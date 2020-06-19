@@ -18,7 +18,11 @@ Depends:
     R (>= 3.2)
 Imports:
     sparklyr (>= 1.2)
-Collate: 
+Suggests:
+    tibble,
+    uuid,
+    testthat
+Collate:
     'globals.R'
     'init.R'
     'sdf_utils.R'
