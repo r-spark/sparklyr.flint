@@ -65,11 +65,23 @@ testthat_sorted_sdf <- function() {
   )
 }
 
+testthat_unsorted_sdf <- function() {
+  testthat_sdf(
+    function() {
+      tibble::tibble(
+        time = c(5, 3, 6, 1, 4, 2),
+        value = c(5, 2, 7, 1, 8, 4)
+      )
+    },
+    ".testthat_unsorted_sdf"
+  )
+}
+
 testthat_date_sdf <- function() {
   testthat_sdf(
     function() {
       tibble::tibble(
-        date = as.Date(seq(6), origin = "2020-01-01"),
+        date = as.Date(seq(6), origin = "1970-01-01"),
         value = c(1, 4, 2, 8, 5, 7)
       )
     },

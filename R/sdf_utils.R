@@ -53,7 +53,9 @@ new_ts_rdd_builder <- function(sc, is_sorted, time_unit, time_column) {
       sdf <- do.call(dplyr::mutate, c(list(sdf), args))
     }
 
-    invoke(builder, "fromDF", spark_dataframe(sdf))
+    ts_rdd <- invoke(builder, "fromDF", spark_dataframe(sdf))
+    class(ts_rdd) <- c("ts_rdd", class(ts_rdd))
+    ts_rdd
   }
 
   impl
@@ -96,4 +98,10 @@ ts_rdd_builder <- function(
     fromDF = .fromDF(.builder, time_column),
     fromRDD = .fromRDD(.builder, time_column)
   ))
+}
+
+#' @export
+#' @importFrom dplyr collect
+collect.ts_rdd <- function(x, ...) {
+  invoke(x, "toDF") %>% sdf_register() %>% collect()
 }
