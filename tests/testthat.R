@@ -95,5 +95,10 @@ if (identical(Sys.getenv("NOT_CRAN"), "true")) {
   filter <- Sys.getenv("TESTTHAT_FILTER", unset = "")
   if (identical(filter, "")) filter <- NULL
 
-  test_check("sparklyr.flint", filter = filter)
+  reporter <- MultiReporter$new(reporters = list(
+    ProgressReporter$new(),
+    CheckReporter$new(),
+    SummaryReporter$new()
+  ))
+  test_check("sparklyr.flint", filter = filter, reporter = reporter)
 }
