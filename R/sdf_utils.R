@@ -39,13 +39,15 @@ new_ts_rdd_builder <- function(sc, is_sorted, time_unit, time_column) {
       list("typeName")
     )
     if (!time_column_type %in% c("long", "timestamp")) {
-      # TODO: how about time_column_type being "date"??
       time_column_sql <- dbplyr::translate_sql_(
         list(rlang::sym(time_column)),
         dbplyr::simulate_dbi()
       )
+      dest_type <- (
+        if (identical(time_column_type, "date")) "TIMESTAMP" else "LONG"
+      )
       args <- list(
-        dplyr::sql(paste0("CAST (", time_column_sql, " AS LONG)"))
+        dplyr::sql(paste0("CAST (", time_column_sql, " AS ", dest_type, ")"))
       )
       names(args) <- time_column
       sdf <- do.call(dplyr::mutate, c(list(sdf), args))
@@ -87,9 +89,9 @@ ts_rdd_builder <- function(
   structure(list(
     .builder <- new_ts_rdd_builder(
       sc,
-      is_sorted,
-      time_unit,
-      time_column
+      is_sorted = is_sorted,
+      time_unit = time_unit,
+      time_column = time_column
     ),
     fromDF = .fromDF(.builder, time_column),
     fromRDD = .fromRDD(.builder, time_column)

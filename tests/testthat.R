@@ -39,20 +39,42 @@ testthat_spark_connection <- function() {
   get(conn_key, envir = .GlobalEnv)
 }
 
-testthat_sorted_sdf <- function() {
+tbl_name <- function(name) gsub("\\.", "_", name)
+
+testthat_sdf <- function(df_provider, sdf_key) {
   sc <- testthat_spark_connection()
 
-  sdf_key <- ".testthat_sorted_sdf"
   if (!exists(sdf_key, envir = .GlobalEnv)) {
-    df <- tibble::tibble(
-      time = seq(1, 6),
-      value = c(1, 4, 2, 8, 5, 7)
-    )
-    sdf <- sdf_copy_to(sc, df)
+    df <- df_provider()
+    sdf <- sdf_copy_to(sc, df, name = tbl_name(sdf_key), overwrite = TRUE)
     assign(sdf_key, sdf, envir = .GlobalEnv)
   }
 
   get(sdf_key, envir = .GlobalEnv)
+}
+
+testthat_sorted_sdf <- function() {
+  testthat_sdf(
+    function() {
+      tibble::tibble(
+        time = seq(6),
+        value = c(1, 4, 2, 8, 5, 7)
+      )
+    },
+    ".testthat_sorted_sdf"
+  )
+}
+
+testthat_date_sdf <- function() {
+  testthat_sdf(
+    function() {
+      tibble::tibble(
+        date = as.Date(seq(6), origin = "2020-01-01"),
+        value = c(1, 4, 2, 8, 5, 7)
+      )
+    },
+    ".testthat_date_sdf"
+  )
 }
 
 if (identical(Sys.getenv("NOT_CRAN"), "true")) {
