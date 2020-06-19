@@ -29,6 +29,50 @@ new_ts_rdd_builder <- function(sc, is_sorted, time_unit, time_column) {
   )
 }
 
+.fromDF <- function(builder, time_column) {
+  impl <- function(sdf) {
+    schema <- invoke(spark_dataframe(sdf), "schema")
+    time_column_idx <- invoke(schema, "fieldIndex", time_column)
+    time_column_type <- invoke(
+      schema,
+      "%>%",
+      list("apply", time_column_idx),
+      list("dataType"),
+      list("typeName")
+    )
+    if (!time_column_type %in% c("long", "timestamp")) {
+      # TODO: how about time_column_type being "date"??
+      time_column_sql <- dbplyr::translate_sql_(
+        list(rlang::sym(time_column)),
+        dbplyr::simulate_dbi()
+      )
+      args <- list(
+        dplyr::sql(paste0("CAST (", time_column_sql, " AS LONG)"))
+      )
+      names(args) <- time_column
+      sdf <- do.call(dplyr::mutate, c(list(sdf), args))
+    }
+
+    invoke(builder, "fromDF", spark_dataframe(sdf))
+  }
+
+  impl
+}
+
+.fromRDD <- function(builder, time_column) {
+  from_df_impl <- .fromDF(builder, time_column)
+  impl <- function(rdd, schema) {
+    sc <- spark_connection(rdd)
+    session <- spark_session(sc)
+    sdf <- invoke(session, "createDataFrame", rdd, schema) %>%
+      sdf_register()
+
+    from_df_impl(sdf)
+  }
+
+  impl
+}
+
 #' TimeSeriesRDD builder object
 #'
 #' Builder object containing all required info (i.e., isSorted, timeUnit, and
@@ -49,32 +93,7 @@ ts_rdd_builder <- function(
       time_unit,
       time_column
     ),
-    fromRDD = function(rdd, schema) {
-      invoke(.builder, "fromRDD", rdd, schema)
-    },
-    fromDF = function(sdf) {
-      schema <- invoke(spark_dataframe(sdf), "schema")
-      time_column_idx <- invoke(schema, "fieldIndex", time_column)
-      time_column_type <- invoke(
-        schema,
-        "%>%",
-        list("apply", time_column_idx),
-        list("dataType"),
-        list("typeName")
-      )
-      if (!time_column_type %in% c("long", "timestamp")) {
-        time_column_sql <- dbplyr::translate_sql_(
-          list(rlang::sym(time_column)),
-          dbplyr::simulate_dbi()
-        )
-        args <- list(
-          dplyr::sql(paste0("CAST (", time_column_sql, " AS LONG)"))
-        )
-        names(args) <- time_column
-        sdf <- do.call(dplyr::mutate, c(list(sdf), args))
-      }
-
-      invoke(.builder, "fromDF", spark_dataframe(sdf))
-    }
+    fromDF = .fromDF(.builder, time_column),
+    fromRDD = .fromRDD(.builder, time_column)
   ))
 }
