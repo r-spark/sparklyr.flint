@@ -13,8 +13,6 @@ NULL
 #'
 #' Convenience function to convert from the name of a time unit (e.g.,
 #' "SECONDS") to its corresponding Java TimeUnit enum value
-#'
-#' @export
 jtime_unit <- function(sc, time_unit = .sparklyr.flint.globals$kValidTimeUnits) {
   invoke_static(sc, "java.util.concurrent.TimeUnit", match.arg(time_unit))
 }
