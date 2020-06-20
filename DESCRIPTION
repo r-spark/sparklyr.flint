@@ -26,3 +26,4 @@ Collate:
     'globals.R'
     'init.R'
     'sdf_utils.R'
+    'window_utils.R'
