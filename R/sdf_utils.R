@@ -27,6 +27,11 @@ new_ts_rdd_builder <- function(sc, is_sorted, time_unit, time_column) {
   )
 }
 
+new_ts_rdd <- function(jobj) {
+  class(jobj) <- c("ts_rdd", class(jobj))
+  jobj
+}
+
 .fromDF <- function(builder, time_column) {
   impl <- function(sdf) {
     schema <- invoke(spark_dataframe(sdf), "schema")
@@ -53,9 +58,7 @@ new_ts_rdd_builder <- function(sc, is_sorted, time_unit, time_column) {
       sdf <- do.call(dplyr::mutate, c(list(sdf), args))
     }
 
-    ts_rdd <- invoke(builder, "fromDF", spark_dataframe(sdf))
-    class(ts_rdd) <- c("ts_rdd", class(ts_rdd))
-    ts_rdd
+    new_ts_rdd(invoke(builder, "fromDF", spark_dataframe(sdf)))
   }
 
   impl

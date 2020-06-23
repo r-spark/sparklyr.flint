@@ -17,7 +17,8 @@ RoxygenNote: 7.1.0
 Depends:
     R (>= 3.2)
 Imports:
-    sparklyr (>= 1.2)
+    sparklyr (>= 1.2),
+    rlang
 Suggests:
     tibble,
     uuid,
@@ -26,4 +27,5 @@ Collate:
     'globals.R'
     'init.R'
     'sdf_utils.R'
-    'window_utils.R'
+    'window_exprs.R'
+    'summarizers.R'

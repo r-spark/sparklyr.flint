@@ -3,6 +3,7 @@
 S3method(collect,ts_rdd)
 export(in_future)
 export(in_past)
+export(summarize_count)
 export(ts_rdd_builder)
 import(sparklyr)
 importFrom(dplyr,collect)

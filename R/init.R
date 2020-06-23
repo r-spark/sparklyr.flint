@@ -16,7 +16,10 @@ spark_dependencies <- function(spark_version, scala_version, ...) {
   scala_version <- if (spark_version < "3.0.0") "2-11" else "2-12"
 
   sparklyr::spark_dependency(
-    packages = sprintf(pkg_name, scala_version, pkg_version),
+    packages = c(
+      sprintf(pkg_name, scala_version, pkg_version),
+      "org.slf4j:slf4j-log4j12:1.7.30"
+    ),
     repositories = "https://dl.bintray.com/yl790/maven"
   )
 }
