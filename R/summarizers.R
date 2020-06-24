@@ -15,7 +15,7 @@
 #' @include window_exprs.R
 NULL
 
-summarize_window_impl <- function(ts_rdd, window_obj, summarizer, group_by = list()) {
+summarize_windows <- function(ts_rdd, window_obj, summarizer, group_by = list()) {
   new_ts_rdd(invoke(ts_rdd, "summarizeWindows", window_obj, summarizer, group_by))
 }
 
@@ -52,7 +52,7 @@ summarize_count <- function(ts_rdd, window, column = NULL) {
 
   count_summarizer <- do.call(invoke_static, args)
 
-  summarize_window_impl(ts_rdd, window_obj, count_summarizer)
+  summarize_windows(ts_rdd, window_obj, count_summarizer)
 }
 
 #' Sum summarizer
@@ -74,5 +74,33 @@ summarize_sum <- function(ts_rdd, window, column) {
     column
   )
 
-  summarize_window_impl(ts_rdd, window_obj, sum_summarizer)
+  summarize_windows(ts_rdd, window_obj, sum_summarizer)
+}
+
+#' Weighted average summarizer
+#'
+#' Compute moving weighted average, weighted standard deviation, weighted t-
+#' stat, and observation count with the column and weight column specified and
+#' store results in new columns named `<column>_<weighted_column>_mean`,
+#' `<column>_<weighted_column>_weightedStandardDeviation`,
+#' `<column>_<weighted_column>_weightedTStat`, and
+#' `<column>_<weighted_column>_observationCount`,
+#'
+#' @inheritParams summarizers
+#' @param weight_column Column specifying relative weight of each data point
+#'
+#' @export
+summarize_weighted_avg <- function(ts_rdd, window, column, weight_column) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  sum_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "weightedMeanTest",
+    column,
+    weight_column
+  )
+
+  summarize_windows(ts_rdd, window_obj, sum_summarizer)
 }
