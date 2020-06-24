@@ -8,7 +8,7 @@
 #'   `in_past("1h")` to summarize data from looking behind 1 hour at each time
 #'    point, `in_future("5s")` to summarize data from looking forward 5 seconds
 #'    at each time point)
-#' @param column Column to summarize
+#' @param column Column to be summarized
 #' @name summarizers
 #'
 #' @include sdf_utils.R
@@ -31,13 +31,13 @@ new_window_obj <- function(sc, window_expr) {
 #' Count the total number of rows if no column is specified, or the number of
 #' non-null values within the specified column within each time window
 #'
+#' @inheritParams summarizers
 #' @param column If not NULL, then report the number of non-NULL values in the
 #'   column specified within each time window, and store the counts in a new
 #'   column named `<column>_count`.
 #'   Otherwise the number of rows within each time window is reported, and
 #'   stored in a column named `count`.
 #'
-#' @rdname summarizers
 #' @export
 summarize_count <- function(ts_rdd, window, column = NULL) {
   sc <- spark_connection(ts_rdd)
@@ -60,9 +60,8 @@ summarize_count <- function(ts_rdd, window, column = NULL) {
 #' Compute moving sums on the column specified and store results in a new column
 #' named `<column>_sum`
 #'
-#' @param column Column to perform moving sum operation on
+#' @inheritParams summarizers
 #'
-#' @rdname summarizers
 #' @export
 summarize_sum <- function(ts_rdd, window, column) {
   sc <- spark_connection(ts_rdd)
