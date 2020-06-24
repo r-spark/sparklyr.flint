@@ -32,7 +32,7 @@ new_ts_rdd <- function(jobj) {
   jobj
 }
 
-.fromDF <- function(builder, time_column) {
+.fromSDF <- function(builder, time_column) {
   impl <- function(sdf) {
     schema <- invoke(spark_dataframe(sdf), "schema")
     time_column_idx <- invoke(schema, "fieldIndex", time_column)
@@ -65,7 +65,7 @@ new_ts_rdd <- function(jobj) {
 }
 
 .fromRDD <- function(builder, time_column) {
-  from_df_impl <- .fromDF(builder, time_column)
+  from_df_impl <- .fromSDF(builder, time_column)
   impl <- function(rdd, schema) {
     sc <- spark_connection(rdd)
     session <- spark_session(sc)
@@ -98,10 +98,44 @@ ts_rdd_builder <- function(
       time_unit = time_unit,
       time_column = time_column
     ),
-    fromDF = .fromDF(.builder, time_column),
+    fromSDF = .fromSDF(.builder, time_column),
     fromRDD = .fromRDD(.builder, time_column)
   ))
 }
+
+#' Construct a TimeSeriesRDD from a Spark DataFrame
+#'
+#' Construct a TimeSeriesRDD containing time series data from a Spark DataFrame
+#'
+#' @export
+fromSDF <- function(
+  sdf,
+  is_sorted = FALSE,
+  time_unit = .sparklyr.flint.globals$kValidTimeUnits,
+  time_column = .sparklyr.flint.globals$kDefaultTimeColumn
+) {
+  sc <- spark_connection(sdf)
+  builder <- ts_rdd_builder(sc, is_sorted, time_unit, time_column)
+  builder$fromSDF(sdf)
+}
+
+#' Construct a TimeSeriesRDD from a Spark RDD of rows
+#'
+#' Construct a TimeSeriesRDD containing time series data from a Spark RDD of rows
+#'
+#' @export
+fromRDD <- function(
+  rdd,
+  schema,
+  is_sorted = FALSE,
+  time_unit = .sparklyr.flint.globals$kValidTimeUnits,
+  time_column = .sparklyr.flint.globals$kDefaultTimeColumn
+) {
+  sc <- spark_connection(rdd)
+  builder <- ts_rdd_builder(sc, is_sorted, time_unit, time_column)
+  builder$fromRDD(rdd, schema)
+}
+
 
 #' @export
 #' @importFrom dplyr collect
