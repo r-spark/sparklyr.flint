@@ -17,8 +17,8 @@ spark_dependencies <- function(spark_version, scala_version, ...) {
 
   sparklyr::spark_dependency(
     packages = c(
-      sprintf(pkg_name, scala_version, pkg_version),
-      "org.slf4j:slf4j-log4j12:1.7.30"
+      "org.slf4j:slf4j-log4j12:1.7.30",
+      sprintf(pkg_name, scala_version, pkg_version)
     ),
     repositories = "https://dl.bintray.com/yl790/maven"
   )
