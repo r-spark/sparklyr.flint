@@ -6,6 +6,7 @@
 \usage{
 fromRDD(
   rdd,
+  schema,
   is_sorted = FALSE,
   time_unit = .sparklyr.flint.globals$kValidTimeUnits,
   time_column = .sparklyr.flint.globals$kDefaultTimeColumn

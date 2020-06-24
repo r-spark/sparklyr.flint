@@ -4,7 +4,10 @@
 #' sum and count.
 #'
 #' @param ts_rdd Timeseries RDD being summarized
-#' @param window Expression specifying time window of the summarization (TODO: example)
+#' @param window R expression specifying time windows to be summarized (e.g.,
+#'   `in_past("1h")` to summarize data from looking behind 1 hour at each time
+#'    point, `in_future("5s")` to summarize data from looking forward 5 seconds
+#'    at each time point)
 #' @param column Column to summarize
 #' @name summarizers
 #'
@@ -14,6 +17,13 @@ NULL
 
 summarize_window_impl <- function(ts_rdd, window_obj, summarizer, group_by = list()) {
   new_ts_rdd(invoke(ts_rdd, "summarizeWindows", window_obj, summarizer, group_by))
+}
+
+#' Evaluate a time window specification and instantiate the corresponding time
+#' window object
+new_window_obj <- function(sc, window_expr) {
+  window_expr$sc <- sc
+  rlang::eval_tidy(window_expr)
 }
 
 #' Count summarizer
@@ -31,10 +41,7 @@ summarize_window_impl <- function(ts_rdd, window_obj, summarizer, group_by = lis
 #' @export
 summarize_count <- function(ts_rdd, window, column = NULL) {
   sc <- spark_connection(ts_rdd)
-
-  window <- rlang::enexpr(window)
-  window$sc <- sc
-  window_obj <- rlang::eval_tidy(window)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
   args <- list(
     sc = sc,
@@ -46,4 +53,27 @@ summarize_count <- function(ts_rdd, window, column = NULL) {
   count_summarizer <- do.call(invoke_static, args)
 
   summarize_window_impl(ts_rdd, window_obj, count_summarizer)
+}
+
+#' Sum summarizer
+#'
+#' Compute moving sums on the column specified and store results in a new column
+#' named `<column>_sum`
+#'
+#' @param column Column to perform moving sum operation on
+#'
+#' @rdname summarizers
+#' @export
+summarize_sum <- function(ts_rdd, window, column) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  sum_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "sum",
+    column
+  )
+
+  summarize_window_impl(ts_rdd, window_obj, sum_summarizer)
 }

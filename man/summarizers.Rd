@@ -3,20 +3,22 @@
 \name{summarizers}
 \alias{summarizers}
 \alias{summarize_count}
+\alias{summarize_sum}
 \title{Wrapper functions for commonly used summarizer functions}
 \usage{
 summarize_count(ts_rdd, window, column = NULL)
+
+summarize_sum(ts_rdd, window, column)
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
 
-\item{window}{Expression specifying time window of the summarization (TODO: example)}
+\item{window}{R expression specifying time windows to be summarized (e.g.,
+`in_past("1h")` to summarize data from looking behind 1 hour at each time
+ point, `in_future("5s")` to summarize data from looking forward 5 seconds
+ at each time point)}
 
-\item{column}{If not NULL, then report the number of non-NULL values in the
-column specified within each time window, and store the counts in a new
-column named `<column>_count`.
-Otherwise the number of rows within each time window is reported, and
-stored in a column named `count`.}
+\item{column}{Column to perform moving sum operation on}
 }
 \description{
 R wrapper functions for commonly used Flint summarizer functionalities such as
@@ -24,4 +26,7 @@ sum and count.
 
 Count the total number of rows if no column is specified, or the number of
 non-null values within the specified column within each time window
+
+Compute moving sums on the column specified and store results in a new column
+named `<column>_sum`
 }
