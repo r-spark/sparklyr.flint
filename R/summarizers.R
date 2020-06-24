@@ -32,9 +32,9 @@ new_window_obj <- function(sc, window_expr) {
 #' non-null values within the specified column within each time window
 #'
 #' @inheritParams summarizers
-#' @param column If not NULL, then report the number of non-NULL values in the
-#'   column specified within each time window, and store the counts in a new
-#'   column named `<column>_count`.
+#' @param column If not NULL, then report the number of values in the column
+#'   specified that are not NULL or NaN within each time window, and store the
+#'   counts in a new column named `<column>_count`.
 #'   Otherwise the number of rows within each time window is reported, and
 #'   stored in a column named `count`.
 #'

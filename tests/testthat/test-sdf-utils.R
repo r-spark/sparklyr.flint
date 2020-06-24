@@ -17,14 +17,14 @@ verify_result <- function(df) {
 
 test_that("ts_rdd_builder can process sorted data frame", {
   sdf <- testthat_sorted_sdf()
-  ts_rdd <- sorted_ts_rdd_builder$fromDF(sdf)
+  ts_rdd <- sorted_ts_rdd_builder$fromSDF(sdf)
 
   verify_result(ts_rdd %>% collect())
 })
 
 test_that("ts_rdd_builder can process unsorted data frame", {
   sdf <- testthat_unsorted_sdf()
-  ts_rdd <- unsorted_ts_rdd_builder$fromDF(sdf)
+  ts_rdd <- unsorted_ts_rdd_builder$fromSDF(sdf)
 
   verify_result(ts_rdd %>% collect())
 })
@@ -40,7 +40,23 @@ test_that("ts_rdd_builder can work with RDD+schema", {
 
 test_that("ts_rdd_builder can work with time column of type Date", {
   sdf <- testthat_date_sdf()
-  ts_rdd <- date_col_ts_rdd_builder$fromDF(sdf)
+  ts_rdd <- date_col_ts_rdd_builder$fromSDF(sdf)
+
+  verify_result(ts_rdd %>% collect())
+})
+
+test_that("fromSDF() works as expected", {
+  sdf <- testthat_date_sdf()
+  ts_rdd <- fromSDF(sdf, is_sorted = TRUE, time_column = "date")
+
+  verify_result(ts_rdd %>% collect())
+})
+
+test_that("fromRDD() works as expected", {
+  sdf <- testthat_date_sdf()
+  rdd <- invoke(spark_dataframe(sdf), "rdd")
+  schema <- invoke(spark_dataframe(sdf), "schema")
+  ts_rdd <- fromRDD(rdd, schema, is_sorted = TRUE, time_column = "date")
 
   verify_result(ts_rdd %>% collect())
 })
