@@ -14,9 +14,9 @@ summarize_count(ts_rdd, window, column = NULL)
  point, `in_future("5s")` to summarize data from looking forward 5 seconds
  at each time point)}
 
-\item{column}{If not NULL, then report the number of non-NULL values in the
-column specified within each time window, and store the counts in a new
-column named `<column>_count`.
+\item{column}{If not NULL, then report the number of values in the column
+specified that are not NULL or NaN within each time window, and store the
+counts in a new column named `<column>_count`.
 Otherwise the number of rows within each time window is reported, and
 stored in a column named `count`.}
 }
