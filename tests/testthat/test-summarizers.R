@@ -26,6 +26,21 @@ test_that("sum summarizer works as expected", {
   expect_equal(ts_sum$v_sum, c(4, 2, 2, 3, 5, 1, -4, 1, 1, 8))
 })
 
+test_that("avg summarizer works as expected", {
+  ts_avg <- summarize_avg(
+    ts,
+    in_past("3s"),
+    column = "v",
+  ) %>% collect()
+
+  expect_equal(
+    ts_avg$v_mean,
+    c(4, 1, 1, 1.5, 5, 1, -4, 0.5, 0.5, 4),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
 test_that("weighted-avg summarizer works as expected", {
   ts_weighted_avg <- summarize_weighted_avg(
     ts,

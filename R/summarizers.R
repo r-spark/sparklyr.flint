@@ -77,6 +77,28 @@ summarize_sum <- function(ts_rdd, window, column) {
   summarize_windows(ts_rdd, window_obj, sum_summarizer)
 }
 
+#' Average summarizer
+#'
+#' Compute moving average of `column` and store results in a new column named
+#' `<column>_mean`
+#'
+#' @inheritParams summarizers
+#'
+#' @export
+summarize_avg <- function(ts_rdd, window, column) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  avg_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "mean",
+    column
+  )
+
+  summarize_windows(ts_rdd, window_obj, avg_summarizer)
+}
+
 #' Weighted average summarizer
 #'
 #' Compute moving weighted average, weighted standard deviation, weighted t-
@@ -94,7 +116,7 @@ summarize_weighted_avg <- function(ts_rdd, window, column, weight_column) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
-  sum_summarizer <- invoke_static(
+  weighted_avg_summarizer <- invoke_static(
     sc,
     "com.twosigma.flint.timeseries.Summarizers",
     "weightedMeanTest",
@@ -102,5 +124,5 @@ summarize_weighted_avg <- function(ts_rdd, window, column, weight_column) {
     weight_column
   )
 
-  summarize_windows(ts_rdd, window_obj, sum_summarizer)
+  summarize_windows(ts_rdd, window_obj, weighted_avg_summarizer)
 }

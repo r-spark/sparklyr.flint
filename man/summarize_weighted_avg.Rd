@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarizers.R
 \name{summarize_weighted_avg}
 \alias{summarize_weighted_avg}
-\title{Weighted-average summarizer}
+\title{Weighted average summarizer}
 \usage{
 summarize_weighted_avg(ts_rdd, window, column, weight_column)
 }
@@ -19,6 +19,10 @@ summarize_weighted_avg(ts_rdd, window, column, weight_column)
 \item{weight_column}{Column specifying relative weight of each data point}
 }
 \description{
-Compute moving weighted-average with the value column and weight column
-specified and store results in a new column named `<column>_mean`
+Compute moving weighted average, weighted standard deviation, weighted t-
+stat, and observation count with the column and weight column specified and
+store results in new columns named `<column>_<weighted_column>_mean`,
+`<column>_<weighted_column>_weightedStandardDeviation`,
+`<column>_<weighted_column>_weightedTStat`, and
+`<column>_<weighted_column>_observationCount`,
 }
