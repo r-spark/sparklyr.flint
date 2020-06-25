@@ -4,7 +4,7 @@
 \alias{summarize_weighted_avg}
 \title{Weighted average summarizer}
 \usage{
-summarize_weighted_avg(ts_rdd, window, column, weight_column)
+summarize_weighted_avg(ts_rdd, window, value_column, weight_column)
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
@@ -14,15 +14,15 @@ summarize_weighted_avg(ts_rdd, window, column, weight_column)
  point, `in_future("5s")` to summarize data from looking forward 5 seconds
  at each time point)}
 
-\item{column}{Column to be summarized}
+\item{value_column}{Column containing data point values}
 
-\item{weight_column}{Column specifying relative weight of each data point}
+\item{weight_column}{Column containing relative weights of data points}
 }
 \description{
 Compute moving weighted average, weighted standard deviation, weighted t-
 stat, and observation count with the column and weight column specified and
-store results in new columns named `<column>_<weighted_column>_mean`,
-`<column>_<weighted_column>_weightedStandardDeviation`,
-`<column>_<weighted_column>_weightedTStat`, and
-`<column>_<weighted_column>_observationCount`,
+store results in new columns named `<value_column>_<weighted_column>_mean`,
+`<value_column>_<weighted_column>_weightedStandardDeviation`,
+`<value_column>_<weighted_column>_weightedTStat`, and
+`<value_column>_<weighted_column>_observationCount`,
 }
