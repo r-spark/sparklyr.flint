@@ -84,3 +84,18 @@ test_that("stddev summarizer works as expected", {
     scale = 1
   )
 })
+
+test_that("var summarizer works as expected", {
+  ts_var <- summarize_var(
+    ts,
+    in_past("6s"),
+    column = "v"
+  ) %>% collect()
+
+  expect_equal(
+    ts_var$v_variance,
+    c(NaN, 18, 18, 14.33333333, 14.33333333, 8, 12.5, 20.33333333, 40.5, 22.33333333),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
