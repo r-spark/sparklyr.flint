@@ -30,7 +30,7 @@ test_that("avg summarizer works as expected", {
   ts_avg <- summarize_avg(
     ts,
     in_past("3s"),
-    column = "v",
+    column = "v"
   ) %>% collect()
 
   expect_equal(
@@ -68,4 +68,19 @@ test_that("weighted-avg summarizer works as expected", {
     scale = 1
   )
   expect_equal(ts_weighted_avg$v_w_observationCount, c(1, 2, 2, 2, 1, 1, 1, 2, 2, 2))
+})
+
+test_that("stddev summarizer works as expected", {
+  ts_stddev <- summarize_stddev(
+    ts,
+    in_past("6s"),
+    column = "v"
+  ) %>% collect()
+
+  expect_equal(
+    ts_stddev$v_stddev,
+    c(NaN, 4.24264069, 4.24264069, 3.78593890, 3.78593890, 2.82842712, 3.53553390, 4.50924975, 6.36396103, 4.72581563),
+    tolerance = 1e-7,
+    scale = 1
+  )
 })

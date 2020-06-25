@@ -126,3 +126,25 @@ summarize_weighted_avg <- function(ts_rdd, window, column, weight_column) {
 
   summarize_windows(ts_rdd, window_obj, weighted_avg_summarizer)
 }
+
+#' Standard deviation summarizer
+#'
+#' Compute standard deviation of values from `column` in each time time window
+#' and store results in a new column named `<column>_stddev`
+#'
+#' @inheritParams summarizers
+#'
+#' @export
+summarize_stddev <- function(ts_rdd, window, column) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  stddev_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "stddev",
+    column
+  )
+
+  summarize_windows(ts_rdd, window_obj, stddev_summarizer)
+}
