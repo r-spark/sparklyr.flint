@@ -17,6 +17,6 @@ summarize_stddev(ts_rdd, window, column)
 \item{column}{Column to be summarized}
 }
 \description{
-Compute standard deviation of values from `column` in each time window and
+Compute standard deviation of values from `column` within each time window and
 store results in a new column named `<column>_stddev`
 }
