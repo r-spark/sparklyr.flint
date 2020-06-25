@@ -14,7 +14,7 @@
 #' @param sc Spark connection (does not need to be specified within the context
 #'   of `summarize_*` functions)
 #'
-#' @name window_utils
+#' @name window_exprs
 #' @include globals.R
 NULL
 
@@ -39,7 +39,7 @@ in_past <- function(duration, sc) {
 #' Create a sliding time window capuring data within the closed interval of
 #' [current time, current time + duration]
 #'
-#' @rdname window_utils
+#' @rdname window_exprs
 #' @export
 in_future <- function(duration, sc) {
   invoke_static(
