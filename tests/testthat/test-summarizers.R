@@ -15,13 +15,13 @@ test_that("summarize_count() works as expected", {
 })
 
 test_that("summarize_count() with specific column works as expected", {
-  ts_count <- summarize_count(ts, in_past("3s"), column = v) %>% collect()
+  ts_count <- summarize_count(ts, in_past("3s"), column = "v") %>% collect()
 
   expect_equal(ts_count$v_count, c(1, 2, 2, 2, 1, 1, 1, 2, 2, 2))
 })
 
 test_that("summarize_sum() works as expected", {
-  ts_sum <- summarize_sum(ts, in_past("3s"), column = v) %>% collect()
+  ts_sum <- summarize_sum(ts, in_past("3s"), column = "v") %>% collect()
 
   expect_equal(ts_sum$v_sum, c(4, 2, 2, 3, 5, 1, -4, 1, 1, 8))
 })
@@ -30,7 +30,7 @@ test_that("summarize_avg() works as expected", {
   ts_avg <- summarize_avg(
     ts,
     in_past("3s"),
-    column = v
+    column = "v"
   ) %>% collect()
 
   expect_equal(
@@ -45,8 +45,8 @@ test_that("summarize_weighted_avg() works as expected", {
   ts_weighted_avg <- summarize_weighted_avg(
     ts,
     in_past("3s"),
-    value_column = v,
-    weight_column = w
+    column = "v",
+    weight_column = "w"
   ) %>% collect()
 
   expect_equal(
@@ -74,7 +74,7 @@ test_that("summarize_stddev() works as expected", {
   ts_stddev <- summarize_stddev(
     ts,
     in_past("6s"),
-    column = v
+    column = "v"
   ) %>% collect()
 
   expect_equal(
@@ -89,7 +89,7 @@ test_that("summarize_var() works as expected", {
   ts_var <- summarize_var(
     ts,
     in_past("6s"),
-    column = v
+    column = "v"
   ) %>% collect()
 
   expect_equal(
@@ -104,8 +104,8 @@ test_that("summarize_covar() works as expected", {
   ts_covar <- summarize_covar(
     ts,
     in_past("6s"),
-    u,
-    v
+    "u",
+    "v"
   ) %>% collect()
 
   expect_equal(

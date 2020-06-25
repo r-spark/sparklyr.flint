@@ -48,12 +48,7 @@ summarize_count <- function(ts_rdd, window, column = NULL) {
     class = "com.twosigma.flint.timeseries.Summarizers",
     method = "count"
   )
-  column <- rlang::enexpr(column)
-  if (!is.null(column))
-    args <- append(
-      args,
-      as.character(column)
-    )
+  if (!is.null(column)) args <- append(args, column)
 
   count_summarizer <- do.call(invoke_static, args)
 
@@ -76,7 +71,7 @@ summarize_sum <- function(ts_rdd, window, column) {
     sc,
     "com.twosigma.flint.timeseries.Summarizers",
     "sum",
-    as.character(rlang::enexpr(column))
+    column
   )
 
   summarize_windows(ts_rdd, window_obj, sum_summarizer)
@@ -98,7 +93,7 @@ summarize_avg <- function(ts_rdd, window, column) {
     sc,
     "com.twosigma.flint.timeseries.Summarizers",
     "mean",
-    as.character(rlang::enexpr(column))
+    column
   )
 
   summarize_windows(ts_rdd, window_obj, avg_summarizer)
@@ -108,17 +103,16 @@ summarize_avg <- function(ts_rdd, window, column) {
 #'
 #' Compute moving weighted average, weighted standard deviation, weighted t-
 #' stat, and observation count with the column and weight column specified and
-#' store results in new columns named `<value_column>_<weighted_column>_mean`,
-#' `<value_column>_<weighted_column>_weightedStandardDeviation`,
-#' `<value_column>_<weighted_column>_weightedTStat`, and
-#' `<value_column>_<weighted_column>_observationCount`,
+#' store results in new columns named `<column>_<weighted_column>_mean`,
+#' `<column>_<weighted_column>_weightedStandardDeviation`,
+#' `<column>_<weighted_column>_weightedTStat`, and
+#' `<column>_<weighted_column>_observationCount`,
 #'
 #' @inheritParams summarizers
-#' @param value_column Column containing data point values
-#' @param weight_column Column containing relative weights of data points
+#' @param weight_column Column specifying relative weight of each data point
 #'
 #' @export
-summarize_weighted_avg <- function(ts_rdd, window, value_column, weight_column) {
+summarize_weighted_avg <- function(ts_rdd, window, column, weight_column) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -126,8 +120,8 @@ summarize_weighted_avg <- function(ts_rdd, window, value_column, weight_column) 
     sc,
     "com.twosigma.flint.timeseries.Summarizers",
     "weightedMeanTest",
-    as.character(rlang::enexpr(value_column)),
-    as.character(rlang::enexpr(weight_column))
+    column,
+    weight_column
   )
 
   summarize_windows(ts_rdd, window_obj, weighted_avg_summarizer)
@@ -149,7 +143,7 @@ summarize_stddev <- function(ts_rdd, window, column) {
     sc,
     "com.twosigma.flint.timeseries.Summarizers",
     "stddev",
-    as.character(rlang::enexpr(column))
+    column
   )
 
   summarize_windows(ts_rdd, window_obj, stddev_summarizer)
@@ -171,7 +165,7 @@ summarize_var <- function(ts_rdd, window, column) {
     sc,
     "com.twosigma.flint.timeseries.Summarizers",
     "variance",
-    as.character(rlang::enexpr(column))
+    column
   )
 
   summarize_windows(ts_rdd, window_obj, var_summarizer)
@@ -195,8 +189,8 @@ summarize_covar <- function(ts_rdd, window, xcolumn, ycolumn) {
     sc,
     "com.twosigma.flint.timeseries.Summarizers",
     "covariance",
-    as.character(rlang::enexpr(xcolumn)),
-    as.character(rlang::enexpr(ycolumn))
+    xcolumn,
+    ycolumn
   )
 
   summarize_windows(ts_rdd, window_obj, covar_summarizer)
