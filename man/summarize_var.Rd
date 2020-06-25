@@ -18,5 +18,6 @@ summarize_var(ts_rdd, window, column)
 }
 \description{
 Compute variance of values from `column` within each time window and store
-results in a new column named `<column>_variance`
+results in a new column named `<column>_variance`, with Bessel's correction
+applied to the results
 }

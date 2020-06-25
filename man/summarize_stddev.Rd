@@ -17,6 +17,7 @@ summarize_stddev(ts_rdd, window, column)
 \item{column}{Column to be summarized}
 }
 \description{
-Compute standard deviation of values from `column` within each time window and
-store results in a new column named `<column>_stddev`
+Compute unbiased (i.e., Bessel's correction is applied) sample standard
+deviation of values from `column` within each time window and store results
+in a new column named `<column>_stddev`
 }

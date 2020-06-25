@@ -129,8 +129,9 @@ summarize_weighted_avg <- function(ts_rdd, window, column, weight_column) {
 
 #' Standard deviation summarizer
 #'
-#' Compute standard deviation of values from `column` within each time window and
-#' store results in a new column named `<column>_stddev`
+#' Compute unbiased (i.e., Bessel's correction is applied) sample standard
+#' deviation of values from `column` within each time window and store results
+#' in a new column named `<column>_stddev`
 #'
 #' @inheritParams summarizers
 #'
@@ -152,7 +153,8 @@ summarize_stddev <- function(ts_rdd, window, column) {
 #' Variance summarizer
 #'
 #' Compute variance of values from `column` within each time window and store
-#' results in a new column named `<column>_variance`
+#' results in a new column named `<column>_variance`, with Bessel's correction
+#' applied to the results
 #'
 #' @inheritParams summarizers
 #'
@@ -198,9 +200,9 @@ summarize_covar <- function(ts_rdd, window, xcolumn, ycolumn) {
 
 #' Weighted covariance summarizer
 #'
-#' Compute weighted covariance between values from `xcolumn` and `ycolumn`
-#' within each time window, using values from `weight_column` as relative
-#' weights, and store results in a new column named
+#' Compute unbiased weighted covariance between values from `xcolumn` and
+#' `ycolumn` within each time window, using values from `weight_column` as
+#' relative weights, and store results in a new column named
 #' `"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance"`
 #'
 #' @inheritParams summarizers

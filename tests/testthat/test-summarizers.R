@@ -117,7 +117,7 @@ test_that("summarize_covar() works as expected", {
 })
 
 test_that("summarize_weighted_covar() works as expected", {
-  ts_weighted_covar <- summarize_covar(
+  ts_weighted_covar <- summarize_weighted_covar(
     ts,
     in_past("6s"),
     xcolumn = "u",

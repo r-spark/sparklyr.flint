@@ -21,8 +21,8 @@ summarize_weighted_covar(ts_rdd, window, xcolumn, ycolumn, weight_column)
 \item{weight_column}{Column specifying relative weight of each data point}
 }
 \description{
-Compute weighted covariance between values from `xcolumn` and `ycolumn`
-within each time window, using values from `weight_column` as relative
-weights, and store results in a new column named
+Compute unbiased weighted covariance between values from `xcolumn` and
+`ycolumn` within each time window, using values from `weight_column` as
+relative weights, and store results in a new column named
 `"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance"`
 }
