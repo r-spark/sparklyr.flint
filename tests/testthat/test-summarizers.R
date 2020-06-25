@@ -132,3 +132,15 @@ test_that("summarize_weighted_covar() works as expected", {
     scale = 1
   )
 })
+
+test_that("summarize_min() works as expected", {
+  ts_min <- summarize_min(ts, in_past("3s"), column = "v") %>% collect()
+
+  expect_equal(ts_min$v_min, c(4, -2, -2, -2, 5, 1, -4, -4, -4, 3))
+})
+
+test_that("summarize_max() works as expected", {
+  ts_max <- summarize_max(ts, in_past("3s"), column = "v") %>% collect()
+
+  expect_equal(ts_max$v_max, c(4, 4, 4, 5, 5, 1, -4, 5, 5, 5))
+})

@@ -24,5 +24,5 @@ summarize_weighted_covar(ts_rdd, window, xcolumn, ycolumn, weight_column)
 Compute unbiased weighted covariance between values from `xcolumn` and
 `ycolumn` within each time window, using values from `weight_column` as
 relative weights, and store results in a new column named
-`"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance"`
+`"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance`
 }

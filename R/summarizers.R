@@ -203,7 +203,7 @@ summarize_covar <- function(ts_rdd, window, xcolumn, ycolumn) {
 #' Compute unbiased weighted covariance between values from `xcolumn` and
 #' `ycolumn` within each time window, using values from `weight_column` as
 #' relative weights, and store results in a new column named
-#' `"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance"`
+#' `"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance`
 #'
 #' @inheritParams summarizers
 #' @param xcolumn Column representing the first random variable
@@ -231,4 +231,48 @@ summarize_weighted_covar <- function(
   )
 
   summarize_windows(ts_rdd, window_obj, weighted_covar_summarizer)
+}
+
+#' Minimum value summarizer
+#'
+#' Find minimum value among values from `column` within each time window, and
+#' store results in a new column named `<column>_min`
+#'
+#' @inheritParams summarizers
+#'
+#' @export
+summarize_min <- function(ts_rdd, window, column) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  min_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "min",
+    column
+  )
+
+  summarize_windows(ts_rdd, window_obj, min_summarizer)
+}
+
+#' Maximum value summarizer
+#'
+#' Find maximum value among values from `column` within each time window, and
+#' store results in a new column named `<column>_max`
+#'
+#' @inheritParams summarizers
+#'
+#' @export
+summarize_max <- function(ts_rdd, window, column) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  max_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "max",
+    column
+  )
+
+  summarize_windows(ts_rdd, window_obj, max_summarizer)
 }
