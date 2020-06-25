@@ -176,9 +176,9 @@ summarize_var <- function(ts_rdd, window, column) {
 #' Compute covariance between values from `xcolumn` and `ycolumn` within each time
 #' window and store results in a new column named `<xcolumn>_<ycolumn>_covariance`
 #'
+#' @inheritParams summarizers
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
-#' @inheritParams summarizers
 #'
 #' @export
 summarize_covar <- function(ts_rdd, window, xcolumn, ycolumn) {
@@ -194,4 +194,39 @@ summarize_covar <- function(ts_rdd, window, xcolumn, ycolumn) {
   )
 
   summarize_windows(ts_rdd, window_obj, covar_summarizer)
+}
+
+#' Weighted covariance summarizer
+#'
+#' Compute weighted covariance between values from `xcolumn` and `ycolumn`
+#' within each time window, using values from `weight_column` as relative
+#' weights, and store results in a new column named
+#' `"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance"`
+#'
+#' @inheritParams summarizers
+#' @param xcolumn Column representing the first random variable
+#' @param ycolumn Column representing the second random variable
+#' @param weight_column Column specifying relative weight of each data point
+#'
+#' @export
+summarize_weighted_covar <- function(
+  ts_rdd,
+  window,
+  xcolumn,
+  ycolumn,
+  weight_column
+) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  weighted_covar_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "weightedCovariance",
+    xcolumn,
+    ycolumn,
+    weight_column
+  )
+
+  summarize_windows(ts_rdd, window_obj, weighted_covar_summarizer)
 }

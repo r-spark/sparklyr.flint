@@ -104,13 +104,30 @@ test_that("summarize_covar() works as expected", {
   ts_covar <- summarize_covar(
     ts,
     in_past("6s"),
-    "u",
-    "v"
+    xcolumn = "u",
+    ycolumn = "v"
   ) %>% collect()
 
   expect_equal(
     ts_covar$u_v_covariance,
     c(0, -7.5, -7.5, -6.3333333, -6.3333333, -4, 6.25, 17.8888889, 27, 22.4444444),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
+test_that("summarize_weighted_covar() works as expected", {
+  ts_weighted_covar <- summarize_covar(
+    ts,
+    in_past("6s"),
+    xcolumn = "u",
+    ycolumn = "v",
+    weight_column = "w"
+  ) %>% collect()
+
+  expect_equal(
+    ts_weighted_covar$u_v_w_weightedCovariance,
+    c(NaN, -15, -12, -9.0526316, -8.0952381, -8, 12.5, 21.5384615, 54, 35.1428571),
     tolerance = 1e-7,
     scale = 1
   )
