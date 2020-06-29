@@ -362,6 +362,33 @@ summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns) {
   summarize(ts_rdd, corr_summarizer)
 }
 
+#' Pearson weighted correlation summarizer
+#'
+#' Compute Pearson weighted correlation between `xcolumn` and `ycolumn` weighted
+#' by `weight_column` and store result in a new columns named
+#' `<xcolumn>_<ycolumn>_<weight_column>_weightedCorrelation`
+#'
+#' @inheritParams summarizers
+#' @param xcolumn Column representing the first random variable
+#' @param ycolumn Column representing the second random variable
+#' @param weight_column Column specifying relative weight of each data point
+#'
+#' @export
+summarize_weighted_corr <- function(ts_rdd, xcolumn, ycolumn, weight_column) {
+  sc <- spark_connection(ts_rdd)
+
+  weighted_corr_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "weightedCorrelation",
+    xcolumn,
+    ycolumn,
+    weight_column
+  )
+
+  summarize(ts_rdd, weighted_corr_summarizer)
+}
+
 #' Minimum value summarizer
 #'
 #' Find minimum value among values from `column` within each time window, and

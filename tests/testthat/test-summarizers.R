@@ -252,7 +252,8 @@ test_that("summarize_corr() works as expected", {
 })
 
 test_that("summarize_corr2() works as expected", {
-  ts_corr <- summarize_corr2(corr_test_case_ts, c("p", "np"), c("f", "dp")) %>% collect()
+  ts_corr <- summarize_corr2(corr_test_case_ts, c("p", "np"), c("f", "dp")) %>%
+    collect()
   expect_equal(
     ts_corr$p_f_correlation,
     -0.02189612,
@@ -281,4 +282,21 @@ test_that("summarize_corr2() works as expected", {
   )
   expect_equal(ts_corr$np_dp_correlation, -1)
   expect_equal(ts_corr$np_dp_correlationTStat, -Inf)
+})
+
+test_that("summarize_weighted_corr() works as expected", {
+  weighted_corr_test_case_ts <- fromSDF(
+    testthat_weighted_corr_test_case(),
+    is_sorted = TRUE,
+    time_unit = "SECONDS",
+    time_column = "t"
+  )
+  ts_weighted_corr <- summarize_weighted_corr(
+    weighted_corr_test_case_ts,
+    "x",
+    "y",
+    "w"
+  ) %>% collect()
+
+  expect_equal(ts_weighted_corr$x_y_w_weightedCorrelation, -1)
 })
