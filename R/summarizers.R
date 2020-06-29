@@ -264,6 +264,29 @@ summarize_z_score <- function(ts_rdd, column, include_current_observation = FALS
   summarize(ts_rdd, z_score_summarizer)
 }
 
+#' N-th moment summarizer
+#'
+#' Computes n-th moment of the column specified and store result in a new column
+#' named `<column>_<n>thMoment`
+#'
+#' @inheritParams summarizers
+#' @param n The order of moment to calculate
+#'
+#' @export
+summarize_nth_moment <- function(ts_rdd, column, n) {
+  sc <- spark_connection(ts_rdd)
+
+  nth_moment_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "nthMoment",
+    column,
+    as.integer(n)
+  )
+
+  summarize(ts_rdd, nth_moment_summarizer)
+}
+
 #' Minimum value summarizer
 #'
 #' Find minimum value among values from `column` within each time window, and

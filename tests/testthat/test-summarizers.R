@@ -7,8 +7,8 @@ ts <- fromSDF(
   time_unit = "SECONDS",
   time_column = "t"
 )
-z_score_test_case <- fromSDF(
-  testthat_z_score_test_case(),
+simple_ts <- fromSDF(
+  testthat_simple_time_series(),
   is_sorted = TRUE,
   time_unit = "SECONDS",
   time_column = "t"
@@ -152,11 +152,39 @@ test_that("summarize_max() works as expected", {
 })
 
 test_that("summarize_z_score() works as expected", {
-  ts_in_sample_z_score <- summarize_z_score(
-    z_score_test_case, column = "v", TRUE) %>% collect()
-  expect_equal(ts_in_sample_z_score$v_zScore, 1.52542554, 1e-7)
+  ts_in_sample_z_score <- summarize_z_score(simple_ts, "v", TRUE) %>% collect()
+  expect_equal(
+    ts_in_sample_z_score$v_zScore,
+    1.52542554,
+    tolerance = 1e-7,
+    scale = 1
+  )
 
-  ts_out_of_sample_z_score <- summarize_z_score(
-    z_score_test_case, column = "v", FALSE) %>% collect()
-  expect_equal(ts_out_of_sample_z_score$v_zScore, 1.80906807, 1e-7)
+  ts_out_of_sample_z_score <-
+    summarize_z_score(simple_ts, "v", FALSE) %>% collect()
+  expect_equal(
+    ts_out_of_sample_z_score$v_zScore,
+    1.80906807,
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
+test_that("summarize_nth_moment() works as expected", {
+  ts_0th_moment <- summarize_nth_moment(simple_ts, "v", 0) %>% collect()
+  expect_equal(ts_0th_moment$v_0thMoment, 1)
+
+  ts_1st_moment <- summarize_nth_moment(simple_ts, "v", 1) %>% collect()
+  expect_equal(ts_1st_moment$v_1thMoment, 3.25)
+
+  ts_2nd_moment <- summarize_nth_moment(simple_ts, "v", 2) %>% collect()
+  expect_equal(
+    ts_2nd_moment$v_2thMoment,
+    13.54166667,
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_3rd_moment <- summarize_nth_moment(simple_ts, "v", 3) %>% collect()
+  expect_equal(ts_3rd_moment$v_3thMoment, 63.375)
 })

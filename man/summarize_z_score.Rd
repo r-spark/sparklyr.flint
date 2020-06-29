@@ -4,7 +4,7 @@
 \alias{summarize_z_score}
 \title{Z-score summarizer}
 \usage{
-summarize_z_score(ts_rdd, column, include_current_observation = TRUE)
+summarize_z_score(ts_rdd, column, include_current_observation = FALSE)
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
@@ -16,7 +16,8 @@ deviation with current observation in z-score calculation, otherwise use
 unbiased sample standard deviation excluding current observation}
 }
 \description{
-Compute z-score of each value in the column specified with the option for
-out-of-sample calculation, and store result in a new column named
+Computes z-score of the most recent value in the column specified, with
+respect to the sample mean and standard deviation observed so far, with the
+option for out-of-sample calculation, and store result in a new column named
 `<column>_zScore`
 }

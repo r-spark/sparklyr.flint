@@ -99,7 +99,7 @@ testthat_generic_time_series <- function() {
   )
 }
 
-testthat_z_score_test_case <- function() {
+testthat_simple_time_series <- function() {
   testthat_sdf(
     function() {
       tibble::tibble(
@@ -107,6 +107,6 @@ testthat_z_score_test_case <- function() {
         v = seq(0.5, 6, 0.5)
       )
     },
-    ".testthat_z_score_test_case"
+    ".testthat_simple_time_series"
   )
 }
