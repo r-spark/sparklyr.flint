@@ -13,6 +13,12 @@ simple_ts <- fromSDF(
   time_unit = "SECONDS",
   time_column = "t"
 )
+corr_test_case_ts <- fromSDF(
+  testthat_corr_test_case(),
+  is_sorted = TRUE,
+  time_unit = "SECONDS",
+  time_column = "t"
+)
 
 test_that("summarize_count() works as expected", {
   ts_count <- summarize_count(ts, in_past("3s")) %>% collect()
@@ -214,13 +220,6 @@ test_that("summarize_nth_central_moment() works as expected", {
 })
 
 test_that("summarize_corr() works as expected", {
-  corr_test_case_ts <- fromSDF(
-    testthat_corr_test_case(),
-    is_sorted = TRUE,
-    time_unit = "SECONDS",
-    time_column = "t"
-  )
-
   ts_corr <- summarize_corr(corr_test_case_ts, c("p", "sp")) %>% collect()
   expect_equal(ts_corr$p_sp_correlation, 1)
   expect_equal(ts_corr$p_sp_correlationTStat, Inf)
@@ -250,4 +249,36 @@ test_that("summarize_corr() works as expected", {
     tolerance = 1e-7,
     scale = 1
   )
+})
+
+test_that("summarize_corr2() works as expected", {
+  ts_corr <- summarize_corr2(corr_test_case_ts, c("p", "np"), c("f", "dp")) %>% collect()
+  expect_equal(
+    ts_corr$p_f_correlation,
+    -0.02189612,
+    tolerance = 1e-7,
+    scale = 1
+  )
+  expect_equal(
+    ts_corr$p_f_correlationTStat,
+    -0.04380274,
+    tolerance = 1e-7,
+    scale = 1
+  )
+  expect_equal(ts_corr$p_dp_correlation, 1)
+  expect_equal(ts_corr$p_dp_correlationTStat, Inf)
+  expect_equal(
+    ts_corr$np_f_correlation,
+    0.02189612,
+    tolerance = 1e-7,
+    scale = 1
+  )
+  expect_equal(
+    ts_corr$np_f_correlationTStat,
+    0.04380274,
+    tolerance = 1e-7,
+    scale = 1
+  )
+  expect_equal(ts_corr$np_dp_correlation, -1)
+  expect_equal(ts_corr$np_dp_correlationTStat, -Inf)
 })

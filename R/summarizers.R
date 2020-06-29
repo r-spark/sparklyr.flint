@@ -318,7 +318,7 @@ summarize_nth_central_moment <- function(ts_rdd, column, n) {
 #' where column1 and column2 are names of any 2 distinct columns
 #'
 #' @inheritParams summarizers
-#' @param columns list of columns to be evaluated
+#' @param columns A list of column names
 #'
 #' @export
 summarize_corr <- function(ts_rdd, columns) {
@@ -329,6 +329,34 @@ summarize_corr <- function(ts_rdd, columns) {
     "com.twosigma.flint.timeseries.Summarizers",
     "correlation",
     as.list(columns)
+  )
+
+  summarize(ts_rdd, corr_summarizer)
+}
+
+#' Pairwise correlation summarizer
+#'
+#' Compute pairwise correations for all possible pairs of columns such that the
+#' first column of each pair is one of `xcolumns` and the second column of each
+#' pair is one of `ycolumns`, storing results in new columns named with the
+#' following pattern:
+#' `<column1>_<column2>_correlation` and `<column1>_<column2>_correlationTStat`
+#' for each pair of columns (column1, column2)
+#'
+#' @inheritParams summarizers
+#' @param xcolumns A list of column names
+#' @param ycolumns A list of column names disjoint from xcolumns
+#'
+#' @export
+summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns) {
+  sc <- spark_connection(ts_rdd)
+
+  corr_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "correlation",
+    as.list(xcolumns),
+    as.list(ycolumns)
   )
 
   summarize(ts_rdd, corr_summarizer)

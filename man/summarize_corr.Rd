@@ -9,7 +9,7 @@ summarize_corr(ts_rdd, columns)
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
 
-\item{columns}{list of columns to be evaluated}
+\item{columns}{A list of column names}
 }
 \description{
 Compute pairwise correations among the list of columns specified and store
