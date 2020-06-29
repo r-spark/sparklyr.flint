@@ -110,3 +110,22 @@ testthat_simple_time_series <- function() {
     ".testthat_simple_time_series"
   )
 }
+
+testthat_corr_test_case <- function() {
+  f <- c(3, 2, 6.4, -7.9, 1.4, 6)
+  p <- c(0.5, 2, 3, 4, 5, 6)
+  testthat_sdf(
+    function() {
+      tibble::tibble(
+        t = seq(6),
+        f = f,
+        p = p,
+        sp = p,
+        np = -p,
+        dp = p * 2,
+        z = rep(0, length(f))
+      )
+    },
+    ".testthat_corr_test_case"
+  )
+}

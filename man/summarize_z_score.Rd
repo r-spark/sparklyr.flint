@@ -16,7 +16,7 @@ deviation with current observation in z-score calculation, otherwise use
 unbiased sample standard deviation excluding current observation}
 }
 \description{
-Computes z-score of the most recent value in the column specified, with
+Compute z-score of the most recent value in the column specified, with
 respect to the sample mean and standard deviation observed so far, with the
 option for out-of-sample calculation, and store result in a new column named
 `<column>_zScore`

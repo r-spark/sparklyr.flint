@@ -239,7 +239,7 @@ summarize_weighted_covar <- function(
 
 #' Z-score summarizer
 #'
-#' Computes z-score of the most recent value in the column specified, with
+#' Compute z-score of the most recent value in the column specified, with
 #' respect to the sample mean and standard deviation observed so far, with the
 #' option for out-of-sample calculation, and store result in a new column named
 #' `<column>_zScore`
@@ -266,7 +266,7 @@ summarize_z_score <- function(ts_rdd, column, include_current_observation = FALS
 
 #' N-th moment summarizer
 #'
-#' Computes n-th moment of the column specified and store result in a new column
+#' Compute n-th moment of the column specified and store result in a new column
 #' named `<column>_<n>thMoment`
 #'
 #' @inheritParams summarizers
@@ -289,7 +289,7 @@ summarize_nth_moment <- function(ts_rdd, column, n) {
 
 #' N-th central moment summarizer
 #'
-#' Computes n-th central moment of the column specified and store result in a
+#' Compute n-th central moment of the column specified and store result in a
 #' new column named `<column>_<n>thCentralMoment`
 #'
 #' @inheritParams summarizers
@@ -308,6 +308,30 @@ summarize_nth_central_moment <- function(ts_rdd, column, n) {
   )
 
   summarize(ts_rdd, nth_central_moment_summarizer)
+}
+
+#' Correlation summarizer
+#'
+#' Compute pairwise correations among the list of columns specified and store
+#' results in new columns named with the following pattern:
+#' `<column1>_<column2>_correlation` and `<column1>_<column2>_correlationTStat`,
+#' where column1 and column2 are names of any 2 distinct columns
+#'
+#' @inheritParams summarizers
+#' @param columns list of columns to be evaluated
+#'
+#' @export
+summarize_corr <- function(ts_rdd, columns) {
+  sc <- spark_connection(ts_rdd)
+
+  corr_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "correlation",
+    as.list(columns)
+  )
+
+  summarize(ts_rdd, corr_summarizer)
 }
 
 #' Minimum value summarizer

@@ -14,6 +14,6 @@ summarize_nth_central_moment(ts_rdd, column, n)
 \item{n}{The order of moment to calculate}
 }
 \description{
-Computes n-th central moment of the column specified and store result in a
+Compute n-th central moment of the column specified and store result in a
 new column named `<column>_<n>thCentralMoment`
 }

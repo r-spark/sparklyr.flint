@@ -14,6 +14,6 @@ summarize_nth_moment(ts_rdd, column, n)
 \item{n}{The order of moment to calculate}
 }
 \description{
-Computes n-th moment of the column specified and store result in a new column
+Compute n-th moment of the column specified and store result in a new column
 named `<column>_<n>thMoment`
 }
