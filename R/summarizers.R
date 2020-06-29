@@ -59,6 +59,50 @@ summarize_count <- function(ts_rdd, window, column = NULL) {
   summarize_windows(ts_rdd, window_obj, count_summarizer)
 }
 
+#' Minimum value summarizer
+#'
+#' Find minimum value among values from `column` within each time window, and
+#' store results in a new column named `<column>_min`
+#'
+#' @inheritParams summarizers
+#'
+#' @export
+summarize_min <- function(ts_rdd, window, column) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  min_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "min",
+    column
+  )
+
+  summarize_windows(ts_rdd, window_obj, min_summarizer)
+}
+
+#' Maximum value summarizer
+#'
+#' Find maximum value among values from `column` within each time window, and
+#' store results in a new column named `<column>_max`
+#'
+#' @inheritParams summarizers
+#'
+#' @export
+summarize_max <- function(ts_rdd, window, column) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  max_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "max",
+    column
+  )
+
+  summarize_windows(ts_rdd, window_obj, max_summarizer)
+}
+
 #' Sum summarizer
 #'
 #' Compute moving sums on the column specified and store results in a new column
@@ -389,46 +433,3 @@ summarize_weighted_corr <- function(ts_rdd, xcolumn, ycolumn, weight_column) {
   summarize(ts_rdd, weighted_corr_summarizer)
 }
 
-#' Minimum value summarizer
-#'
-#' Find minimum value among values from `column` within each time window, and
-#' store results in a new column named `<column>_min`
-#'
-#' @inheritParams summarizers
-#'
-#' @export
-summarize_min <- function(ts_rdd, window, column) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
-
-  min_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "min",
-    column
-  )
-
-  summarize_windows(ts_rdd, window_obj, min_summarizer)
-}
-
-#' Maximum value summarizer
-#'
-#' Find maximum value among values from `column` within each time window, and
-#' store results in a new column named `<column>_max`
-#'
-#' @inheritParams summarizers
-#'
-#' @export
-summarize_max <- function(ts_rdd, window, column) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
-
-  max_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "max",
-    column
-  )
-
-  summarize_windows(ts_rdd, window_obj, max_summarizer)
-}

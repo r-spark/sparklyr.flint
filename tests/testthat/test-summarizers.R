@@ -32,6 +32,18 @@ test_that("summarize_count() with specific column works as expected", {
   expect_equal(ts_count$v_count, c(1, 2, 2, 2, 1, 1, 1, 2, 2, 2))
 })
 
+test_that("summarize_min() works as expected", {
+  ts_min <- summarize_min(ts, in_past("3s"), column = "v") %>% collect()
+
+  expect_equal(ts_min$v_min, c(4, -2, -2, -2, 5, 1, -4, -4, -4, 3))
+})
+
+test_that("summarize_max() works as expected", {
+  ts_max <- summarize_max(ts, in_past("3s"), column = "v") %>% collect()
+
+  expect_equal(ts_max$v_max, c(4, 4, 4, 5, 5, 1, -4, 5, 5, 5))
+})
+
 test_that("summarize_sum() works as expected", {
   ts_sum <- summarize_sum(ts, in_past("3s"), column = "v") %>% collect()
 
@@ -143,18 +155,6 @@ test_that("summarize_weighted_covar() works as expected", {
     tolerance = 1e-7,
     scale = 1
   )
-})
-
-test_that("summarize_min() works as expected", {
-  ts_min <- summarize_min(ts, in_past("3s"), column = "v") %>% collect()
-
-  expect_equal(ts_min$v_min, c(4, -2, -2, -2, 5, 1, -4, -4, -4, 3))
-})
-
-test_that("summarize_max() works as expected", {
-  ts_max <- summarize_max(ts, in_past("3s"), column = "v") %>% collect()
-
-  expect_equal(ts_max$v_max, c(4, 4, 4, 5, 5, 1, -4, 5, 5, 5))
 })
 
 test_that("summarize_z_score() works as expected", {
