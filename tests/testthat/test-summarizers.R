@@ -188,3 +188,27 @@ test_that("summarize_nth_moment() works as expected", {
   ts_3rd_moment <- summarize_nth_moment(simple_ts, "v", 3) %>% collect()
   expect_equal(ts_3rd_moment$v_3thMoment, 63.375)
 })
+
+test_that("summarize_nth_central_moment() works as expected", {
+  ts_1st_central_moment <- summarize_nth_central_moment(simple_ts, "v", 1) %>% collect()
+  expect_equal(ts_1st_central_moment$v_1thCentralMoment, 0)
+
+  ts_2nd_central_moment <- summarize_nth_central_moment(simple_ts, "v", 2) %>% collect()
+  expect_equal(
+    ts_2nd_central_moment$v_2thCentralMoment,
+    2.97916667,
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_3rd_central_moment <- summarize_nth_central_moment(simple_ts, "v", 3) %>% collect()
+  expect_equal(ts_3rd_central_moment$v_3thCentralMoment, 0)
+
+  ts_4th_central_moment <- summarize_nth_central_moment(simple_ts, "v", 4) %>% collect()
+  expect_equal(
+    ts_4th_central_moment$v_4thCentralMoment,
+    15.82682292,
+    tolerance = 1e-7,
+    scale = 1
+  )
+})

@@ -287,6 +287,29 @@ summarize_nth_moment <- function(ts_rdd, column, n) {
   summarize(ts_rdd, nth_moment_summarizer)
 }
 
+#' N-th central moment summarizer
+#'
+#' Computes n-th central moment of the column specified and store result in a
+#' new column named `<column>_<n>thCentralMoment`
+#'
+#' @inheritParams summarizers
+#' @param n The order of moment to calculate
+#'
+#' @export
+summarize_nth_central_moment <- function(ts_rdd, column, n) {
+  sc <- spark_connection(ts_rdd)
+
+  nth_central_moment_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "nthCentralMoment",
+    column,
+    as.integer(n)
+  )
+
+  summarize(ts_rdd, nth_central_moment_summarizer)
+}
+
 #' Minimum value summarizer
 #'
 #' Find minimum value among values from `column` within each time window, and
