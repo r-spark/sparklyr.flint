@@ -19,6 +19,10 @@ summarize_windows <- function(ts_rdd, window_obj, summarizer, group_by = list())
   new_ts_rdd(invoke(ts_rdd, "summarizeWindows", window_obj, summarizer, group_by))
 }
 
+summarize <- function(ts_rdd, summarizer, group_by = list()) {
+  new_ts_rdd(invoke(ts_rdd, "summarize", summarizer, group_by))
+}
+
 #' Evaluate a time window specification and instantiate the corresponding time
 #' window object
 new_window_obj <- function(sc, window_expr) {
@@ -231,6 +235,33 @@ summarize_weighted_covar <- function(
   )
 
   summarize_windows(ts_rdd, window_obj, weighted_covar_summarizer)
+}
+
+#' Z-score summarizer
+#'
+#' Computes z-score of the most recent value in the column specified, with
+#' respect to the sample mean and standard deviation observed so far, with the
+#' option for out-of-sample calculation, and store result in a new column named
+#' `<column>_zScore`
+#'
+#' @inheritParams summarizers
+#' @param include_current_observation If true, then use unbiased sample standard
+#'   deviation with current observation in z-score calculation, otherwise use
+#'   unbiased sample standard deviation excluding current observation
+#'
+#' @export
+summarize_z_score <- function(ts_rdd, column, include_current_observation = FALSE) {
+  sc <- spark_connection(ts_rdd)
+
+  z_score_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "zScore",
+    column,
+    include_current_observation
+  )
+
+  summarize(ts_rdd, z_score_summarizer)
 }
 
 #' Minimum value summarizer

@@ -7,6 +7,12 @@ ts <- fromSDF(
   time_unit = "SECONDS",
   time_column = "t"
 )
+z_score_test_case <- fromSDF(
+  testthat_z_score_test_case(),
+  is_sorted = TRUE,
+  time_unit = "SECONDS",
+  time_column = "t"
+)
 
 test_that("summarize_count() works as expected", {
   ts_count <- summarize_count(ts, in_past("3s")) %>% collect()
@@ -143,4 +149,14 @@ test_that("summarize_max() works as expected", {
   ts_max <- summarize_max(ts, in_past("3s"), column = "v") %>% collect()
 
   expect_equal(ts_max$v_max, c(4, 4, 4, 5, 5, 1, -4, 5, 5, 5))
+})
+
+test_that("summarize_z_score() works as expected", {
+  ts_in_sample_z_score <- summarize_z_score(
+    z_score_test_case, column = "v", TRUE) %>% collect()
+  expect_equal(ts_in_sample_z_score$v_zScore, 1.52542554, 1e-7)
+
+  ts_out_of_sample_z_score <- summarize_z_score(
+    z_score_test_case, column = "v", FALSE) %>% collect()
+  expect_equal(ts_out_of_sample_z_score$v_zScore, 1.80906807, 1e-7)
 })

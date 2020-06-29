@@ -98,3 +98,15 @@ testthat_generic_time_series <- function() {
     ".testthat_generic_time_series"
   )
 }
+
+testthat_z_score_test_case <- function() {
+  testthat_sdf(
+    function() {
+      tibble::tibble(
+        t = seq(12),
+        v = seq(0.5, 6, 0.5)
+      )
+    },
+    ".testthat_z_score_test_case"
+  )
+}
