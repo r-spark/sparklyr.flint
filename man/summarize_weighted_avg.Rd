@@ -4,7 +4,13 @@
 \alias{summarize_weighted_avg}
 \title{Weighted average summarizer}
 \usage{
-summarize_weighted_avg(ts_rdd, window, column, weight_column)
+summarize_weighted_avg(
+  ts_rdd,
+  window,
+  column,
+  weight_column,
+  key_columns = list()
+)
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
@@ -17,6 +23,15 @@ summarize_weighted_avg(ts_rdd, window, column, weight_column)
 \item{column}{Column to be summarized}
 
 \item{weight_column}{Column specifying relative weight of each data point}
+
+\item{key_columns}{Optional list of columns that will form an equivalence
+relation associating each row with the time series it belongs to (i.e., any
+2 rows having equal values in those columns will be associated with the
+same time series, and any 2 rows having differing values in those columns
+are considered to be from 2 separate time series and will therefore be
+summarized separately)
+By default, `key_colums` is empty and all rows are considered to be part of
+a single time series.}
 }
 \description{
 Compute moving weighted average, weighted standard deviation, weighted t-

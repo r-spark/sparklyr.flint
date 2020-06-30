@@ -4,7 +4,7 @@
 \alias{summarize_nth_central_moment}
 \title{N-th central moment summarizer}
 \usage{
-summarize_nth_central_moment(ts_rdd, column, n)
+summarize_nth_central_moment(ts_rdd, column, n, key_columns = list())
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
@@ -12,6 +12,15 @@ summarize_nth_central_moment(ts_rdd, column, n)
 \item{column}{Column to be summarized}
 
 \item{n}{The order of moment to calculate}
+
+\item{key_columns}{Optional list of columns that will form an equivalence
+relation associating each row with the time series it belongs to (i.e., any
+2 rows having equal values in those columns will be associated with the
+same time series, and any 2 rows having differing values in those columns
+are considered to be from 2 separate time series and will therefore be
+summarized separately)
+By default, `key_colums` is empty and all rows are considered to be part of
+a single time series.}
 }
 \description{
 Compute n-th central moment of the column specified and store result in a

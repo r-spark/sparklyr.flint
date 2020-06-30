@@ -4,7 +4,12 @@
 \alias{summarize_z_score}
 \title{Z-score summarizer}
 \usage{
-summarize_z_score(ts_rdd, column, include_current_observation = FALSE)
+summarize_z_score(
+  ts_rdd,
+  column,
+  include_current_observation = FALSE,
+  key_columns = list()
+)
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
@@ -14,6 +19,15 @@ summarize_z_score(ts_rdd, column, include_current_observation = FALSE)
 \item{include_current_observation}{If true, then use unbiased sample standard
 deviation with current observation in z-score calculation, otherwise use
 unbiased sample standard deviation excluding current observation}
+
+\item{key_columns}{Optional list of columns that will form an equivalence
+relation associating each row with the time series it belongs to (i.e., any
+2 rows having equal values in those columns will be associated with the
+same time series, and any 2 rows having differing values in those columns
+are considered to be from 2 separate time series and will therefore be
+summarized separately)
+By default, `key_colums` is empty and all rows are considered to be part of
+a single time series.}
 }
 \description{
 Compute z-score of the most recent value in the column specified, with

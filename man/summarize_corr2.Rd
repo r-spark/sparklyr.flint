@@ -4,7 +4,7 @@
 \alias{summarize_corr2}
 \title{Pairwise correlation summarizer}
 \usage{
-summarize_corr2(ts_rdd, xcolumns, ycolumns)
+summarize_corr2(ts_rdd, xcolumns, ycolumns, key_columns = list())
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
@@ -12,6 +12,15 @@ summarize_corr2(ts_rdd, xcolumns, ycolumns)
 \item{xcolumns}{A list of column names}
 
 \item{ycolumns}{A list of column names disjoint from xcolumns}
+
+\item{key_columns}{Optional list of columns that will form an equivalence
+relation associating each row with the time series it belongs to (i.e., any
+2 rows having equal values in those columns will be associated with the
+same time series, and any 2 rows having differing values in those columns
+are considered to be from 2 separate time series and will therefore be
+summarized separately)
+By default, `key_colums` is empty and all rows are considered to be part of
+a single time series.}
 }
 \description{
 Compute pairwise correations for all possible pairs of columns such that the

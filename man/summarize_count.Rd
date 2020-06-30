@@ -4,7 +4,7 @@
 \alias{summarize_count}
 \title{Count summarizer}
 \usage{
-summarize_count(ts_rdd, window, column = NULL)
+summarize_count(ts_rdd, window, column = NULL, key_columns = list())
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
@@ -19,6 +19,15 @@ specified that are not NULL or NaN within each time window, and store the
 counts in a new column named `<column>_count`.
 Otherwise the number of rows within each time window is reported, and
 stored in a column named `count`.}
+
+\item{key_columns}{Optional list of columns that will form an equivalence
+relation associating each row with the time series it belongs to (i.e., any
+2 rows having equal values in those columns will be associated with the
+same time series, and any 2 rows having differing values in those columns
+are considered to be from 2 separate time series and will therefore be
+summarized separately)
+By default, `key_colums` is empty and all rows are considered to be part of
+a single time series.}
 }
 \description{
 Count the total number of rows if no column is specified, or the number of

@@ -9,18 +9,39 @@
 #'    point, `in_future("5s")` to summarize data from looking forward 5 seconds
 #'    at each time point)
 #' @param column Column to be summarized
+#' @param key_columns Optional list of columns that will form an equivalence
+#'   relation associating each row with the time series it belongs to (i.e., any
+#'   2 rows having equal values in those columns will be associated with the
+#'   same time series, and any 2 rows having differing values in those columns
+#'   are considered to be from 2 separate time series and will therefore be
+#'   summarized separately)
+#'   By default, `key_colums` is empty and all rows are considered to be part of
+#'   a single time series.
 #' @name summarizers
 #'
 #' @include sdf_utils.R
 #' @include window_exprs.R
 NULL
 
-summarize_windows <- function(ts_rdd, window_obj, summarizer, group_by = list()) {
-  new_ts_rdd(invoke(ts_rdd, "summarizeWindows", window_obj, summarizer, group_by))
+summarize_windows <- function(
+  ts_rdd,
+  window_obj,
+  summarizer,
+  key_columns
+) {
+  new_ts_rdd(
+    invoke(
+      ts_rdd,
+      "summarizeWindows",
+      window_obj,
+      summarizer,
+      as.list(key_columns)
+    )
+  )
 }
 
-summarize <- function(ts_rdd, summarizer, group_by = list()) {
-  new_ts_rdd(invoke(ts_rdd, "summarize", summarizer, group_by))
+summarize <- function(ts_rdd, summarizer, key_columns = list()) {
+  new_ts_rdd(invoke(ts_rdd, "summarize", summarizer, as.list(key_columns)))
 }
 
 #' Evaluate a time window specification and instantiate the corresponding time
@@ -43,7 +64,12 @@ new_window_obj <- function(sc, window_expr) {
 #'   stored in a column named `count`.
 #'
 #' @export
-summarize_count <- function(ts_rdd, window, column = NULL) {
+summarize_count <- function(
+  ts_rdd,
+  window,
+  column = NULL,
+  key_columns = list()
+) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -56,7 +82,7 @@ summarize_count <- function(ts_rdd, window, column = NULL) {
 
   count_summarizer <- do.call(invoke_static, args)
 
-  summarize_windows(ts_rdd, window_obj, count_summarizer)
+  summarize_windows(ts_rdd, window_obj, count_summarizer, key_columns)
 }
 
 #' Minimum value summarizer
@@ -67,7 +93,7 @@ summarize_count <- function(ts_rdd, window, column = NULL) {
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_min <- function(ts_rdd, window, column) {
+summarize_min <- function(ts_rdd, window, column, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -78,7 +104,7 @@ summarize_min <- function(ts_rdd, window, column) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, min_summarizer)
+  summarize_windows(ts_rdd, window_obj, min_summarizer, key_columns)
 }
 
 #' Maximum value summarizer
@@ -89,7 +115,7 @@ summarize_min <- function(ts_rdd, window, column) {
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_max <- function(ts_rdd, window, column) {
+summarize_max <- function(ts_rdd, window, column, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -100,7 +126,7 @@ summarize_max <- function(ts_rdd, window, column) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, max_summarizer)
+  summarize_windows(ts_rdd, window_obj, max_summarizer, key_columns)
 }
 
 #' Sum summarizer
@@ -111,7 +137,7 @@ summarize_max <- function(ts_rdd, window, column) {
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_sum <- function(ts_rdd, window, column) {
+summarize_sum <- function(ts_rdd, window, column, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -122,7 +148,7 @@ summarize_sum <- function(ts_rdd, window, column) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, sum_summarizer)
+  summarize_windows(ts_rdd, window_obj, sum_summarizer, key_columns)
 }
 
 #' Average summarizer
@@ -133,7 +159,7 @@ summarize_sum <- function(ts_rdd, window, column) {
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_avg <- function(ts_rdd, window, column) {
+summarize_avg <- function(ts_rdd, window, column, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -144,7 +170,7 @@ summarize_avg <- function(ts_rdd, window, column) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, avg_summarizer)
+  summarize_windows(ts_rdd, window_obj, avg_summarizer, key_columns)
 }
 
 #' Weighted average summarizer
@@ -160,7 +186,13 @@ summarize_avg <- function(ts_rdd, window, column) {
 #' @param weight_column Column specifying relative weight of each data point
 #'
 #' @export
-summarize_weighted_avg <- function(ts_rdd, window, column, weight_column) {
+summarize_weighted_avg <- function(
+  ts_rdd,
+  window,
+  column,
+  weight_column,
+  key_columns = list()
+) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -172,7 +204,7 @@ summarize_weighted_avg <- function(ts_rdd, window, column, weight_column) {
     weight_column
   )
 
-  summarize_windows(ts_rdd, window_obj, weighted_avg_summarizer)
+  summarize_windows(ts_rdd, window_obj, weighted_avg_summarizer, key_columns)
 }
 
 #' Standard deviation summarizer
@@ -184,7 +216,7 @@ summarize_weighted_avg <- function(ts_rdd, window, column, weight_column) {
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_stddev <- function(ts_rdd, window, column) {
+summarize_stddev <- function(ts_rdd, window, column, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -195,7 +227,7 @@ summarize_stddev <- function(ts_rdd, window, column) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, stddev_summarizer)
+  summarize_windows(ts_rdd, window_obj, stddev_summarizer, key_columns)
 }
 
 #' Variance summarizer
@@ -207,7 +239,7 @@ summarize_stddev <- function(ts_rdd, window, column) {
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_var <- function(ts_rdd, window, column) {
+summarize_var <- function(ts_rdd, window, column, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -218,7 +250,7 @@ summarize_var <- function(ts_rdd, window, column) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, var_summarizer)
+  summarize_windows(ts_rdd, window_obj, var_summarizer, key_columns)
 }
 
 #' Covariance summarizer
@@ -231,7 +263,13 @@ summarize_var <- function(ts_rdd, window, column) {
 #' @param ycolumn Column representing the second random variable
 #'
 #' @export
-summarize_covar <- function(ts_rdd, window, xcolumn, ycolumn) {
+summarize_covar <- function(
+  ts_rdd,
+  window,
+  xcolumn,
+  ycolumn,
+  key_columns = list()
+) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -243,7 +281,7 @@ summarize_covar <- function(ts_rdd, window, xcolumn, ycolumn) {
     ycolumn
   )
 
-  summarize_windows(ts_rdd, window_obj, covar_summarizer)
+  summarize_windows(ts_rdd, window_obj, covar_summarizer, key_columns)
 }
 
 #' Weighted covariance summarizer
@@ -264,7 +302,8 @@ summarize_weighted_covar <- function(
   window,
   xcolumn,
   ycolumn,
-  weight_column
+  weight_column,
+  key_columns = list()
 ) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
@@ -278,7 +317,7 @@ summarize_weighted_covar <- function(
     weight_column
   )
 
-  summarize_windows(ts_rdd, window_obj, weighted_covar_summarizer)
+  summarize_windows(ts_rdd, window_obj, weighted_covar_summarizer, key_columns)
 }
 
 #' Z-score summarizer
@@ -294,7 +333,11 @@ summarize_weighted_covar <- function(
 #'   unbiased sample standard deviation excluding current observation
 #'
 #' @export
-summarize_z_score <- function(ts_rdd, column, include_current_observation = FALSE) {
+summarize_z_score <- function(
+  ts_rdd,
+  column,
+  include_current_observation = FALSE,
+  key_columns = list()) {
   sc <- spark_connection(ts_rdd)
 
   z_score_summarizer <- invoke_static(
@@ -305,7 +348,7 @@ summarize_z_score <- function(ts_rdd, column, include_current_observation = FALS
     include_current_observation
   )
 
-  summarize(ts_rdd, z_score_summarizer)
+  summarize(ts_rdd, z_score_summarizer, key_columns)
 }
 
 #' N-th moment summarizer
@@ -317,7 +360,7 @@ summarize_z_score <- function(ts_rdd, column, include_current_observation = FALS
 #' @param n The order of moment to calculate
 #'
 #' @export
-summarize_nth_moment <- function(ts_rdd, column, n) {
+summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
 
   nth_moment_summarizer <- invoke_static(
@@ -328,7 +371,7 @@ summarize_nth_moment <- function(ts_rdd, column, n) {
     as.integer(n)
   )
 
-  summarize(ts_rdd, nth_moment_summarizer)
+  summarize(ts_rdd, nth_moment_summarizer, key_columns)
 }
 
 #' N-th central moment summarizer
@@ -340,7 +383,12 @@ summarize_nth_moment <- function(ts_rdd, column, n) {
 #' @param n The order of moment to calculate
 #'
 #' @export
-summarize_nth_central_moment <- function(ts_rdd, column, n) {
+summarize_nth_central_moment <- function(
+  ts_rdd,
+  column,
+  n,
+  key_columns = list()
+) {
   sc <- spark_connection(ts_rdd)
 
   nth_central_moment_summarizer <- invoke_static(
@@ -351,7 +399,7 @@ summarize_nth_central_moment <- function(ts_rdd, column, n) {
     as.integer(n)
   )
 
-  summarize(ts_rdd, nth_central_moment_summarizer)
+  summarize(ts_rdd, nth_central_moment_summarizer, key_columns)
 }
 
 #' Correlation summarizer
@@ -365,7 +413,7 @@ summarize_nth_central_moment <- function(ts_rdd, column, n) {
 #' @param columns A list of column names
 #'
 #' @export
-summarize_corr <- function(ts_rdd, columns) {
+summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
 
   corr_summarizer <- invoke_static(
@@ -375,7 +423,7 @@ summarize_corr <- function(ts_rdd, columns) {
     as.list(columns)
   )
 
-  summarize(ts_rdd, corr_summarizer)
+  summarize(ts_rdd, corr_summarizer, key_columns)
 }
 
 #' Pairwise correlation summarizer
@@ -392,7 +440,7 @@ summarize_corr <- function(ts_rdd, columns) {
 #' @param ycolumns A list of column names disjoint from xcolumns
 #'
 #' @export
-summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns) {
+summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
 
   corr_summarizer <- invoke_static(
@@ -403,7 +451,7 @@ summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns) {
     as.list(ycolumns)
   )
 
-  summarize(ts_rdd, corr_summarizer)
+  summarize(ts_rdd, corr_summarizer, key_columns)
 }
 
 #' Pearson weighted correlation summarizer
@@ -418,7 +466,13 @@ summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns) {
 #' @param weight_column Column specifying relative weight of each data point
 #'
 #' @export
-summarize_weighted_corr <- function(ts_rdd, xcolumn, ycolumn, weight_column) {
+summarize_weighted_corr <- function(
+  ts_rdd,
+  xcolumn,
+  ycolumn,
+  weight_column,
+  key_columns = list()
+) {
   sc <- spark_connection(ts_rdd)
 
   weighted_corr_summarizer <- invoke_static(
@@ -430,6 +484,6 @@ summarize_weighted_corr <- function(ts_rdd, xcolumn, ycolumn, weight_column) {
     weight_column
   )
 
-  summarize(ts_rdd, weighted_corr_summarizer)
+  summarize(ts_rdd, weighted_corr_summarizer, key_columns)
 }
 
