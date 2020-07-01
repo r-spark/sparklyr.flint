@@ -143,3 +143,16 @@ testthat_weighted_corr_test_case <- function() {
     ".testthat_weighted_corr_test_case"
   )
 }
+
+testthat_multiple_simple_ts_test_case <- function() {
+  testthat_sdf(
+    function() {
+      tibble::tibble(
+        t = do.call(c, lapply(seq(6), function(x) rep(x, 2))),
+        v = c(6, NaN, 5, 2, NaN, 3, 3, 4, 2, NaN, 1, 6),
+        id = rep(c(0, 1), 6)
+      )
+    },
+    ".testthat_multiple_simple_ts_test_case"
+  )
+}

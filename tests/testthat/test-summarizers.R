@@ -19,6 +19,12 @@ corr_test_case_ts <- fromSDF(
   time_unit = "SECONDS",
   time_column = "t"
 )
+multiple_simple_ts <- fromSDF(
+  testthat_multiple_simple_ts_test_case(),
+  is_sorted = TRUE,
+  time_unit = "SECONDS",
+  time_column = "t"
+)
 
 test_that("summarize_count() works as expected", {
   ts_count <- summarize_count(ts, in_past("3s")) %>% collect()
@@ -30,6 +36,42 @@ test_that("summarize_count() with specific column works as expected", {
   ts_count <- summarize_count(ts, in_past("3s"), column = "v") %>% collect()
 
   expect_equal(ts_count$v_count, c(1, 2, 2, 2, 1, 1, 1, 2, 2, 2))
+})
+
+test_that("summarize_count() with key_columns works as expected", {
+  ts_count <- summarize_count(
+    multiple_simple_ts, in_past("3s"), key_columns = c("id")) %>% collect()
+
+  expect_equal(ts_count$id, rep(c(0, 1), 6))
+  expect_equal(ts_count$count, c(1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4))
+
+  ts_count <- summarize_count(
+    multiple_simple_ts, in_future("3s"), key_columns = c("id")) %>% collect()
+
+  expect_equal(ts_count$id, rep(c(0, 1), 6))
+  expect_equal(ts_count$count, c(4, 4, 4, 4, 4, 4, 3, 3, 2, 2, 1, 1))
+})
+
+test_that("summarize_count() with key_columns and specific column works as expected", {
+  ts_count <- summarize_count(
+    multiple_simple_ts,
+    in_past("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_count$id, rep(c(0, 1), 6))
+  expect_equal(ts_count$v_count, c(1, 0, 2, 1, 2, 2, 3, 3, 3, 3, 3, 3))
+
+  ts_count <- summarize_count(
+    multiple_simple_ts,
+    in_future("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_count$id, rep(c(0, 1), 6))
+  expect_equal(ts_count$v_count, c(3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1))
 })
 
 test_that("summarize_min() works as expected", {
