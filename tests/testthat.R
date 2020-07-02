@@ -11,7 +11,7 @@ if (identical(Sys.getenv("NOT_CRAN"), "true")) {
   reporter <- MultiReporter$new(reporters = list(
     ProgressReporter$new(),
     CheckReporter$new(),
-    SummaryReporter$new()
+    SummaryReporter$new(show_praise = FALSE)
   ))
   test_check("sparklyr.flint", filter = filter, reporter = reporter)
 }
