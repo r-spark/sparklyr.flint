@@ -178,3 +178,18 @@ testthat_corr_multiple_ts_test_case <- function() {
     ".testthat_corr_multiple_ts_test_case"
   )
 }
+
+testthat_weighted_corr_test_case <- function() {
+  testthat_sdf(
+    function() {
+      tibble::tibble(
+        t = 1000 + 100 * c(1, seq(8)),
+        id = c(0, rep(c(0, 1), 4)),
+        w = seq(9, 1, -1),
+        x = seq(9),
+        y = seq(9, 1, -1)
+      )
+    },
+    ".testthat_weighted_corr_test_case"
+  )
+}

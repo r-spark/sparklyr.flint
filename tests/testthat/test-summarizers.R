@@ -31,6 +31,12 @@ corr_test_case_multiple_ts <- fromSDF(
   time_unit = "SECONDS",
   time_column = "t"
 )
+weighted_corr_test_case_ts <- fromSDF(
+  testthat_weighted_corr_test_case(),
+  is_sorted = TRUE,
+  time_unit = "SECONDS",
+  time_column = "t"
+)
 
 test_that("summarize_count() works as expected", {
   ts_count <- summarize_count(ts, in_past("3s")) %>% collect()
@@ -825,12 +831,6 @@ test_that("summarize_corr2() with key_columns works as expected", {
 })
 
 test_that("summarize_weighted_corr() works as expected", {
-  weighted_corr_test_case_ts <- fromSDF(
-    testthat_weighted_corr_test_case(),
-    is_sorted = TRUE,
-    time_unit = "SECONDS",
-    time_column = "t"
-  )
   ts_weighted_corr <- summarize_weighted_corr(
     weighted_corr_test_case_ts,
     "x",
@@ -839,4 +839,19 @@ test_that("summarize_weighted_corr() works as expected", {
   ) %>% collect()
 
   expect_equal(ts_weighted_corr$x_y_w_weightedCorrelation, -1)
+})
+
+test_that("summarize_weighted_corr() with key_columns works as expected", {
+  ts_weighted_corr <- summarize_weighted_corr(
+    weighted_corr_test_case_ts,
+    "x",
+    "y",
+    "w",
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+
+  expect_equal(ts_weighted_corr$id, c(0, 1))
+  expect_equal(ts_weighted_corr$x_y_w_weightedCorrelation, c(-1, -1))
 })
