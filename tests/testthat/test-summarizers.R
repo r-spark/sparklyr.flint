@@ -378,6 +378,40 @@ test_that("summarize_covar() works as expected", {
   )
 })
 
+test_that("summarize_covar() with key_columns works as expected", {
+  ts_covar <- summarize_covar(
+    multiple_simple_ts,
+    in_past("6s"),
+    xcolumn = "u",
+    ycolumn = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_covar$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_covar$u_v_covariance,
+    c(0, NaN, -0.25, 0, -0.25, 3, -2.11111111, 1, -1.75, 1, -2.48, -1.5),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_covar <- summarize_covar(
+    multiple_simple_ts,
+    in_future("6s"),
+    xcolumn = "u",
+    ycolumn = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_covar$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_covar$u_v_covariance,
+    c(-2.48, -1.5, -1.3125, -1.5, 0, -5.11111111, 0, -1, -0.5, 0, 0, 0),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
 test_that("summarize_weighted_covar() works as expected", {
   ts_weighted_covar <- summarize_weighted_covar(
     ts,
