@@ -136,6 +136,28 @@ test_that("summarize_sum() works as expected", {
   expect_equal(ts_sum$v_sum, c(4, 2, 2, 3, 5, 1, -4, 1, 1, 8))
 })
 
+test_that("summarize_sum() with key_columns works as expected", {
+  ts_sum <- summarize_sum(
+    multiple_simple_ts,
+    in_past("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_sum$id, rep(c(0, 1), 6))
+  expect_equal(ts_sum$v_sum, c(6, 0, 11, 2, 11, 5, 14, 9, 10, 9, 6, 13))
+
+  ts_sum <- summarize_sum(
+    multiple_simple_ts,
+    in_future("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_sum$id, rep(c(0, 1), 6))
+  expect_equal(ts_sum$v_sum, c(14, 9, 10, 9, 6, 13, 6, 10, 3, 6, 1, 6))
+})
+
 test_that("summarize_avg() works as expected", {
   ts_avg <- summarize_avg(
     ts,
