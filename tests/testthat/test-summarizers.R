@@ -234,6 +234,40 @@ test_that("summarize_weighted_avg() works as expected", {
   expect_equal(ts_weighted_avg$v_w_observationCount, c(1, 2, 2, 2, 1, 1, 1, 2, 2, 2))
 })
 
+test_that("summarize_weighted_avg() with key_columns works as expected", {
+  ts_weighted_avg <- summarize_weighted_avg(
+    multiple_simple_ts,
+    in_past("3s"),
+    column = "v",
+    weight_column = "w",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_weighted_avg$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_weighted_avg$v_w_weightedMean,
+    c(6, NaN, 5.66666667, 2, 5.66666667, 2.6, 4.14285714, 3, 3.16666667, 3, 2.125, 3.83333333),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_weighted_avg <- summarize_weighted_avg(
+    multiple_simple_ts,
+    in_future("3s"),
+    column = "v",
+    weight_column = "w",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_weighted_avg$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_weighted_avg$v_w_weightedMean,
+    c(4.14285714, 3, 3.16666667, 3, 2.125, 3.83333333, 2.125, 4.66666667, 1.25, 6, 1, 6),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
 test_that("summarize_stddev() works as expected", {
   ts_stddev <- summarize_stddev(
     ts,
