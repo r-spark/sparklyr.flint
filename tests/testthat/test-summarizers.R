@@ -429,6 +429,42 @@ test_that("summarize_weighted_covar() works as expected", {
   )
 })
 
+test_that("summarize_weighted_covar() with key_columns works as expected", {
+  ts_weighted_covar <- summarize_weighted_covar(
+    multiple_simple_ts,
+    in_past("6s"),
+    xcolumn = "u",
+    ycolumn = "v",
+    weight_column = "w",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_weighted_covar$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_weighted_covar$u_v_w_weightedCovariance,
+    c(NaN, NaN, -0.5, NaN, -0.4, NaN, -3, NaN, -2.19565217, NaN, -1.93700787, NaN),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_weighted_covar <- summarize_weighted_covar(
+    multiple_simple_ts,
+    in_future("6s"),
+    xcolumn = "u",
+    ycolumn = "v",
+    weight_column = "w",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_weighted_covar$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_weighted_covar$u_v_w_weightedCovariance,
+    c(-3.2777777778, -1.2391304348, -1.1296296296, -1.2391304348, 0.0526315789, -7.3181818182, 0.0526315789, -2, -1, NaN, NaN, NaN),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
 test_that("summarize_z_score() works as expected", {
   ts_in_sample_z_score <- summarize_z_score(simple_ts, "v", TRUE) %>% collect()
   expect_equal(
