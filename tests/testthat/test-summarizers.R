@@ -283,6 +283,38 @@ test_that("summarize_stddev() works as expected", {
   )
 })
 
+test_that("summarize_stddev() with key_columns works as expected", {
+  ts_stddev <- summarize_stddev(
+    multiple_simple_ts,
+    in_past("6s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_stddev$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_stddev$v_stddev,
+    c(NaN, NaN, 0.707106781, NaN, 0.707106781, 0.707106781, 1.527525232, 1, 1.825741858, 1, 2.073644135, 1.707825128),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_stddev <- summarize_stddev(
+    multiple_simple_ts,
+    in_future("6s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_stddev$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_stddev$v_stddev,
+    c(2.073644135, 1.707825128, 1.707825128, 1.707825128, 1, 1.527525232, 1, 1.414213562, 0.707106781, Inf, NaN, Inf),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
 test_that("summarize_var() works as expected", {
   ts_var <- summarize_var(
     ts,
@@ -293,6 +325,38 @@ test_that("summarize_var() works as expected", {
   expect_equal(
     ts_var$v_variance,
     c(NaN, 18, 18, 14.33333333, 14.33333333, 8, 12.5, 20.33333333, 40.5, 22.33333333),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
+test_that("summarize_var() with key_columns works as expected", {
+  ts_var <- summarize_var(
+    multiple_simple_ts,
+    in_past("6s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_var$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_var$v_variance,
+    c(NaN, NaN, 0.5, NaN, 0.5, 0.5, 2.33333333, 1, 3.33333333, 1, 4.3, 2.91666667),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_var <- summarize_var(
+    multiple_simple_ts,
+    in_future("6s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_var$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_var$v_variance,
+    c(4.3, 2.91666667, 2.91666667, 2.91666667, 1, 2.33333333, 1, 2, 0.5, Inf, -Inf, Inf),
     tolerance = 1e-7,
     scale = 1
   )
