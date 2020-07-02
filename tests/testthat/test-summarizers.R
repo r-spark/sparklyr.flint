@@ -539,6 +539,60 @@ test_that("summarize_nth_moment() works as expected", {
   expect_equal(ts_3rd_moment$v_3thMoment, 63.375)
 })
 
+test_that("summarize_nth_moment() with key_columns works as expected", {
+  ts_0th_moment <- summarize_nth_moment(
+    multiple_simple_ts,
+    "v",
+    0,
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(ts_0th_moment$id, c(0, 1))
+  expect_equal(ts_0th_moment$v_0thMoment, c(1, 1))
+
+  ts_1st_moment <- summarize_nth_moment(
+    multiple_simple_ts,
+    "v",
+    1,
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(ts_1st_moment$id, c(0, 1))
+  expect_equal(ts_1st_moment$v_1thMoment, c(3.4, 3.75))
+
+  ts_2nd_moment <- summarize_nth_moment(
+    multiple_simple_ts,
+    "v",
+    2,
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(
+    ts_2nd_moment$v_2thMoment,
+    c(15, 16.25),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_3rd_moment <- summarize_nth_moment(
+    multiple_simple_ts,
+    "v",
+    3,
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(
+    ts_3rd_moment$v_3thMoment,
+    c(75.4, 78.75),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
 test_that("summarize_nth_central_moment() works as expected", {
   ts_1st_central_moment <- summarize_nth_central_moment(simple_ts, "v", 1) %>% collect()
   expect_equal(ts_1st_central_moment$v_1thCentralMoment, 0)
@@ -558,6 +612,49 @@ test_that("summarize_nth_central_moment() works as expected", {
   expect_equal(
     ts_4th_central_moment$v_4thCentralMoment,
     15.82682292,
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
+test_that("summarize_nth_central_moment() with key_columns works as expected", {
+  ts_1st_central_moment <- summarize_nth_central_moment(
+    multiple_simple_ts,
+    "v",
+    1,
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(ts_1st_central_moment$id, c(0, 1))
+  expect_equal(ts_1st_central_moment$v_1thCentralMoment, c(0, 0))
+
+  ts_2nd_central_moment <- summarize_nth_central_moment(
+    multiple_simple_ts,
+    "v",
+    2,
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(
+    ts_2nd_central_moment$v_2thCentralMoment,
+    c(3.440, 2.1875),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_3rd_central_moment <- summarize_nth_central_moment(
+    multiple_simple_ts,
+    "v",
+    3,
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(
+    ts_3rd_central_moment$v_3thCentralMoment,
+    c(1.008, 1.40625),
     tolerance = 1e-7,
     scale = 1
   )
