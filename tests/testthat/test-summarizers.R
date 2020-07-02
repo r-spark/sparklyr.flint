@@ -173,6 +173,38 @@ test_that("summarize_avg() works as expected", {
   )
 })
 
+test_that("summarize_avg() with key_columns works as expected", {
+  ts_avg <- summarize_avg(
+    multiple_simple_ts,
+    in_past("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_avg$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_avg$v_mean,
+    c(6, 0, 5.5, 2, 5.5, 2.5, 4.66666667, 3, 3.33333333, 3, 2, 4.33333333),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_avg <- summarize_avg(
+    multiple_simple_ts,
+    in_future("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_avg$id, rep(c(0, 1), 6))
+  expect_equal(
+    ts_avg$v_mean,
+    c(4.66666667, 3, 3.33333333, 3, 2, 4.33333333, 2, 5, 1.5, 6, 1, 6),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
 test_that("summarize_weighted_avg() works as expected", {
   ts_weighted_avg <- summarize_weighted_avg(
     ts,
