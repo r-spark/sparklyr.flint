@@ -25,6 +25,12 @@ multiple_simple_ts <- fromSDF(
   time_unit = "SECONDS",
   time_column = "t"
 )
+corr_test_case_multiple_ts <- fromSDF(
+  testthat_corr_multiple_ts_test_case(),
+  is_sorted = TRUE,
+  time_unit = "SECONDS",
+  time_column = "t"
+)
 
 test_that("summarize_count() works as expected", {
   ts_count <- summarize_count(ts, in_past("3s")) %>% collect()
@@ -692,6 +698,64 @@ test_that("summarize_corr() works as expected", {
   )
 })
 
+test_that("summarize_corr() with key_columns works as expected", {
+  ts_corr <- summarize_corr(
+    corr_test_case_multiple_ts,
+    c("p", "sp"),
+    key_columns = c("id")) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(ts_corr$id, c(3, 7))
+  expect_equal(ts_corr$p_sp_correlation, c(1, 1))
+
+  ts_corr <- summarize_corr(
+    corr_test_case_multiple_ts,
+    c("p", "np"),
+    key_columns = c("id")) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(ts_corr$id, c(3, 7))
+  expect_equal(ts_corr$p_np_correlation, c(-1, -1))
+
+  ts_corr <- summarize_corr(
+    corr_test_case_multiple_ts,
+    c("p", "dp"),
+    key_columns = c("id")) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(ts_corr$id, c(3, 7))
+  expect_equal(ts_corr$p_dp_correlation, c(1, 1))
+
+  ts_corr <- summarize_corr(
+    corr_test_case_multiple_ts,
+    c("p", "z"),
+    key_columns = c("id")) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(ts_corr$id, c(3, 7))
+  expect_equal(ts_corr$p_z_correlation, c(NaN, NaN))
+
+  ts_corr <- summarize_corr(
+    corr_test_case_multiple_ts,
+    c("p", "f"),
+    key_columns = c("id")) %>%
+    collect() %>%
+    dplyr::arrange(id)
+  expect_equal(ts_corr$id, c(3, 7))
+  expect_equal(
+    ts_corr$p_f_correlation,
+    c(-0.47908486, -0.02189612),
+    tolerance = 1e-7,
+    scale = 1
+  )
+  expect_equal(
+    ts_corr$p_f_correlationTStat,
+    c(-1.09159718, -0.04380274),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
 test_that("summarize_corr2() works as expected", {
   ts_corr <- summarize_corr2(corr_test_case_ts, c("p", "np"), c("f", "dp")) %>%
     collect()
@@ -723,6 +787,41 @@ test_that("summarize_corr2() works as expected", {
   )
   expect_equal(ts_corr$np_dp_correlation, -1)
   expect_equal(ts_corr$np_dp_correlationTStat, -Inf)
+})
+
+test_that("summarize_corr2() with key_columns works as expected", {
+  ts_corr <- summarize_corr2(
+    corr_test_case_multiple_ts,
+    c("p", "np"), c("f"),
+    key_columns = c("id")) %>%
+    collect() %>%
+    dplyr::arrange(id)
+
+  expect_equal(ts_corr$id, c(3, 7))
+  expect_equal(
+    ts_corr$p_f_correlation,
+    c(-0.4790848587, -0.0218961214),
+    tolerance = 1e-7,
+    scale = 1
+  )
+  expect_equal(
+    ts_corr$p_f_correlationTStat,
+    c(-1.0915971793, -0.0438027444),
+    tolerance = 1e-7,
+    scale = 1
+  )
+  expect_equal(
+    ts_corr$np_f_correlation,
+    c(0.4790848587, 0.0218961214),
+    tolerance = 1e-7,
+    scale = 1
+  )
+  expect_equal(
+    ts_corr$np_f_correlationTStat,
+    c(1.0915971793, 0.0438027444),
+    tolerance = 1e-7,
+    scale = 1
+  )
 })
 
 test_that("summarize_weighted_corr() works as expected", {

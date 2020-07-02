@@ -158,3 +158,23 @@ testthat_multiple_simple_ts_test_case <- function() {
     ".testthat_multiple_simple_ts_test_case"
   )
 }
+
+testthat_corr_multiple_ts_test_case <- function() {
+  f <- c(3, 5, -1.5, 2, -2.4, 6.4, 1.5, -7.9, 4.6, 1.4, -9.6, 6)
+  p <- seq(0.5, 6, 0.5)
+  testthat_sdf(
+    function() {
+      tibble::tibble(
+        t = seq(12),
+        id = c(7, 3, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7),
+        f = f,
+        p = p,
+        sp = p,
+        np = -p,
+        dp = p * 2,
+        z = rep(0, length(f))
+      )
+    },
+    ".testthat_corr_multiple_ts_test_case"
+  )
+}
