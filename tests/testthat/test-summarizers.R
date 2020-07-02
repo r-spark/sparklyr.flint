@@ -484,6 +484,42 @@ test_that("summarize_z_score() works as expected", {
   )
 })
 
+test_that("summarize_z_score() with key_columns works as expected", {
+  ts_in_sample_z_score <- summarize_z_score(
+    multiple_simple_ts,
+    "v",
+    include_current_observation = TRUE,
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+
+  expect_equal(ts_in_sample_z_score$id, c(0, 1))
+  expect_equal(
+    ts_in_sample_z_score$v_zScore,
+    c(-1.15738277, 1.31746510),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_in_sample_z_score <- summarize_z_score(
+    multiple_simple_ts,
+    "v",
+    include_current_observation = FALSE,
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+
+  expect_equal(ts_in_sample_z_score$id, c(0, 1))
+  expect_equal(
+    ts_in_sample_z_score$v_zScore,
+    c(-1.64316767, 3),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
 test_that("summarize_nth_moment() works as expected", {
   ts_0th_moment <- summarize_nth_moment(simple_ts, "v", 0) %>% collect()
   expect_equal(ts_0th_moment$v_0thMoment, 1)
