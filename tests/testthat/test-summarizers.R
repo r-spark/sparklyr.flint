@@ -80,10 +80,54 @@ test_that("summarize_min() works as expected", {
   expect_equal(ts_min$v_min, c(4, -2, -2, -2, 5, 1, -4, -4, -4, 3))
 })
 
+test_that("summarize_min() with key_columns works as expected", {
+  ts_min <- summarize_min(
+    multiple_simple_ts,
+    in_past("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_min$id, rep(c(0, 1), 6))
+  expect_equal(ts_min$v_min, c(6, NaN, 5, 2, 5, 2, 3, 2, 2, 2, 1, 3))
+
+  ts_min <- summarize_min(
+    multiple_simple_ts,
+    in_future("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_min$id, rep(c(0, 1), 6))
+  expect_equal(ts_min$v_min, c(3, 2, 2, 2, 1, 3, 1, 4, 1, 6, 1, 6))
+})
+
 test_that("summarize_max() works as expected", {
   ts_max <- summarize_max(ts, in_past("3s"), column = "v") %>% collect()
 
   expect_equal(ts_max$v_max, c(4, 4, 4, 5, 5, 1, -4, 5, 5, 5))
+})
+
+test_that("summarize_max() with key_columns works as expected", {
+  ts_max <- summarize_max(
+    multiple_simple_ts,
+    in_past("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_max$id, rep(c(0, 1), 6))
+  expect_equal(ts_max$v_max, c(6, NaN, 6, 2, 6, 3, 6, 4, 5, 4, 3, 6))
+
+  ts_max <- summarize_max(
+    multiple_simple_ts,
+    in_future("3s"),
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_max$id, rep(c(0, 1), 6))
+  expect_equal(ts_max$v_max, c(6, 4, 5, 4, 3, 6, 3, 6, 2, 6, 1, 6))
 })
 
 test_that("summarize_sum() works as expected", {
