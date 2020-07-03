@@ -99,6 +99,21 @@ testthat_generic_time_series <- function() {
   )
 }
 
+testthat_generic_cycles <- function() {
+  testthat_sdf(
+    function() {
+      tibble::tibble(
+        t = c(1, 1, 1, 2, 2, 2, 2, 3, 3, 3),
+        id = c(1, 2, 1, 0, 0, 1, 1, 2, 3, 3),
+        u = c(-4, 1, 3, -3, NA, 1, -4, 8, 5, 10),
+        v = c(4, -2, NA, 5, NA, 1, -4, 5, NA, 3),
+        w = c(1, 0.5, 1, 1, 1, 0.5, 1, 0.5, 1, 2)
+      )
+    },
+    ".testthat_generic_cycles"
+  )
+}
+
 testthat_simple_time_series <- function() {
   testthat_sdf(
     function() {
