@@ -15,6 +15,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: 'Spark 2.4.0 (R oldrel, oraclejdk8)'
+            r: 'oldrel'
+            env:
+              SPARK_VERSION: '2.4.0'
+              JAVA_VERSION: 'oraclejdk8'
           - name: 'Spark 2.4.0 (R release, oraclejdk8)'
             r: 'release'
             env:
@@ -30,6 +35,11 @@ jobs:
             env:
               SPARK_VERSION: '3.0.0'
               JAVA_VERSION: 'oraclejdk8'
+          - name: 'Spark 3.0.0 (R release, openjdk11)'
+            r: 'release'
+            env:
+              SPARK_VERSION: '3.0.0'
+              JAVA_URL: 'https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.1%2B13/OpenJDK11U-jdk_x64_linux_hotspot_11.0.1_13.tar.gz'
     env:
       ${{ matrix.env }}
     steps:
