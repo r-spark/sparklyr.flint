@@ -1,4 +1,4 @@
-context("sdf-utils")
+context("summarize-windows")
 
 sc <- testthat_spark_connection()
 ts <- fromSDF(
