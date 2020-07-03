@@ -4,15 +4,17 @@
 #' should be imported into a TimeSeriesRDD (e.g., which column represents time,
 #' whether rows are already ordered by time, and time unit being used, etc)
 #'
+#' @param sc Spark connection
+#' @param is_sorted Whether the rows being imported are already sorted by time
+#' @param time_unit Time unit of the time column (must be one of the following
+#'   values: "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS",
+#'   "MINUTES", "HOURS", "DAYS"
+#' @param time_column Name of the time column
+#'
 #' @name sdf_utils
 #' @include globals.R
 NULL
 
-
-#' Converter from time unit name to Java enum value
-#'
-#' Convenience function to convert from the name of a time unit (e.g.,
-#' "SECONDS") to its corresponding Java TimeUnit enum value
 jtime_unit <- function(sc, time_unit = .sparklyr.flint.globals$kValidTimeUnits) {
   invoke_static(sc, "java.util.concurrent.TimeUnit", match.arg(time_unit))
 }
@@ -83,6 +85,8 @@ new_ts_rdd <- function(jobj) {
 #' Builder object containing all required info (i.e., isSorted, timeUnit, and
 #' timeColumn) for importing a Spark data frame into a TimeSeriesRDD
 #'
+#' @inheritParams sdf_utils
+#'
 #' @export
 ts_rdd_builder <- function(
   sc,
@@ -107,6 +111,9 @@ ts_rdd_builder <- function(
 #'
 #' Construct a TimeSeriesRDD containing time series data from a Spark DataFrame
 #'
+#' @inheritParams sdf_utils
+#' @param sdf A Spark DataFrame object
+#'
 #' @export
 fromSDF <- function(
   sdf,
@@ -123,6 +130,11 @@ fromSDF <- function(
 #'
 #' Construct a TimeSeriesRDD containing time series data from a Spark RDD of rows
 #'
+#' @inheritParams sdf_utils
+#' @param rdd A Spark RDD[Row] object containing time series data
+#' @param schema A Spark StructType object containing schema of the time series
+#'   data
+#'
 #' @export
 fromRDD <- function(
   rdd,
@@ -137,8 +149,15 @@ fromRDD <- function(
 }
 
 
-#' @export
+#' Collect data from a TimeSeriesRDD
+#'
+#' Collect data from a TimeSeriesRDD into a R data frame
+#'
+#' @param x A com.twosigma.flint.timeseries.TimeSeriesRDD object
+#' @param ... Additional arguments to `sdf_collect()`
+#'
 #' @importFrom dplyr collect
+#' @export
 collect.ts_rdd <- function(x, ...) {
   invoke(x, "toDF") %>% sdf_register() %>% collect()
 }

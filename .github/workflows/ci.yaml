@@ -69,7 +69,9 @@ jobs:
         env:
           _R_CHECK_FORCE_SUGGESTS_: false
           WARNINGS_ARE_ERRORS: 1
-        run: R CMD check --no-build-vignettes --no-manual --no-tests sparklyr*tar.gz
+        run: |
+          R CMD check --no-build-vignettes --no-manual --no-tests sparklyr.flint*.tar.gz
+          rm -f sparklyr.flint*.tar.gz
       - name: Install sparklyr.flint from source
         run: Rscript -e 'install.packages(".", repos = NULL, type = "source")'
       - name: Run tests

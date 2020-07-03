@@ -11,6 +11,17 @@ ts_rdd_builder(
   time_column = .sparklyr.flint.globals$kDefaultTimeColumn
 )
 }
+\arguments{
+\item{sc}{Spark connection}
+
+\item{is_sorted}{Whether the rows being imported are already sorted by time}
+
+\item{time_unit}{Time unit of the time column (must be one of the following
+values: "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS",
+"MINUTES", "HOURS", "DAYS"}
+
+\item{time_column}{Name of the time column}
+}
 \description{
 Builder object containing all required info (i.e., isSorted, timeUnit, and
 timeColumn) for importing a Spark data frame into a TimeSeriesRDD

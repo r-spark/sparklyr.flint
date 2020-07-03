@@ -11,6 +11,17 @@ fromSDF(
   time_column = .sparklyr.flint.globals$kDefaultTimeColumn
 )
 }
+\arguments{
+\item{sdf}{A Spark DataFrame object}
+
+\item{is_sorted}{Whether the rows being imported are already sorted by time}
+
+\item{time_unit}{Time unit of the time column (must be one of the following
+values: "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS",
+"MINUTES", "HOURS", "DAYS"}
+
+\item{time_column}{Name of the time column}
+}
 \description{
 Construct a TimeSeriesRDD containing time series data from a Spark DataFrame
 }
