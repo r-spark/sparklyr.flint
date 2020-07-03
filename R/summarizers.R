@@ -4,10 +4,11 @@
 #' sum and count.
 #'
 #' @param ts_rdd Timeseries RDD being summarized
-#' @param window R expression specifying time windows to be summarized (e.g.,
-#'   `in_past("1h")` to summarize data from looking behind 1 hour at each time
-#'    point, `in_future("5s")` to summarize data from looking forward 5 seconds
-#'    at each time point)
+#' @param window Either a R expression specifying time windows to be summarized
+#'    (e.g., `in_past("1h")` to summarize data from looking behind 1 hour at
+#'    each time point, `in_future("5s")` to summarize data from looking forward
+#'    5 seconds at each time point), or `NULL` to compute aggregate statistics
+#'    on rows grouped by timestamps
 #' @param column Column to be summarized
 #' @param key_columns Optional list of columns that will form an equivalence
 #'   relation associating each row with the time series it belongs to (i.e., any
@@ -23,20 +24,28 @@
 #' @include window_exprs.R
 NULL
 
-summarize_windows <- function(
+summarize_time_range <- function(
   ts_rdd,
   window_obj,
   summarizer,
   key_columns
 ) {
   new_ts_rdd(
-    invoke(
-      ts_rdd,
-      "summarizeWindows",
-      window_obj,
-      summarizer,
-      as.list(key_columns)
-    )
+    if (is.null(window_obj))
+      invoke(
+        ts_rdd,
+        "summarizeCycles",
+        summarizer,
+        as.list(key_columns)
+      )
+    else
+      invoke(
+        ts_rdd,
+        "summarizeWindows",
+        window_obj,
+        summarizer,
+        as.list(key_columns)
+      )
   )
 }
 
@@ -45,27 +54,33 @@ summarize <- function(ts_rdd, summarizer, key_columns = list()) {
 }
 
 new_window_obj <- function(sc, window_expr) {
-  window_expr$sc <- sc
-  rlang::eval_tidy(window_expr)
+  if (is.null(window_expr)) {
+    NULL
+  } else {
+    window_expr$sc <- sc
+    rlang::eval_tidy(window_expr)
+  }
 }
 
 #' Count summarizer
 #'
 #' Count the total number of rows if no column is specified, or the number of
-#' non-null values within the specified column within each time window
+#' non-null values within the specified column within each time window or group
+#' of rows with identical timestamps
 #'
 #' @inheritParams summarizers
 #' @param column If not NULL, then report the number of values in the column
-#'   specified that are not NULL or NaN within each time window, and store the
-#'   counts in a new column named `<column>_count`.
-#'   Otherwise the number of rows within each time window is reported, and
-#'   stored in a column named `count`.
+#'   specified that are not NULL or NaN within each time window or group of rows
+#'   with identical timestamps, and store the counts in a new column named
+#'   `<column>_count`.
+#'   Otherwise the number of rows within each time window or group of rows with
+#'   identical timestamps is reported, and stored in a column named `count`.
 #'
 #' @export
 summarize_count <- function(
   ts_rdd,
-  window,
   column = NULL,
+  window = NULL,
   key_columns = list()
 ) {
   sc <- spark_connection(ts_rdd)
@@ -80,18 +95,19 @@ summarize_count <- function(
 
   count_summarizer <- do.call(invoke_static, args)
 
-  summarize_windows(ts_rdd, window_obj, count_summarizer, key_columns)
+  summarize_time_range(ts_rdd, window_obj, count_summarizer, key_columns)
 }
 
 #' Minimum value summarizer
 #'
-#' Find minimum value among values from `column` within each time window, and
-#' store results in a new column named `<column>_min`
+#' Find minimum value among values from `column` within each time window or
+#' group of rows with identical timestamps, and store results in a new column
+#' named `<column>_min`
 #'
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_min <- function(ts_rdd, window, column, key_columns = list()) {
+summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -102,18 +118,19 @@ summarize_min <- function(ts_rdd, window, column, key_columns = list()) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, min_summarizer, key_columns)
+  summarize_time_range(ts_rdd, window_obj, min_summarizer, key_columns)
 }
 
 #' Maximum value summarizer
 #'
-#' Find maximum value among values from `column` within each time window, and
-#' store results in a new column named `<column>_max`
+#' Find maximum value among values from `column` within each time window or
+#' group of rows with identical timestamps, and store results in a new column
+#' named `<column>_max`
 #'
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_max <- function(ts_rdd, window, column, key_columns = list()) {
+summarize_max <- function(ts_rdd, column, window = NULL, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -124,7 +141,7 @@ summarize_max <- function(ts_rdd, window, column, key_columns = list()) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, max_summarizer, key_columns)
+  summarize_time_range(ts_rdd, window_obj, max_summarizer, key_columns)
 }
 
 #' Sum summarizer
@@ -135,7 +152,7 @@ summarize_max <- function(ts_rdd, window, column, key_columns = list()) {
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_sum <- function(ts_rdd, window, column, key_columns = list()) {
+summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -146,7 +163,7 @@ summarize_sum <- function(ts_rdd, window, column, key_columns = list()) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, sum_summarizer, key_columns)
+  summarize_time_range(ts_rdd, window_obj, sum_summarizer, key_columns)
 }
 
 #' Average summarizer
@@ -157,7 +174,7 @@ summarize_sum <- function(ts_rdd, window, column, key_columns = list()) {
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_avg <- function(ts_rdd, window, column, key_columns = list()) {
+summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -168,7 +185,7 @@ summarize_avg <- function(ts_rdd, window, column, key_columns = list()) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, avg_summarizer, key_columns)
+  summarize_time_range(ts_rdd, window_obj, avg_summarizer, key_columns)
 }
 
 #' Weighted average summarizer
@@ -186,9 +203,9 @@ summarize_avg <- function(ts_rdd, window, column, key_columns = list()) {
 #' @export
 summarize_weighted_avg <- function(
   ts_rdd,
-  window,
   column,
   weight_column,
+  window = NULL,
   key_columns = list()
 ) {
   sc <- spark_connection(ts_rdd)
@@ -202,19 +219,20 @@ summarize_weighted_avg <- function(
     weight_column
   )
 
-  summarize_windows(ts_rdd, window_obj, weighted_avg_summarizer, key_columns)
+  summarize_time_range(ts_rdd, window_obj, weighted_avg_summarizer, key_columns)
 }
 
 #' Standard deviation summarizer
 #'
 #' Compute unbiased (i.e., Bessel's correction is applied) sample standard
-#' deviation of values from `column` within each time window and store results
-#' in a new column named `<column>_stddev`
+#' deviation of values from `column` within each time window or group of rows
+#' with identical timestamps, and store results in a new column named
+#' `<column>_stddev`
 #'
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_stddev <- function(ts_rdd, window, column, key_columns = list()) {
+summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -225,19 +243,19 @@ summarize_stddev <- function(ts_rdd, window, column, key_columns = list()) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, stddev_summarizer, key_columns)
+  summarize_time_range(ts_rdd, window_obj, stddev_summarizer, key_columns)
 }
 
 #' Variance summarizer
 #'
-#' Compute variance of values from `column` within each time window and store
-#' results in a new column named `<column>_variance`, with Bessel's correction
-#' applied to the results
+#' Compute variance of values from `column` within each time window or group
+#' of rows with identical timestamps, and store results in a new column named
+#' `<column>_variance`, with Bessel's correction applied to the results
 #'
 #' @inheritParams summarizers
 #'
 #' @export
-summarize_var <- function(ts_rdd, window, column, key_columns = list()) {
+summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, rlang::enexpr(window))
 
@@ -248,13 +266,14 @@ summarize_var <- function(ts_rdd, window, column, key_columns = list()) {
     column
   )
 
-  summarize_windows(ts_rdd, window_obj, var_summarizer, key_columns)
+  summarize_time_range(ts_rdd, window_obj, var_summarizer, key_columns)
 }
 
 #' Covariance summarizer
 #'
 #' Compute covariance between values from `xcolumn` and `ycolumn` within each time
-#' window and store results in a new column named `<xcolumn>_<ycolumn>_covariance`
+#' window or group of rows with identical timestamps, and store results in a new
+#' column named `<xcolumn>_<ycolumn>_covariance`
 #'
 #' @inheritParams summarizers
 #' @param xcolumn Column representing the first random variable
@@ -263,9 +282,9 @@ summarize_var <- function(ts_rdd, window, column, key_columns = list()) {
 #' @export
 summarize_covar <- function(
   ts_rdd,
-  window,
   xcolumn,
   ycolumn,
+  window = NULL,
   key_columns = list()
 ) {
   sc <- spark_connection(ts_rdd)
@@ -279,14 +298,15 @@ summarize_covar <- function(
     ycolumn
   )
 
-  summarize_windows(ts_rdd, window_obj, covar_summarizer, key_columns)
+  summarize_time_range(ts_rdd, window_obj, covar_summarizer, key_columns)
 }
 
 #' Weighted covariance summarizer
 #'
 #' Compute unbiased weighted covariance between values from `xcolumn` and
-#' `ycolumn` within each time window, using values from `weight_column` as
-#' relative weights, and store results in a new column named
+#' `ycolumn` within each time window or group of rows with identical time-
+#' stamps, using values from `weight_column` as relative weights, and store
+#' results in a new column named
 #' `"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance`
 #'
 #' @inheritParams summarizers
@@ -297,10 +317,10 @@ summarize_covar <- function(
 #' @export
 summarize_weighted_covar <- function(
   ts_rdd,
-  window,
   xcolumn,
   ycolumn,
   weight_column,
+  window = NULL,
   key_columns = list()
 ) {
   sc <- spark_connection(ts_rdd)
@@ -315,7 +335,12 @@ summarize_weighted_covar <- function(
     weight_column
   )
 
-  summarize_windows(ts_rdd, window_obj, weighted_covar_summarizer, key_columns)
+  summarize_time_range(
+    ts_rdd,
+    window_obj,
+    weighted_covar_summarizer,
+    key_columns
+  )
 }
 
 #' Z-score summarizer

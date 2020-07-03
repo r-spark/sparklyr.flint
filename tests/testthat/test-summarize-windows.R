@@ -39,26 +39,29 @@ weighted_corr_test_case_ts <- fromSDF(
 )
 
 test_that("summarize_count() works as expected", {
-  ts_count <- summarize_count(ts, in_past("3s")) %>% collect()
+  ts_count <- summarize_count(ts, window = in_past("3s")) %>% collect()
 
   expect_equal(ts_count$count, c(1, 2, 3, 3, 3, 2, 1, 2, 3, 3))
 })
 
 test_that("summarize_count() with specific column works as expected", {
-  ts_count <- summarize_count(ts, in_past("3s"), column = "v") %>% collect()
+  ts_count <- summarize_count(ts, column = "v", window = in_past("3s")) %>%
+    collect()
 
   expect_equal(ts_count$v_count, c(1, 2, 2, 2, 1, 1, 1, 2, 2, 2))
 })
 
 test_that("summarize_count() with key_columns works as expected", {
   ts_count <- summarize_count(
-    multiple_simple_ts, in_past("3s"), key_columns = c("id")) %>% collect()
+    multiple_simple_ts, window = in_past("3s"), key_columns = c("id")) %>%
+    collect()
 
   expect_equal(ts_count$id, rep(c(0, 1), 6))
   expect_equal(ts_count$count, c(1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4))
 
   ts_count <- summarize_count(
-    multiple_simple_ts, in_future("3s"), key_columns = c("id")) %>% collect()
+    multiple_simple_ts, window = in_future("3s"), key_columns = c("id")) %>%
+    collect()
 
   expect_equal(ts_count$id, rep(c(0, 1), 6))
   expect_equal(ts_count$count, c(4, 4, 4, 4, 4, 4, 3, 3, 2, 2, 1, 1))
@@ -67,8 +70,8 @@ test_that("summarize_count() with key_columns works as expected", {
 test_that("summarize_count() with key_columns and specific column works as expected", {
   ts_count <- summarize_count(
     multiple_simple_ts,
-    in_past("3s"),
     column = "v",
+    window = in_past("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -77,8 +80,8 @@ test_that("summarize_count() with key_columns and specific column works as expec
 
   ts_count <- summarize_count(
     multiple_simple_ts,
-    in_future("3s"),
     column = "v",
+    window = in_future("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -87,7 +90,8 @@ test_that("summarize_count() with key_columns and specific column works as expec
 })
 
 test_that("summarize_min() works as expected", {
-  ts_min <- summarize_min(ts, in_past("3s"), column = "v") %>% collect()
+  ts_min <- summarize_min(ts, column = "v", window = in_past("3s")) %>%
+    collect()
 
   expect_equal(ts_min$v_min, c(4, -2, -2, -2, 5, 1, -4, -4, -4, 3))
 })
@@ -95,8 +99,8 @@ test_that("summarize_min() works as expected", {
 test_that("summarize_min() with key_columns works as expected", {
   ts_min <- summarize_min(
     multiple_simple_ts,
-    in_past("3s"),
     column = "v",
+    window = in_past("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -105,8 +109,8 @@ test_that("summarize_min() with key_columns works as expected", {
 
   ts_min <- summarize_min(
     multiple_simple_ts,
-    in_future("3s"),
     column = "v",
+    window = in_future("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -115,7 +119,8 @@ test_that("summarize_min() with key_columns works as expected", {
 })
 
 test_that("summarize_max() works as expected", {
-  ts_max <- summarize_max(ts, in_past("3s"), column = "v") %>% collect()
+  ts_max <- summarize_max(ts, column = "v", window = in_past("3s")) %>%
+    collect()
 
   expect_equal(ts_max$v_max, c(4, 4, 4, 5, 5, 1, -4, 5, 5, 5))
 })
@@ -123,8 +128,8 @@ test_that("summarize_max() works as expected", {
 test_that("summarize_max() with key_columns works as expected", {
   ts_max <- summarize_max(
     multiple_simple_ts,
-    in_past("3s"),
     column = "v",
+    window = in_past("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -133,8 +138,8 @@ test_that("summarize_max() with key_columns works as expected", {
 
   ts_max <- summarize_max(
     multiple_simple_ts,
-    in_future("3s"),
     column = "v",
+    window = in_future("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -143,7 +148,8 @@ test_that("summarize_max() with key_columns works as expected", {
 })
 
 test_that("summarize_sum() works as expected", {
-  ts_sum <- summarize_sum(ts, in_past("3s"), column = "v") %>% collect()
+  ts_sum <- summarize_sum(ts, column = "v", window = in_past("3s")) %>%
+    collect()
 
   expect_equal(ts_sum$v_sum, c(4, 2, 2, 3, 5, 1, -4, 1, 1, 8))
 })
@@ -151,8 +157,8 @@ test_that("summarize_sum() works as expected", {
 test_that("summarize_sum() with key_columns works as expected", {
   ts_sum <- summarize_sum(
     multiple_simple_ts,
-    in_past("3s"),
     column = "v",
+    window = in_past("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -161,8 +167,8 @@ test_that("summarize_sum() with key_columns works as expected", {
 
   ts_sum <- summarize_sum(
     multiple_simple_ts,
-    in_future("3s"),
     column = "v",
+    window = in_future("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -173,8 +179,8 @@ test_that("summarize_sum() with key_columns works as expected", {
 test_that("summarize_avg() works as expected", {
   ts_avg <- summarize_avg(
     ts,
-    in_past("3s"),
-    column = "v"
+    column = "v",
+    window = in_past("3s")
   ) %>% collect()
 
   expect_equal(
@@ -188,8 +194,8 @@ test_that("summarize_avg() works as expected", {
 test_that("summarize_avg() with key_columns works as expected", {
   ts_avg <- summarize_avg(
     multiple_simple_ts,
-    in_past("3s"),
     column = "v",
+    window = in_past("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -203,8 +209,8 @@ test_that("summarize_avg() with key_columns works as expected", {
 
   ts_avg <- summarize_avg(
     multiple_simple_ts,
-    in_future("3s"),
     column = "v",
+    window = in_future("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -220,9 +226,9 @@ test_that("summarize_avg() with key_columns works as expected", {
 test_that("summarize_weighted_avg() works as expected", {
   ts_weighted_avg <- summarize_weighted_avg(
     ts,
-    in_past("3s"),
     column = "v",
-    weight_column = "w"
+    weight_column = "w",
+    window = in_past("3s")
   ) %>% collect()
 
   expect_equal(
@@ -249,9 +255,9 @@ test_that("summarize_weighted_avg() works as expected", {
 test_that("summarize_weighted_avg() with key_columns works as expected", {
   ts_weighted_avg <- summarize_weighted_avg(
     multiple_simple_ts,
-    in_past("3s"),
     column = "v",
     weight_column = "w",
+    window = in_past("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -265,9 +271,9 @@ test_that("summarize_weighted_avg() with key_columns works as expected", {
 
   ts_weighted_avg <- summarize_weighted_avg(
     multiple_simple_ts,
-    in_future("3s"),
     column = "v",
     weight_column = "w",
+    window = in_future("3s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -283,8 +289,8 @@ test_that("summarize_weighted_avg() with key_columns works as expected", {
 test_that("summarize_stddev() works as expected", {
   ts_stddev <- summarize_stddev(
     ts,
-    in_past("6s"),
-    column = "v"
+    column = "v",
+    window = in_past("6s")
   ) %>% collect()
 
   expect_equal(
@@ -298,8 +304,8 @@ test_that("summarize_stddev() works as expected", {
 test_that("summarize_stddev() with key_columns works as expected", {
   ts_stddev <- summarize_stddev(
     multiple_simple_ts,
-    in_past("6s"),
     column = "v",
+    window = in_past("6s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -313,8 +319,8 @@ test_that("summarize_stddev() with key_columns works as expected", {
 
   ts_stddev <- summarize_stddev(
     multiple_simple_ts,
-    in_future("6s"),
     column = "v",
+    window = in_future("6s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -330,8 +336,8 @@ test_that("summarize_stddev() with key_columns works as expected", {
 test_that("summarize_var() works as expected", {
   ts_var <- summarize_var(
     ts,
-    in_past("6s"),
-    column = "v"
+    column = "v",
+    window = in_past("6s")
   ) %>% collect()
 
   expect_equal(
@@ -345,8 +351,8 @@ test_that("summarize_var() works as expected", {
 test_that("summarize_var() with key_columns works as expected", {
   ts_var <- summarize_var(
     multiple_simple_ts,
-    in_past("6s"),
     column = "v",
+    window = in_past("6s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -360,8 +366,8 @@ test_that("summarize_var() with key_columns works as expected", {
 
   ts_var <- summarize_var(
     multiple_simple_ts,
-    in_future("6s"),
     column = "v",
+    window = in_future("6s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -377,9 +383,9 @@ test_that("summarize_var() with key_columns works as expected", {
 test_that("summarize_covar() works as expected", {
   ts_covar <- summarize_covar(
     ts,
-    in_past("6s"),
     xcolumn = "u",
-    ycolumn = "v"
+    ycolumn = "v",
+    window = in_past("6s")
   ) %>% collect()
 
   expect_equal(
@@ -393,9 +399,9 @@ test_that("summarize_covar() works as expected", {
 test_that("summarize_covar() with key_columns works as expected", {
   ts_covar <- summarize_covar(
     multiple_simple_ts,
-    in_past("6s"),
     xcolumn = "u",
     ycolumn = "v",
+    window = in_past("6s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -409,9 +415,9 @@ test_that("summarize_covar() with key_columns works as expected", {
 
   ts_covar <- summarize_covar(
     multiple_simple_ts,
-    in_future("6s"),
     xcolumn = "u",
     ycolumn = "v",
+    window = in_future("6s"),
     key_columns = c("id")
   ) %>% collect()
 
@@ -427,9 +433,9 @@ test_that("summarize_covar() with key_columns works as expected", {
 test_that("summarize_weighted_covar() works as expected", {
   ts_weighted_covar <- summarize_weighted_covar(
     ts,
-    in_past("6s"),
     xcolumn = "u",
     ycolumn = "v",
+    window = in_past("6s"),
     weight_column = "w"
   ) %>% collect()
 
@@ -444,9 +450,9 @@ test_that("summarize_weighted_covar() works as expected", {
 test_that("summarize_weighted_covar() with key_columns works as expected", {
   ts_weighted_covar <- summarize_weighted_covar(
     multiple_simple_ts,
-    in_past("6s"),
     xcolumn = "u",
     ycolumn = "v",
+    window = in_past("6s"),
     weight_column = "w",
     key_columns = c("id")
   ) %>% collect()
@@ -461,10 +467,10 @@ test_that("summarize_weighted_covar() with key_columns works as expected", {
 
   ts_weighted_covar <- summarize_weighted_covar(
     multiple_simple_ts,
-    in_future("6s"),
     xcolumn = "u",
     ycolumn = "v",
     weight_column = "w",
+    window = in_future("6s"),
     key_columns = c("id")
   ) %>% collect()
 

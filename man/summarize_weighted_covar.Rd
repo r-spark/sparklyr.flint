@@ -6,26 +6,27 @@
 \usage{
 summarize_weighted_covar(
   ts_rdd,
-  window,
   xcolumn,
   ycolumn,
   weight_column,
+  window = NULL,
   key_columns = list()
 )
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
 
-\item{window}{R expression specifying time windows to be summarized (e.g.,
-`in_past("1h")` to summarize data from looking behind 1 hour at each time
- point, `in_future("5s")` to summarize data from looking forward 5 seconds
- at each time point)}
-
 \item{xcolumn}{Column representing the first random variable}
 
 \item{ycolumn}{Column representing the second random variable}
 
 \item{weight_column}{Column specifying relative weight of each data point}
+
+\item{window}{Either a R expression specifying time windows to be summarized
+(e.g., `in_past("1h")` to summarize data from looking behind 1 hour at
+each time point, `in_future("5s")` to summarize data from looking forward
+5 seconds at each time point), or `NULL` to compute aggregate statistics
+on rows grouped by timestamps}
 
 \item{key_columns}{Optional list of columns that will form an equivalence
 relation associating each row with the time series it belongs to (i.e., any
@@ -38,7 +39,8 @@ a single time series.}
 }
 \description{
 Compute unbiased weighted covariance between values from `xcolumn` and
-`ycolumn` within each time window, using values from `weight_column` as
-relative weights, and store results in a new column named
+`ycolumn` within each time window or group of rows with identical time-
+stamps, using values from `weight_column` as relative weights, and store
+results in a new column named
 `"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance`
 }

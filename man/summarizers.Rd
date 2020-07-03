@@ -6,10 +6,11 @@
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
 
-\item{window}{R expression specifying time windows to be summarized (e.g.,
-`in_past("1h")` to summarize data from looking behind 1 hour at each time
- point, `in_future("5s")` to summarize data from looking forward 5 seconds
- at each time point)}
+\item{window}{Either a R expression specifying time windows to be summarized
+(e.g., `in_past("1h")` to summarize data from looking behind 1 hour at
+each time point, `in_future("5s")` to summarize data from looking forward
+5 seconds at each time point), or `NULL` to compute aggregate statistics
+on rows grouped by timestamps}
 
 \item{column}{Column to be summarized}
 
