@@ -9,7 +9,7 @@ verify_result <- function(df) {
   expect_equivalent(
     df,
     tibble::tibble(
-      time = as.Date(seq(6), origin = as.Date("1970-01-01")),
+      time = as.Date(seq(6), origin = "1970-01-01"),
       value <- c(1, 4, 2, 8, 5, 7)
     )
   )

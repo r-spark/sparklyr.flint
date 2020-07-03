@@ -37,13 +37,13 @@ spark_dependencies <- function(spark_version, scala_version, ...) {
   # initialize package-wide constants
   constants <- list(
     kValidTimeUnits = c(
-      "NANOSECONDS",
-      "MICROSECONDS",
-      "MILLISECONDS",
-      "SECONDS",
-      "MINUTES",
+      "DAYS",
       "HOURS",
-      "DAYS"
+      "MINUTES",
+      "SECONDS",
+      "MILLISECONDS",
+      "MICROSECONDS",
+      "NANOSECONDS"
     ),
     kDefaultTimeColumn = "time"
   )

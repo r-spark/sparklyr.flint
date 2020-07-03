@@ -65,7 +65,7 @@ jobs:
         uses: actions/cache@master
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: sparklyr.flint-${{ runner.os }}-r-${{ matrix.r }}-${{ hashFiles('DESCRIPTION') }}
+          key: sparklyr.flint-${{ runner.os }}-r-${{ matrix.r }}-${{ hashFiles('DESCRIPTION') }}-${{ hashFiles('.ci/install_r_deps.sh') }}
           restore-keys: sparklyr-${{ runner.os }}-r-${{ matrix.r }}
       - name: Install system dependencies
         run: source .ci/install_deps.sh
@@ -88,11 +88,8 @@ jobs:
         run: |
           export SPARKLYR_LOG_FILE=/tmp/sparklyr.log
 
-          sudo timedatectl set-timezone America/Los_Angeles
-          export TZ='America/Los_Angeles'
-
           cd tests
-          NOT_CRAN="true" Rscript testthat.R
+          NOT_CRAN='true' Rscript testthat.R
       - uses: actions/upload-artifact@v1
         if: failure()
         with:
