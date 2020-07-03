@@ -3,6 +3,17 @@
 \name{sdf_utils}
 \alias{sdf_utils}
 \title{Utility functions for importing a Spark data frame into a TimeSeriesRDD}
+\arguments{
+\item{sc}{Spark connection}
+
+\item{is_sorted}{Whether the rows being imported are already sorted by time}
+
+\item{time_unit}{Time unit of the time column (must be one of the following
+values: "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS",
+"MINUTES", "HOURS", "DAYS"}
+
+\item{time_column}{Name of the time column}
+}
 \description{
 These functions provide an interface for specifying how a Spark data frame
 should be imported into a TimeSeriesRDD (e.g., which column represents time,

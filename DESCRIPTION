@@ -2,12 +2,11 @@ Package: sparklyr.flint
 Type: Package
 Title: Sparklyr extension for Flint
 Version: 0.0.1
-Authors@R: c(
-    person("Yitao", "Li", role = c("aut", "cre"), email = "yitao@rstudio.com")
-    )
+Author: Yitao Li <yitao@rstudio.com>
 Maintainer: Yitao Li <yitao@rstudio.com>
-Description: Sparklyr extension making Flint time series library functionalities
-    (https://github.com/twosigma/flint) available through R
+Description: This sparklyr extension makes Flint time series library
+    functionalities (https://github.com/twosigma/flint) easily accessible
+    through R.
 License: Apache License 2.0 | file LICENSE
 SystemRequirements: Spark: 2.x or above
 URL: http://spark.rstudio.com
@@ -17,12 +16,10 @@ RoxygenNote: 7.1.0
 Depends:
     R (>= 3.2)
 Imports:
-    sparklyr (>= 1.2),
+    dbplyr,
+    dplyr,
+    sparklyr (>= 1.3),
     rlang
-Suggests:
-    tibble,
-    uuid,
-    testthat
 Collate:
     'globals.R'
     'init.R'

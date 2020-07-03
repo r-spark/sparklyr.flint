@@ -1,0 +1,100 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+name: CI
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: 'Spark 2.4.0 (R oldrel, oraclejdk8)'
+            r: 'oldrel'
+            env:
+              SPARK_VERSION: '2.4.0'
+              JAVA_VERSION: 'oraclejdk8'
+          - name: 'Spark 2.4.0 (R release, oraclejdk8)'
+            r: 'release'
+            env:
+              SPARK_VERSION: '2.4.0'
+              JAVA_VERSION: 'oraclejdk8'
+          - name: 'Spark 2.4.5 (R release, oraclejdk8)'
+            r: 'release'
+            env:
+              SPARK_VERSION: '2.4.5'
+              JAVA_VERSION: 'oraclejdk8'
+          - name: 'Spark 3.0.0 (R release, oraclejdk8)'
+            r: 'release'
+            env:
+              SPARK_VERSION: '3.0.0'
+              JAVA_VERSION: 'oraclejdk8'
+          - name: 'Spark 3.0.0 (R release, openjdk11)'
+            r: 'release'
+            env:
+              SPARK_VERSION: '3.0.0'
+              JAVA_URL: 'https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.1%2B13/OpenJDK11U-jdk_x64_linux_hotspot_11.0.1_13.tar.gz'
+    env:
+      ${{ matrix.env }}
+    steps:
+      - name: Mount tmpfs
+        run: sudo mount -t tmpfs tmpfs /tmp
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@master
+        with:
+          r-version: ${{ matrix.r }}
+      - name: Install Java
+        run: |
+          if [[ ! -z "$JAVA_VERSION" ]]; then
+            source ./.ci/jdk_switcher.sh use "$JAVA_VERSION";
+          fi
+
+          if [[ ! -z "$JAVA_URL" ]]; then
+            source ./.ci/install-jdk.sh --url $JAVA_URL
+          fi
+
+          echo $JAVA_HOME
+      - name: Cache R packages
+        if: runner.os != 'Windows'
+        uses: actions/cache@master
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: sparklyr.flint-${{ runner.os }}-r-${{ matrix.r }}-${{ hashFiles('DESCRIPTION') }}-${{ hashFiles('.ci/install_r_deps.sh') }}
+          restore-keys: sparklyr-${{ runner.os }}-r-${{ matrix.r }}
+      - name: Install system dependencies
+        run: source .ci/install_deps.sh
+      - name: Install R dependencies
+        run: source .ci/install_r_deps.sh
+      - name: Build
+        env:
+          WARNINGS_ARE_ERRORS: 1
+        run: R CMD build .
+      - name: Check
+        env:
+          _R_CHECK_FORCE_SUGGESTS_: false
+          WARNINGS_ARE_ERRORS: 1
+        run: |
+          R CMD check --no-build-vignettes --no-manual --no-tests sparklyr.flint*.tar.gz
+          rm -f sparklyr.flint*.tar.gz
+      - name: Install sparklyr.flint from source
+        run: Rscript -e 'install.packages(".", repos = NULL, type = "source")'
+      - name: Run tests
+        run: |
+          export SPARKLYR_LOG_FILE=/tmp/sparklyr.log
+
+          cd tests
+          NOT_CRAN='true' Rscript testthat.R
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: Worker logs
+          path: /tmp/sparklyr.log
+      - name: Dump worker logs on failure
+        if: failure()
+        run: cat /tmp/sparklyr.log

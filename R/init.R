@@ -39,11 +39,12 @@ spark_dependencies <- function(spark_version, scala_version, ...) {
     kValidTimeUnits = c(
       "DAYS",
       "HOURS",
-      "MICROSECONDS",
-      "MILLISECONDS",
       "MINUTES",
-      "NANOSECONDS",
-      "SECONDS"),
+      "SECONDS",
+      "MILLISECONDS",
+      "MICROSECONDS",
+      "NANOSECONDS"
+    ),
     kDefaultTimeColumn = "time"
   )
   for (x in names(constants)) {

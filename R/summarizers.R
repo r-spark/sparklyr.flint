@@ -44,8 +44,6 @@ summarize <- function(ts_rdd, summarizer, key_columns = list()) {
   new_ts_rdd(invoke(ts_rdd, "summarize", summarizer, as.list(key_columns)))
 }
 
-#' Evaluate a time window specification and instantiate the corresponding time
-#' window object
 new_window_obj <- function(sc, window_expr) {
   window_expr$sc <- sc
   rlang::eval_tidy(window_expr)
