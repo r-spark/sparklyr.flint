@@ -112,3 +112,45 @@ test_that("summarize_avg() with key_columns works as expected", {
   verify_timestamps_with_id_key_column(ts_avg)
   expect_equal(ts_avg$v_mean, c(4, -2, 5, -1.5, 5, 3))
 })
+
+test_that("summarize_weighted_avg() works as expected", {
+  ts_weighted_avg <- summarize_weighted_avg(
+    ts,
+    column = "v",
+    weight_column = "w"
+  ) %>% collect()
+
+  verify_timestamps(ts_weighted_avg)
+  expect_equal(ts_weighted_avg$v_w_weightedMean, c(2, 0.6, 3.4))
+  expect_equal(
+    ts_weighted_avg$v_w_weightedStandardDeviation,
+    c(4.2426407, 5.0373604, 1.4142136),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
+test_that("summarize_weighted_avg() with key_columns works as expected", {
+  ts_weighted_avg <- summarize_weighted_avg(
+    ts,
+    column = "v",
+    weight_column = "w",
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(time, id)
+
+  verify_timestamps_with_id_key_column(ts_weighted_avg)
+  expect_equal(
+    ts_weighted_avg$v_w_weightedMean,
+    c(4, -2, 5, -2.33333333, 5,  3),
+    tolerance = 1e-7,
+    scale = 1
+  )
+  expect_equal(
+    ts_weighted_avg$v_w_weightedStandardDeviation,
+    c(NaN, NaN, NaN, 3.53553391, NaN, NaN),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
