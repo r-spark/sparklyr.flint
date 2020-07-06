@@ -161,6 +161,7 @@ test_that("summarize_stddev() works as expected", {
     column = "v"
   ) %>% collect()
 
+  verify_timestamps(ts_stddev)
   expect_equal(
     ts_stddev$v_stddev,
     c(4.24264069, 4.50924975, 1.41421356),
@@ -174,12 +175,73 @@ test_that("summarize_stddev() with key_columns works as expected", {
     ts,
     column = "v",
     key_columns = c("id")
-  ) %>% collect()
+  ) %>%
+    collect() %>%
+    dplyr::arrange(time, id)
 
+  verify_timestamps_with_id_key_column(ts_stddev)
   expect_equal(
     ts_stddev$v_stddev,
     c(NaN, NaN, NaN, 3.53553391, NaN, NaN),
     tolerance = 1e-7,
     scale = 1
   )
+})
+
+test_that("summarize_var() works as expected", {
+  ts_var <- summarize_var(
+    ts,
+    column = "v"
+  ) %>% collect()
+
+  verify_timestamps(ts_var)
+  expect_equal(
+    ts_var$v_variance,
+    c(18, 20.3333333, 2),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
+test_that("summarize_var() with key_columns works as expected", {
+  ts_var <- summarize_var(
+    ts,
+    column = "v",
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(time, id)
+
+  verify_timestamps_with_id_key_column(ts_var)
+  expect_equal(
+    ts_var$v_variance,
+    c(NaN, NaN, NaN, 12.5, NaN, NaN),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
+test_that("summarize_covar() works as expected", {
+  ts_covar <- summarize_covar(
+    ts,
+    xcolumn = "u",
+    ycolumn = "v"
+  ) %>% collect()
+
+  verify_timestamps(ts_covar)
+  expect_equal(ts_covar$u_v_covariance, c(-7.5, 2, -1))
+})
+
+test_that("summarize_covar() with key_columns works as expected", {
+  ts_covar <- summarize_covar(
+    ts,
+    xcolumn = "u",
+    ycolumn = "v",
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(time, id)
+
+  verify_timestamps_with_id_key_column(ts_covar)
+  expect_equal(ts_covar$u_v_covariance, c(0, 0, 0, 6.25, 0, 0))
 })
