@@ -154,3 +154,32 @@ test_that("summarize_weighted_avg() with key_columns works as expected", {
     scale = 1
   )
 })
+
+test_that("summarize_stddev() works as expected", {
+  ts_stddev <- summarize_stddev(
+    ts,
+    column = "v"
+  ) %>% collect()
+
+  expect_equal(
+    ts_stddev$v_stddev,
+    c(4.24264069, 4.50924975, 1.41421356),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
+test_that("summarize_stddev() with key_columns works as expected", {
+  ts_stddev <- summarize_stddev(
+    ts,
+    column = "v",
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(
+    ts_stddev$v_stddev,
+    c(NaN, NaN, NaN, 3.53553391, NaN, NaN),
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
