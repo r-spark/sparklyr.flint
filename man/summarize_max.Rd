@@ -4,17 +4,18 @@
 \alias{summarize_max}
 \title{Maximum value summarizer}
 \usage{
-summarize_max(ts_rdd, window, column, key_columns = list())
+summarize_max(ts_rdd, column, window = NULL, key_columns = list())
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
 
-\item{window}{R expression specifying time windows to be summarized (e.g.,
-`in_past("1h")` to summarize data from looking behind 1 hour at each time
- point, `in_future("5s")` to summarize data from looking forward 5 seconds
- at each time point)}
-
 \item{column}{Column to be summarized}
+
+\item{window}{Either a R expression specifying time windows to be summarized
+(e.g., `in_past("1h")` to summarize data from looking behind 1 hour at
+each time point, `in_future("5s")` to summarize data from looking forward
+5 seconds at each time point), or `NULL` to compute aggregate statistics
+on rows grouped by timestamps}
 
 \item{key_columns}{Optional list of columns that will form an equivalence
 relation associating each row with the time series it belongs to (i.e., any
@@ -26,6 +27,7 @@ By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
 \description{
-Find maximum value among values from `column` within each time window, and
-store results in a new column named `<column>_max`
+Find maximum value among values from `column` within each time window or
+group of rows with identical timestamps, and store results in a new column
+named `<column>_max`
 }
