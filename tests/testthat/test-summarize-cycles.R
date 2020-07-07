@@ -244,3 +244,32 @@ test_that("summarize_covar() with key_columns works as expected", {
   verify_attrs_with_id_key_column(ts_covar)
   expect_equal(ts_covar$u_v_covariance, c(0, 0, 0, 6.25, 0, 0))
 })
+
+test_that("summarize_weighted_covar() works as expected", {
+  ts_weighted_covar <- summarize_weighted_covar(
+    ts,
+    xcolumn = "u",
+    ycolumn = "v",
+    weight_column = "w"
+  ) %>% collect()
+
+  expect_equal(ts_weighted_covar$u_v_w_weightedCovariance, c(-15, 3.375, -2))
+})
+
+test_that("summarize_weighted_covar() with key_columns works as expected", {
+  ts_weighted_covar <- summarize_weighted_covar(
+    ts,
+    xcolumn = "u",
+    ycolumn = "v",
+    weight_column = "w",
+    key_columns = c("id")
+  ) %>%
+    collect() %>%
+    dplyr::arrange(time, id)
+
+  verify_attrs_with_id_key_column(ts_weighted_covar)
+  expect_equal(
+    ts_weighted_covar$u_v_w_weightedCovariance,
+    c(NaN, NaN, NaN, 12.5, NaN, NaN)
+  )
+})
