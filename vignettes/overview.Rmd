@@ -1,0 +1,23 @@
+---
+title: "Overview of sparklyr.flint"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{sparklyr-flint}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+[sparklyr.flint](https://github.com/r-spark/sparklyr.flint) is a sparklyr extension that aims to make [Flint](https://github.com/twosigma/flint) time series functionalities easily accessible from R.
+
+Analyzing time series data using sparklyr.flint usually entails the following:
+
+ * Importing time series data into a Spark dataframe if it is not in Spark already
+ * Conversion of Spark dataframe into a TimeSeriesRDD, a time-series-aware data structure
+ * Analyzing the resulting TimeSeriesRDD using Flint time series functionalities -- at the moment, sparklyr.flint supports most of the summarizers implemented by [Flint](https://github.com/twosigma/flint) and supports summarization of both time windows and cycles

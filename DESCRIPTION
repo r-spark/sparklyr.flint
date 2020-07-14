@@ -26,3 +26,7 @@ Collate:
     'sdf_utils.R'
     'window_exprs.R'
     'summarizers.R'
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
