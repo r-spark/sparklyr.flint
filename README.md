@@ -61,7 +61,8 @@ sdf <- copy_to(sc, df, overwrite = TRUE)
 ```
 
 Next, we shall copy data points from above from a Spark data frame into
-a `TimeSeriesRDD` so that Flint can analyze them:
+a `TimeSeriesRDD` so that Flint can analyze
+them:
 
 ``` r
 ts_rdd <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
@@ -69,7 +70,8 @@ ts_rdd <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t
 
 Alternatively, one can also create a builder object if the same
 `(is_sorted, time_unit, time_column)` settings need to be applied to
-multiple Spark data frames or RDDs:
+multiple Spark data frames or
+RDDs:
 
 ``` r
 builder <- ts_rdd_builder(sc, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
@@ -85,7 +87,7 @@ various summarizers with this time window on the `TimeSeriesRDD` from
 above.
 
 ``` r
-ts_count <- summarize_count(ts_rdd, in_past("3s"))
+ts_count <- summarize_count(ts_rdd, window = in_past("3s"))
 ts_count %>% collect()
 ```
 
@@ -106,7 +108,7 @@ should output the total number of rows within each time window:
     ## 10 1970-01-01 00:00:19     3     3
 
 ``` r
-ts_count <- summarize_count(ts_rdd, in_past("3s"), column = "v")
+ts_count <- summarize_count(ts_rdd, column = "v", window = in_past("3s"))
 ts_count %>% collect()
 ```
 
@@ -130,7 +132,7 @@ should output the total number of values from column `v` that are not
 and
 
 ``` r
-ts_sum <- summarize_sum(ts_rdd, in_past("3s"), "v")
+ts_sum <- summarize_sum(ts_rdd, column = "v", window = in_past("3s"))
 ts_sum %>% collect()
 ```
 

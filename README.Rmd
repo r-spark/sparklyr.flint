@@ -60,7 +60,7 @@ ts_rdd_3 <- builder$fromRDD(rdd_3, schema_of_rdd_3)
 Let's say for each time point `t` (in seconds), we are interested in a summary all rows within the time span of `[t - 3, t]`, then we can specify the desired time window in R as `in_past("3s")`, and apply various summarizers with this time window on the `TimeSeriesRDD` from above.
 
 ```{r, eval=FALSE}
-ts_count <- summarize_count(ts_rdd, in_past("3s"))
+ts_count <- summarize_count(ts_rdd, window = in_past("3s"))
 ts_count %>% collect()
 ```
 should output the total number of rows within each time window:
@@ -82,7 +82,7 @@ should output the total number of rows within each time window:
 ```
 
 ```{r, eval=FALSE}
-ts_count <- summarize_count(ts_rdd, in_past("3s"), column = "v")
+ts_count <- summarize_count(ts_rdd, column = "v", window = in_past("3s"))
 ts_count %>% collect()
 ```
 should output the total number of values from column `v` that are not `NULL` or `NaN` within each time window:
@@ -106,7 +106,7 @@ should output the total number of values from column `v` that are not `NULL` or 
 and
 
 ```{r, eval=FALSE}
-ts_sum <- summarize_sum(ts_rdd, in_past("3s"), "v")
+ts_sum <- summarize_sum(ts_rdd, column = "v", window = in_past("3s"))
 ts_sum %>% collect()
 ```
 should output the sum of values from column `v` within each time window, ignoring `NULL` or `NaN` values:
