@@ -1,5 +1,5 @@
 ---
-title: "importing-time-series-data"
+title: "Importing time series data"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{importing-time-series-data}
@@ -32,7 +32,7 @@ sc <- spark_connect(master = "local")
 
 to connect to Spark in local mode.
 
-For those who are unfamiliar with Spark connections, [chapter 7]("https://therinspark.com/connections.html#connections) of “Mastering Spark with R” by Javier Luraschi, Kevin Kuo, and Edgar Ruiz contains some very helpful explanations of several modes of connecting to Spark from `sparklyr`.
+For those unfamiliar with Spark connections, [chapter 7]("https://therinspark.com/connections.html#connections) of “Mastering Spark with R” by Javier Luraschi, Kevin Kuo, and Edgar Ruiz contains some very helpful explanations of several modes of connecting to Spark from `sparklyr`.
 
 Next, the time series data needs to be imported into a Spark dataframe. This can be accomplished with methods such as `sparklyr::spark_read_csv`, `sparklyr::spark_read_json`, etc if data source is a file on disk, e.g.,
 
@@ -49,10 +49,10 @@ example_time_series_data <- data.frame(
 )
 sdf <- copy_to(sc, example_time_series_data, overwrite = TRUE)
 ```
-Finally, in order to unambiguously interpret the time series data we have provided in `sdf` so far, the Flint time series library needs to be informed about the name and the unit of the time column, and also whether all rows in the Spark dataframe from above are sorted by time already. All of this information will be encapsulated in a `TimeSeriesRDD` object derived from `sdf`, as shown below:
+Finally, in order to unambiguously interpret the time series data we have provided in `sdf` so far, the Flint time series library will have to be informed about the name and the unit of the time column, and also whether all rows in the Spark dataframe from above are sorted by time already. All of this information will be encapsulated in a `TimeSeriesRDD` object derived from `sdf`, as shown below:
 
 ```r
 ts_rdd <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 ```
 
-At this point, `ts_rdd` contains all data and metadata necessary for Flint to perform various analyses on `example_time_series_data`, and results from those analyses will also be returned to us in a separate `TimeSeriesRDD` objects.
+At this point, `ts_rdd` contains all data and metadata necessary for Flint to perform various analyses on `example_time_series_data`, and results from those analyses will also be returned to us in separate `TimeSeriesRDD` objects.
