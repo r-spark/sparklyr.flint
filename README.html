@@ -606,31 +606,31 @@ body {
 <p>At the moment, Flint time series functionalities are accessible through both Spark 2.x and Spark 3.0 via sparklyr, and some commonly used summarizers such ‘count’ and ‘sum’ are working as expected through a reasonably intuitive R interface (see example below). Meanwhile there are still plenty of other Flint functionalities such as EWMA summarizer, weighted mean, etc that will need similar R interfaces in <code>sparklyr.flint</code>.</p>
 <h2 id="example-usage">Example Usage</h2>
 <p>First attach <code>sparklyr.flint</code> package and then connect to Spark from sparklyr, e.g.,</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(sparklyr)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(sparklyr.flint)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a>spark_version &lt;-<span class="st"> &quot;2.4.0&quot;</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>sc &lt;-<span class="st"> </span><span class="kw">spark_connect</span>(<span class="dt">master =</span> <span class="st">&quot;local&quot;</span>, <span class="dt">version =</span> spark_version)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(sparklyr)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(sparklyr.flint)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">spark_version &lt;-<span class="st"> &quot;2.4.0&quot;</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">sc &lt;-<span class="st"> </span><span class="kw">spark_connect</span>(<span class="dt">master =</span> <span class="st">&quot;local&quot;</span>, <span class="dt">version =</span> spark_version)</a></code></pre></div>
 <p>or alternatively,</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>spark_version &lt;-<span class="st"> &quot;3.0.0&quot;</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>sc &lt;-<span class="st"> </span><span class="kw">spark_connect</span>(<span class="dt">master =</span> <span class="st">&quot;local&quot;</span>, <span class="dt">version =</span> spark_version)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">spark_version &lt;-<span class="st"> &quot;3.0.0&quot;</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">sc &lt;-<span class="st"> </span><span class="kw">spark_connect</span>(<span class="dt">master =</span> <span class="st">&quot;local&quot;</span>, <span class="dt">version =</span> spark_version)</a></code></pre></div>
 <p>since this extension also works with Spark 3.0.</p>
 <p>For the purpose of this illustration, we shall create some simple data points such that verifying the correctness of summarized results in all examples below will be an easy exercise for the reader.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>df &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">tibble</span>(</span>
-<span id="cb3-2"><a href="#cb3-2"></a>  <span class="dt">t =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">16</span>, <span class="dv">18</span>, <span class="dv">19</span>),</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  <span class="dt">v =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">-2</span>, <span class="ot">NA</span>, <span class="dv">5</span>, <span class="ot">NA</span>, <span class="dv">1</span>, <span class="dv">-4</span>, <span class="dv">5</span>, <span class="ot">NA</span>, <span class="dv">3</span>)</span>
-<span id="cb3-4"><a href="#cb3-4"></a>)</span>
-<span id="cb3-5"><a href="#cb3-5"></a>sdf &lt;-<span class="st"> </span><span class="kw">copy_to</span>(sc, df, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">df &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">tibble</span>(</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">  <span class="dt">t =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">16</span>, <span class="dv">18</span>, <span class="dv">19</span>),</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="dt">v =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">-2</span>, <span class="ot">NA</span>, <span class="dv">5</span>, <span class="ot">NA</span>, <span class="dv">1</span>, <span class="dv">-4</span>, <span class="dv">5</span>, <span class="ot">NA</span>, <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">)</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">sdf &lt;-<span class="st"> </span><span class="kw">copy_to</span>(sc, df, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>Next, we shall copy data points from above from a Spark data frame into a <code>TimeSeriesRDD</code> so that Flint can analyze them:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>ts_rdd &lt;-<span class="st"> </span><span class="kw">fromSDF</span>(sdf, <span class="dt">is_sorted =</span> <span class="ot">TRUE</span>, <span class="dt">time_unit =</span> <span class="st">&quot;SECONDS&quot;</span>, <span class="dt">time_column =</span> <span class="st">&quot;t&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">ts_rdd &lt;-<span class="st"> </span><span class="kw">fromSDF</span>(sdf, <span class="dt">is_sorted =</span> <span class="ot">TRUE</span>, <span class="dt">time_unit =</span> <span class="st">&quot;SECONDS&quot;</span>, <span class="dt">time_column =</span> <span class="st">&quot;t&quot;</span>)</a></code></pre></div>
 <p>Alternatively, one can also create a builder object if the same <code>(is_sorted, time_unit, time_column)</code> settings need to be applied to multiple Spark data frames or RDDs:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>builder &lt;-<span class="st"> </span><span class="kw">ts_rdd_builder</span>(sc, <span class="dt">is_sorted =</span> <span class="ot">TRUE</span>, <span class="dt">time_unit =</span> <span class="st">&quot;SECONDS&quot;</span>, <span class="dt">time_column =</span> <span class="st">&quot;t&quot;</span>)</span>
-<span id="cb5-2"><a href="#cb5-2"></a>ts_rdd_<span class="dv">1</span> &lt;-<span class="st"> </span>builder<span class="op">$</span><span class="kw">fromSDF</span>(sdf_<span class="dv">1</span>)</span>
-<span id="cb5-3"><a href="#cb5-3"></a>ts_rdd_<span class="dv">2</span> &lt;-<span class="st"> </span>builder<span class="op">$</span><span class="kw">fromSDF</span>(sdf_<span class="dv">2</span>)</span>
-<span id="cb5-4"><a href="#cb5-4"></a>ts_rdd_<span class="dv">3</span> &lt;-<span class="st"> </span>builder<span class="op">$</span><span class="kw">fromRDD</span>(rdd_<span class="dv">3</span>, schema_of_rdd_<span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">builder &lt;-<span class="st"> </span><span class="kw">ts_rdd_builder</span>(sc, <span class="dt">is_sorted =</span> <span class="ot">TRUE</span>, <span class="dt">time_unit =</span> <span class="st">&quot;SECONDS&quot;</span>, <span class="dt">time_column =</span> <span class="st">&quot;t&quot;</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">ts_rdd_<span class="dv">1</span> &lt;-<span class="st"> </span>builder<span class="op">$</span><span class="kw">fromSDF</span>(sdf_<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">ts_rdd_<span class="dv">2</span> &lt;-<span class="st"> </span>builder<span class="op">$</span><span class="kw">fromSDF</span>(sdf_<span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">ts_rdd_<span class="dv">3</span> &lt;-<span class="st"> </span>builder<span class="op">$</span><span class="kw">fromRDD</span>(rdd_<span class="dv">3</span>, schema_of_rdd_<span class="dv">3</span>)</a></code></pre></div>
 <p>Let’s say for each time point <code>t</code> (in seconds), we are interested in a summary all rows within the time span of <code>[t - 3, t]</code>, then we can specify the desired time window in R as <code>in_past(&quot;3s&quot;)</code>, and apply various summarizers with this time window on the <code>TimeSeriesRDD</code> from above.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>ts_count &lt;-<span class="st"> </span><span class="kw">summarize_count</span>(ts_rdd, <span class="kw">in_past</span>(<span class="st">&quot;3s&quot;</span>))</span>
-<span id="cb6-2"><a href="#cb6-2"></a>ts_count <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">collect</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">ts_count &lt;-<span class="st"> </span><span class="kw">summarize_count</span>(ts_rdd, <span class="dt">window =</span> <span class="kw">in_past</span>(<span class="st">&quot;3s&quot;</span>))</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">ts_count <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">collect</span>()</a></code></pre></div>
 <p>should output the total number of rows within each time window:</p>
 <pre><code>## # A tibble: 10 x 3
 ##    time                    v count
@@ -646,8 +646,8 @@ body {
 ##  9 1970-01-01 00:00:18   NaN     3
 ## 10 1970-01-01 00:00:19     3     3
 </code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>ts_count &lt;-<span class="st"> </span><span class="kw">summarize_count</span>(ts_rdd, <span class="kw">in_past</span>(<span class="st">&quot;3s&quot;</span>), <span class="dt">column =</span> <span class="st">&quot;v&quot;</span>)</span>
-<span id="cb8-2"><a href="#cb8-2"></a>ts_count <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">collect</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">ts_count &lt;-<span class="st"> </span><span class="kw">summarize_count</span>(ts_rdd, <span class="dt">column =</span> <span class="st">&quot;v&quot;</span>, <span class="dt">window =</span> <span class="kw">in_past</span>(<span class="st">&quot;3s&quot;</span>))</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">ts_count <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">collect</span>()</a></code></pre></div>
 <p>should output the total number of values from column <code>v</code> that are not <code>NULL</code> or <code>NaN</code> within each time window:</p>
 <pre><code>## # A tibble: 10 x 3
 ##    time                    v v_count
@@ -664,8 +664,8 @@ body {
 ## 10 1970-01-01 00:00:19     3       2
 </code></pre>
 <p>and</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>ts_sum &lt;-<span class="st"> </span><span class="kw">summarize_sum</span>(ts_rdd, <span class="kw">in_past</span>(<span class="st">&quot;3s&quot;</span>), <span class="st">&quot;v&quot;</span>)</span>
-<span id="cb10-2"><a href="#cb10-2"></a>ts_sum <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">collect</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">ts_sum &lt;-<span class="st"> </span><span class="kw">summarize_sum</span>(ts_rdd, <span class="dt">column =</span> <span class="st">&quot;v&quot;</span>, <span class="dt">window =</span> <span class="kw">in_past</span>(<span class="st">&quot;3s&quot;</span>))</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">ts_sum <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">collect</span>()</a></code></pre></div>
 <p>should output the sum of values from column <code>v</code> within each time window, ignoring <code>NULL</code> or <code>NaN</code> values:</p>
 <pre><code>## # A tibble: 10 x 3
 ##    time                    v v_sum
