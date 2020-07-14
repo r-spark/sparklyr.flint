@@ -1,3 +1,6 @@
 derby.log
 logs
 metastore_db
+inst/doc
+doc
+Meta
