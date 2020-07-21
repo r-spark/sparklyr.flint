@@ -7,6 +7,12 @@ ts <- fromSDF(
   time_unit = "SECONDS",
   time_column = "t"
 )
+quantile_summarizer_test_case_ts <- fromSDF(
+  testthat_quantile_summarizer_test_case(),
+  is_sorted = FALSE,
+  time_unit = "SECONDS",
+  time_column = "c"
+)
 
 verify_timestamps <- function(df) {
   expect_equal(as.numeric(df$time), seq(3))
@@ -272,4 +278,49 @@ test_that("summarize_weighted_covar() with key_columns works as expected", {
     ts_weighted_covar$u_v_w_weightedCovariance,
     c(NaN, NaN, NaN, 12.5, NaN, NaN)
   )
+})
+
+test_that("summarize_quantile() works as expected", {
+  ts_quantile <- summarize_quantile(
+    quantile_summarizer_test_case_ts,
+    column = "v",
+    p = c(0.25, 0.5, 0.75)
+  ) %>% collect()
+
+  expect_equal(ts_quantile$v_0.25quantile, seq(4.75, 8.75, 1))
+  expect_equal(ts_quantile$v_0.5quantile, seq(8.5, 12.5, 1))
+  expect_equal(ts_quantile$v_0.75quantile, seq(12.25, 16.25, 1))
+})
+
+test_that("summarize_quantile() with key_columns works as expected", {
+  ts_quantile <- summarize_quantile(
+    quantile_summarizer_test_case_ts,
+    column = "v",
+    p = c(0.25, 0.5, 0.75),
+    key_columns = c("id")
+  ) %>% collect()
+
+  for (x in c(0, 1)) {
+    expect_equal(
+      ts_quantile %>%
+        dplyr::filter(id == x) %>%
+        dplyr::arrange(time) %>%
+        dplyr::pull(v_0.25quantile),
+      x * 10 + seq(2.25, 6.25, 1)
+    )
+    expect_equal(
+      ts_quantile %>%
+        dplyr::filter(id == x) %>%
+        dplyr::arrange(time) %>%
+        dplyr::pull(v_0.5quantile),
+      x * 10 + seq(3.5, 7.5, 1)
+    )
+    expect_equal(
+      ts_quantile %>%
+        dplyr::filter(id == x) %>%
+        dplyr::arrange(time) %>%
+        dplyr::pull(v_0.75quantile),
+      x * 10 + seq(4.75, 8.75, 1)
+    )
+  }
 })

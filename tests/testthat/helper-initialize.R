@@ -129,7 +129,12 @@ testthat_simple_time_series <- function() {
 testthat_quantile_summarizer_test_case <- function() {
   testthat_sdf(
     function() {
-      tibble::tibble(t = seq(20), v = seq(20), c = rep(seq(5), 4))
+      tibble::tibble(
+        t = seq(20),
+        v = seq(20),
+        c = rep(seq(5), 4),
+        id = c(rep(0, 10), rep(1, 10))
+      )
     },
     ".testthat_quantile_summarizer_test_case"
   )
