@@ -307,7 +307,7 @@ summarize_covar <- function(
 #' `ycolumn` within each time window or group of rows with identical time-
 #' stamps, using values from `weight_column` as relative weights, and store
 #' results in a new column named
-#' `"<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance`
+#' `<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance`
 #'
 #' @inheritParams summarizers
 #' @param xcolumn Column representing the first random variable
@@ -339,6 +339,43 @@ summarize_weighted_covar <- function(
     ts_rdd,
     window_obj,
     weighted_covar_summarizer,
+    key_columns
+  )
+}
+
+#' Quantile summarizer
+#'
+#' Compute quantiles of `column` within each time window or group of rows with
+#' identical time-stamps, and store results in new columns named
+#' `<column>_<quantile value>_quantile`
+#'
+#' @inheritParams summarizers
+#' @param column Column to be summarized
+#' @param p List of quantile probabilities
+#'
+#' @export
+summarize_quantile <- function(
+  ts_rdd,
+  column,
+  p,
+  window = NULL,
+  key_columns = list()
+) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  quantile_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "quantile",
+    column,
+    as.list(p)
+  )
+
+  summarize_time_range(
+    ts_rdd,
+    window_obj,
+    quantile_summarizer,
     key_columns
   )
 }
