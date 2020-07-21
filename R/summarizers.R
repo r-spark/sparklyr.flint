@@ -347,7 +347,7 @@ summarize_weighted_covar <- function(
 #'
 #' Compute quantiles of `column` within each time window or group of rows with
 #' identical time-stamps, and store results in new columns named
-#' `<column>_<quantile value>_quantile`
+#' `<column>_<quantile value>quantile`
 #'
 #' @inheritParams summarizers
 #' @param column Column to be summarized
