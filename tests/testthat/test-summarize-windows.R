@@ -7,6 +7,12 @@ ts <- fromSDF(
   time_unit = "SECONDS",
   time_column = "t"
 )
+quantile_summarizer_test_case_ts <- fromSDF(
+  testthat_quantile_summarizer_test_case(),
+  is_sorted = TRUE,
+  time_unit = "SECONDS",
+  time_column = "t"
+)
 multiple_simple_ts <- fromSDF(
   testthat_multiple_simple_ts_test_case(),
   is_sorted = TRUE,
@@ -457,4 +463,62 @@ test_that("summarize_weighted_covar() with key_columns works as expected", {
     tolerance = 1e-7,
     scale = 1
   )
+})
+
+test_that("summarize_quantile() works as expected", {
+  ts_quantile <- summarize_quantile(
+    quantile_summarizer_test_case_ts,
+    column = "v",
+    p = c(0.25, 0.5, 0.75),
+    window = in_past("5s")
+  ) %>% collect()
+
+  expect_equal(
+    ts_quantile$`v_0.25quantile`,
+    c(seq(1, 2.25, 0.25), seq(3.25, 16.25, 1))
+  )
+
+  expect_equal(
+    ts_quantile$`v_0.5quantile`,
+    c(seq(1, 3.5, 0.5), seq(4.5, 17.5, 1))
+  )
+
+  expect_equal(
+    ts_quantile$`v_0.75quantile`,
+    c(seq(1, 4.75, 0.75), seq(5.75, 18.75, 1))
+  )
+})
+
+test_that("summarize_quantile() with key_columns works as expected", {
+  ts_quantile <- summarize_quantile(
+    quantile_summarizer_test_case_ts,
+    column = "v",
+    p = c(0.25, 0.5, 0.75),
+    window = in_past("5s"),
+    key_columns = c("c")
+  ) %>% collect()
+
+  for (x in range(5)) {
+    expect_equal(
+      ts_quantile %>%
+        dplyr::filter(c == x) %>%
+        dplyr::arrange(time) %>%
+        dplyr::pull(v_0.25quantile),
+      c(x, x + seq(1.25, 11.25, 5))
+    )
+    expect_equal(
+      ts_quantile %>%
+        dplyr::filter(c == x) %>%
+        dplyr::arrange(time) %>%
+        dplyr::pull(v_0.5quantile),
+      c(x, x + seq(2.5, 12.5, 5))
+    )
+    expect_equal(
+      ts_quantile %>%
+        dplyr::filter(c == x) %>%
+        dplyr::arrange(time) %>%
+        dplyr::pull(v_0.75quantile),
+      c(x, x + seq(3.75, 13.75, 5))
+    )
+  }
 })

@@ -126,6 +126,15 @@ testthat_simple_time_series <- function() {
   )
 }
 
+testthat_quantile_summarizer_test_case <- function() {
+  testthat_sdf(
+    function() {
+      tibble::tibble(t = seq(20), v = seq(20), c = rep(seq(5), 4))
+    },
+    ".testthat_quantile_summarizer_test_case"
+  )
+}
+
 testthat_corr_test_case <- function() {
   f <- c(3, 2, 6.4, -7.9, 1.4, 6)
   p <- c(0.5, 2, 3, 4, 5, 6)
