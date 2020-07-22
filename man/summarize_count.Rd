@@ -33,6 +33,6 @@ a single time series.}
 }
 \description{
 Count the total number of rows if no column is specified, or the number of
-non-null values within the specified column within each time window or group
-of rows with identical timestamps
+non-null values within the specified column within each time window or within
+each group of rows with identical timestamps
 }

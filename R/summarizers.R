@@ -65,8 +65,8 @@ new_window_obj <- function(sc, window_expr) {
 #' Count summarizer
 #'
 #' Count the total number of rows if no column is specified, or the number of
-#' non-null values within the specified column within each time window or group
-#' of rows with identical timestamps
+#' non-null values within the specified column within each time window or within
+#' each group of rows with identical timestamps
 #'
 #' @inheritParams summarizers
 #' @param column If not NULL, then report the number of values in the column
@@ -101,8 +101,8 @@ summarize_count <- function(
 #' Minimum value summarizer
 #'
 #' Find minimum value among values from `column` within each time window or
-#' group of rows with identical timestamps, and store results in a new column
-#' named `<column>_min`
+#' within each group of rows with identical timestamps, and store results in a
+#' new column named `<column>_min`
 #'
 #' @inheritParams summarizers
 #'
@@ -124,8 +124,8 @@ summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' Maximum value summarizer
 #'
 #' Find maximum value among values from `column` within each time window or
-#' group of rows with identical timestamps, and store results in a new column
-#' named `<column>_max`
+#' within each group of rows with identical timestamps, and store results in a
+#' new column named `<column>_max`
 #'
 #' @inheritParams summarizers
 #'
@@ -160,6 +160,29 @@ summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
     sc,
     "com.twosigma.flint.timeseries.Summarizers",
     "sum",
+    column
+  )
+
+  summarize_time_range(ts_rdd, window_obj, sum_summarizer, key_columns)
+}
+
+#' Product summarizer
+#'
+#' Compute product of values from the given column within a moving time window
+#  or within each group of rows with identical timestamps and store results in a
+#' new column named `<column>_product`
+#'
+#' @inheritParams summarizers
+#'
+#' @export
+summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list()) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  sum_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "product",
     column
   )
 
@@ -225,9 +248,9 @@ summarize_weighted_avg <- function(
 #' Standard deviation summarizer
 #'
 #' Compute unbiased (i.e., Bessel's correction is applied) sample standard
-#' deviation of values from `column` within each time window or group of rows
-#' with identical timestamps, and store results in a new column named
-#' `<column>_stddev`
+#' deviation of values from `column` within each time window or within each
+#' group of rows with identical timestamps, and store results in a new column
+#' named `<column>_stddev`
 #'
 #' @inheritParams summarizers
 #'
@@ -248,9 +271,9 @@ summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()
 
 #' Variance summarizer
 #'
-#' Compute variance of values from `column` within each time window or group
-#' of rows with identical timestamps, and store results in a new column named
-#' `<column>_variance`, with Bessel's correction applied to the results
+#' Compute variance of values from `column` within each time window or within
+#' each group of rows with identical timestamps, and store results in a new column
+#' named `<column>_variance`, with Bessel's correction applied to the results
 #'
 #' @inheritParams summarizers
 #'
@@ -272,8 +295,8 @@ summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' Covariance summarizer
 #'
 #' Compute covariance between values from `xcolumn` and `ycolumn` within each time
-#' window or group of rows with identical timestamps, and store results in a new
-#' column named `<xcolumn>_<ycolumn>_covariance`
+#' window or within each group of rows with identical timestamps, and store results
+#' in a new column named `<xcolumn>_<ycolumn>_covariance`
 #'
 #' @inheritParams summarizers
 #' @param xcolumn Column representing the first random variable
@@ -304,8 +327,8 @@ summarize_covar <- function(
 #' Weighted covariance summarizer
 #'
 #' Compute unbiased weighted covariance between values from `xcolumn` and
-#' `ycolumn` within each time window or group of rows with identical time-
-#' stamps, using values from `weight_column` as relative weights, and store
+#' `ycolumn` within each time window or within each group of rows with identical
+#' timestamps, using values from `weight_column` as relative weights, and store
 #' results in a new column named
 #' `<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance`
 #'
@@ -345,8 +368,8 @@ summarize_weighted_covar <- function(
 
 #' Quantile summarizer
 #'
-#' Compute quantiles of `column` within each time window or group of rows with
-#' identical time-stamps, and store results in new columns named
+#' Compute quantiles of `column` within each time window or within each group of
+#' rows with identical time-stamps, and store results in new columns named
 #' `<column>_<quantile value>quantile`
 #'
 #' @inheritParams summarizers

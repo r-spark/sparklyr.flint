@@ -27,7 +27,7 @@ By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
 \description{
-Compute variance of values from `column` within each time window or group
-of rows with identical timestamps, and store results in a new column named
-`<column>_variance`, with Bessel's correction applied to the results
+Compute variance of values from `column` within each time window or within
+each group of rows with identical timestamps, and store results in a new column
+named `<column>_variance`, with Bessel's correction applied to the results
 }

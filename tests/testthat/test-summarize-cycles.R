@@ -102,6 +102,22 @@ test_that("summarize_sum() with key_columns works as expected", {
   expect_equal(ts_sum$v_sum, c(4, -2, 5, -3, 5, 3))
 })
 
+test_that("summarize_product() works as expected", {
+  ts_product <- summarize_product(ts, column = "v") %>% collect()
+
+  verify_timestamps(ts_product)
+  expect_equal(ts_product$v_product, c(-8, -20, 15))
+})
+
+test_that("summarize_product() with key_columns works as expected", {
+  ts_product <- summarize_product(ts, column = "v", key_columns = c("id")) %>%
+    collect() %>%
+    dplyr::arrange(time, id)
+
+  verify_attrs_with_id_key_column(ts_product)
+  expect_equal(ts_product$v_product, c(4, -2, 5, -4, 5, 3))
+})
+
 test_that("summarize_avg() works as expected", {
   ts_avg <- summarize_avg(ts, column = "v") %>% collect()
 

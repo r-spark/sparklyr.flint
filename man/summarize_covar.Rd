@@ -30,6 +30,6 @@ a single time series.}
 }
 \description{
 Compute covariance between values from `xcolumn` and `ycolumn` within each time
-window or group of rows with identical timestamps, and store results in a new
-column named `<xcolumn>_<ycolumn>_covariance`
+window or within each group of rows with identical timestamps, and store results
+in a new column named `<xcolumn>_<ycolumn>_covariance`
 }

@@ -158,6 +158,35 @@ test_that("summarize_sum() with key_columns works as expected", {
   expect_equal(ts_sum$v_sum, c(14, 9, 10, 9, 6, 13, 6, 10, 3, 6, 1, 6))
 })
 
+test_that("summarize_product() works as expected", {
+  ts_product <- summarize_product(ts, column = "v", window = in_past("3s")) %>%
+    collect()
+
+  expect_equal(ts_product$v_product, c(4, -8, -8, -10, 5, 1, -4, -20, -20, 15))
+})
+
+test_that("summarize_product() with key_columns works as expected", {
+  ts_product <- summarize_product(
+    multiple_simple_ts,
+    column = "v",
+    window = in_past("3s"),
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_product$id, rep(c(0, 1), 6))
+  expect_equal(ts_product$v_product, c(6, NaN, 30, 2, 30, 6, 90, 24, 30, 24, 6, 72))
+
+  ts_product <- summarize_product(
+    multiple_simple_ts,
+    column = "v",
+    window = in_future("3s"),
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_product$id, rep(c(0, 1), 6))
+  expect_equal(ts_product$v_product, c(90, 24, 30, 24, 6, 72, 6, 24, 2, 6, 1, 6))
+})
+
 test_that("summarize_avg() works as expected", {
   ts_avg <- summarize_avg(
     ts,
