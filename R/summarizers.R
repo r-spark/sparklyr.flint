@@ -189,6 +189,32 @@ summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list(
   summarize_time_range(ts_rdd, window_obj, sum_summarizer, key_columns)
 }
 
+#' Dot product summarizer
+#'
+#' Compute dot product of values from `xcolumn` and `ycolumn` within a moving
+#' time window or within each group of rows with identical timestamps and store
+#' results in a new column named `<xcolumn>_<ycolumn>_dotProduct`
+#'
+#' @inheritParams summarizers
+#' @param xcolumn Name of the first column
+#' @param ycolumn Name of the second column
+#'
+#' @export
+summarize_dot_product <- function(ts_rdd, xcolumn, ycolumn, window = NULL, key_columns = list()) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+
+  sum_summarizer <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.Summarizers",
+    "dotProduct",
+    xcolumn,
+    ycolumn
+  )
+
+  summarize_time_range(ts_rdd, window_obj, sum_summarizer, key_columns)
+}
+
 #' Average summarizer
 #'
 #' Compute moving average of `column` and store results in a new column named

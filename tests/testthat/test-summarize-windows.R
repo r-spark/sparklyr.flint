@@ -187,6 +187,42 @@ test_that("summarize_product() with key_columns works as expected", {
   expect_equal(ts_product$v_product, c(90, 24, 30, 24, 6, 72, 6, 24, 2, 6, 1, 6))
 })
 
+test_that("summarize_dot_product() works as expected", {
+  ts_dot_product <- summarize_dot_product(
+    ts,
+    xcolumn = "u",
+    ycolumn = "v",
+    window = in_past("3s")
+  ) %>%
+    collect()
+
+  expect_equal(ts_dot_product$u_v_dotProduct, c(-16, -18, -18, -17, -15, 1, 16, 56, 56, 70))
+})
+
+test_that("summarize_dot_product() with key_columns works as expected", {
+  ts_dot_product <- summarize_dot_product(
+    multiple_simple_ts,
+    xcolumn = "u",
+    ycolumn = "v",
+    window = in_past("3s"),
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_dot_product$id, rep(c(0, 1), 6))
+  expect_equal(ts_dot_product$u_v_dotProduct, c(18, 0, 38, -4, 38, 26, 59, 30, 51, 30, 38, 28))
+
+  ts_dot_product <- summarize_dot_product(
+    multiple_simple_ts,
+    xcolumn = "u",
+    ycolumn = "v",
+    window = in_future("3s"),
+    key_columns = c("id")
+  ) %>% collect()
+
+  expect_equal(ts_dot_product$id, rep(c(0, 1), 6))
+  expect_equal(ts_dot_product$u_v_dotProduct, c(59, 30, 51, 30, 38, 28, 38, -2, 17, -6, 7, -6))
+})
+
 test_that("summarize_avg() works as expected", {
   ts_avg <- summarize_avg(
     ts,
