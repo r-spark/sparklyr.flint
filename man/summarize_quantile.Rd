@@ -33,3 +33,25 @@ Compute quantiles of `column` within each time window or within each group of
 rows with identical time-stamps, and store results in new columns named
 `<column>_<quantile value>quantile`
 }
+\seealso{
+Other summarizers: 
+\code{\link{summarize_avg}()},
+\code{\link{summarize_corr2}()},
+\code{\link{summarize_corr}()},
+\code{\link{summarize_count}()},
+\code{\link{summarize_covar}()},
+\code{\link{summarize_dot_product}()},
+\code{\link{summarize_max}()},
+\code{\link{summarize_min}()},
+\code{\link{summarize_nth_central_moment}()},
+\code{\link{summarize_nth_moment}()},
+\code{\link{summarize_product}()},
+\code{\link{summarize_stddev}()},
+\code{\link{summarize_sum}()},
+\code{\link{summarize_var}()},
+\code{\link{summarize_weighted_avg}()},
+\code{\link{summarize_weighted_corr}()},
+\code{\link{summarize_weighted_covar}()},
+\code{\link{summarize_z_score}()}
+}
+\concept{summarizers}

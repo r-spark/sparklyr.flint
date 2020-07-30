@@ -39,3 +39,25 @@ Compute dot product of values from `xcolumn` and `ycolumn` within a moving
 time window or within each group of rows with identical timestamps and store
 results in a new column named `<xcolumn>_<ycolumn>_dotProduct`
 }
+\seealso{
+Other summarizers: 
+\code{\link{summarize_avg}()},
+\code{\link{summarize_corr2}()},
+\code{\link{summarize_corr}()},
+\code{\link{summarize_count}()},
+\code{\link{summarize_covar}()},
+\code{\link{summarize_max}()},
+\code{\link{summarize_min}()},
+\code{\link{summarize_nth_central_moment}()},
+\code{\link{summarize_nth_moment}()},
+\code{\link{summarize_product}()},
+\code{\link{summarize_quantile}()},
+\code{\link{summarize_stddev}()},
+\code{\link{summarize_sum}()},
+\code{\link{summarize_var}()},
+\code{\link{summarize_weighted_avg}()},
+\code{\link{summarize_weighted_corr}()},
+\code{\link{summarize_weighted_covar}()},
+\code{\link{summarize_z_score}()}
+}
+\concept{summarizers}

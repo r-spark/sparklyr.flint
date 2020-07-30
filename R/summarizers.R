@@ -75,6 +75,7 @@ new_window_obj <- function(sc, window_expr) {
 #'   `<column>_count`.
 #'   Otherwise the number of rows within each time window or group of rows with
 #'   identical timestamps is reported, and stored in a column named `count`.
+#' @family summarizers
 #'
 #' @export
 summarize_count <- function(
@@ -105,6 +106,7 @@ summarize_count <- function(
 #' new column named `<column>_min`
 #'
 #' @inheritParams summarizers
+#' @family summarizers
 #'
 #' @export
 summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -128,6 +130,7 @@ summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' new column named `<column>_max`
 #'
 #' @inheritParams summarizers
+#' @family summarizers
 #'
 #' @export
 summarize_max <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -150,6 +153,7 @@ summarize_max <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' named `<column>_sum`
 #'
 #' @inheritParams summarizers
+#' @family summarizers
 #'
 #' @export
 summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -173,6 +177,7 @@ summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' new column named `<column>_product`
 #'
 #' @inheritParams summarizers
+#' @family summarizers
 #'
 #' @export
 summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -198,6 +203,7 @@ summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list(
 #' @inheritParams summarizers
 #' @param xcolumn Name of the first column
 #' @param ycolumn Name of the second column
+#' @family summarizers
 #'
 #' @export
 summarize_dot_product <- function(ts_rdd, xcolumn, ycolumn, window = NULL, key_columns = list()) {
@@ -221,6 +227,7 @@ summarize_dot_product <- function(ts_rdd, xcolumn, ycolumn, window = NULL, key_c
 #' `<column>_mean`
 #'
 #' @inheritParams summarizers
+#' @family summarizers
 #'
 #' @export
 summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -248,6 +255,7 @@ summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' @inheritParams summarizers
 #' @param weight_column Column specifying relative weight of each data point
+#' @family summarizers
 #'
 #' @export
 summarize_weighted_avg <- function(
@@ -279,6 +287,7 @@ summarize_weighted_avg <- function(
 #' named `<column>_stddev`
 #'
 #' @inheritParams summarizers
+#' @family summarizers
 #'
 #' @export
 summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -302,6 +311,7 @@ summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()
 #' named `<column>_variance`, with Bessel's correction applied to the results
 #'
 #' @inheritParams summarizers
+#' @family summarizers
 #'
 #' @export
 summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -327,6 +337,7 @@ summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' @inheritParams summarizers
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
+#' @family summarizers
 #'
 #' @export
 summarize_covar <- function(
@@ -362,6 +373,7 @@ summarize_covar <- function(
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
 #' @param weight_column Column specifying relative weight of each data point
+#' @family summarizers
 #'
 #' @export
 summarize_weighted_covar <- function(
@@ -401,6 +413,7 @@ summarize_weighted_covar <- function(
 #' @inheritParams summarizers
 #' @param column Column to be summarized
 #' @param p List of quantile probabilities
+#' @family summarizers
 #'
 #' @export
 summarize_quantile <- function(
@@ -440,6 +453,7 @@ summarize_quantile <- function(
 #' @param include_current_observation If true, then use unbiased sample standard
 #'   deviation with current observation in z-score calculation, otherwise use
 #'   unbiased sample standard deviation excluding current observation
+#' @family summarizers
 #'
 #' @export
 summarize_z_score <- function(
@@ -467,6 +481,7 @@ summarize_z_score <- function(
 #'
 #' @inheritParams summarizers
 #' @param n The order of moment to calculate
+#' @family summarizers
 #'
 #' @export
 summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
@@ -490,6 +505,7 @@ summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
 #'
 #' @inheritParams summarizers
 #' @param n The order of moment to calculate
+#' @family summarizers
 #'
 #' @export
 summarize_nth_central_moment <- function(
@@ -520,6 +536,7 @@ summarize_nth_central_moment <- function(
 #'
 #' @inheritParams summarizers
 #' @param columns A list of column names
+#' @family summarizers
 #'
 #' @export
 summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
@@ -547,6 +564,7 @@ summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
 #' @inheritParams summarizers
 #' @param xcolumns A list of column names
 #' @param ycolumns A list of column names disjoint from xcolumns
+#' @family summarizers
 #'
 #' @export
 summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
@@ -573,6 +591,7 @@ summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
 #' @param weight_column Column specifying relative weight of each data point
+#' @family summarizers
 #'
 #' @export
 summarize_weighted_corr <- function(
