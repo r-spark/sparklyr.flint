@@ -39,8 +39,8 @@ a single time series.}
 }
 \description{
 Compute unbiased weighted covariance between values from `xcolumn` and
-`ycolumn` within each time window or group of rows with identical time-
-stamps, using values from `weight_column` as relative weights, and store
+`ycolumn` within each time window or within each group of rows with identical
+timestamps, using values from `weight_column` as relative weights, and store
 results in a new column named
 `<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance`
 }

@@ -28,6 +28,6 @@ a single time series.}
 }
 \description{
 Find maximum value among values from `column` within each time window or
-group of rows with identical timestamps, and store results in a new column
-named `<column>_max`
+within each group of rows with identical timestamps, and store results in a
+new column named `<column>_max`
 }

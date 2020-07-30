@@ -28,7 +28,7 @@ a single time series.}
 }
 \description{
 Compute unbiased (i.e., Bessel's correction is applied) sample standard
-deviation of values from `column` within each time window or group of rows
-with identical timestamps, and store results in a new column named
-`<column>_stddev`
+deviation of values from `column` within each time window or within each
+group of rows with identical timestamps, and store results in a new column
+named `<column>_stddev`
 }

@@ -28,6 +28,6 @@ a single time series.}
 }
 \description{
 Find minimum value among values from `column` within each time window or
-group of rows with identical timestamps, and store results in a new column
-named `<column>_min`
+within each group of rows with identical timestamps, and store results in a
+new column named `<column>_min`
 }
