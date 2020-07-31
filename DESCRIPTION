@@ -2,7 +2,10 @@ Package: sparklyr.flint
 Type: Package
 Title: Sparklyr Extension for Flint
 Version: 0.1.0
-Author: Yitao Li <yitao@rstudio.com>
+Authors@R: c(
+    person("Yitao", "Li", email = "yitao@rstudio.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-1261-905X"))
+    )
 Maintainer: Yitao Li <yitao@rstudio.com>
 Description: This sparklyr extension makes Flint time series library
     functionalities (<https://github.com/twosigma/flint>) easily accessible
