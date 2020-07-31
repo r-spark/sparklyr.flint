@@ -1,18 +1,18 @@
 Package: sparklyr.flint
 Type: Package
-Title: Sparklyr extension for Flint
-Version: 0.0.1
+Title: Sparklyr Extension for Flint
+Version: 0.1.0
 Author: Yitao Li <yitao@rstudio.com>
 Maintainer: Yitao Li <yitao@rstudio.com>
 Description: This sparklyr extension makes Flint time series library
-    functionalities (https://github.com/twosigma/flint) easily accessible
+    functionalities (<https://github.com/twosigma/flint>) easily accessible
     through R.
 License: Apache License 2.0 | file LICENSE
 SystemRequirements: Spark: 2.x or above
-URL: http://spark.rstudio.com
+URL: <https://github.com/r-spark/sparklyr.flint>
 BugReports: https://github.com/r-spark/sparklyr.flint/issues
 LazyData: TRUE
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Depends:
     R (>= 3.2)
 Imports:

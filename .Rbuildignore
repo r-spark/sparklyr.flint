@@ -4,7 +4,10 @@
 ^README\.html$
 ^README_files$
 ^README_images$
-^.github/
+^\.git$
+^\.github/
+^\.gitignore$
+^vignettes/\.gitignore$
 ^docs/
 ^internal/
 ^man-roxygen/

@@ -32,7 +32,7 @@ sc <- spark_connect(master = "local")
 
 to connect to Spark in local mode.
 
-For those unfamiliar with Spark connections, [chapter 7]("https://therinspark.com/connections.html#connections) of “Mastering Spark with R” by Javier Luraschi, Kevin Kuo, and Edgar Ruiz contains some very helpful explanations of several modes of connecting to Spark from `sparklyr`.
+For those unfamiliar with Spark connections, [chapter 7](https://therinspark.com/connections.html#connections) of “Mastering Spark with R” by Javier Luraschi, Kevin Kuo, and Edgar Ruiz contains some very helpful explanations of several modes of connecting to Spark from `sparklyr`.
 
 Next, the time series data needs to be imported into a Spark dataframe. This can be accomplished with methods such as `sparklyr::spark_read_csv`, `sparklyr::spark_read_json`, etc if data source is a file on disk, e.g.,
 
