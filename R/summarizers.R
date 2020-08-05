@@ -24,35 +24,6 @@
 #' @include window_exprs.R
 NULL
 
-summarize_time_range <- function(
-  ts_rdd,
-  window_obj,
-  summarizer,
-  key_columns
-) {
-  new_ts_rdd(
-    if (is.null(window_obj))
-      invoke(
-        ts_rdd,
-        "summarizeCycles",
-        summarizer,
-        as.list(key_columns)
-      )
-    else
-      invoke(
-        ts_rdd,
-        "summarizeWindows",
-        window_obj,
-        summarizer,
-        as.list(key_columns)
-      )
-  )
-}
-
-summarize <- function(ts_rdd, summarizer, key_columns = list()) {
-  new_ts_rdd(invoke(ts_rdd, "summarize", summarizer, as.list(key_columns)))
-}
-
 new_window_obj <- function(sc, window_expr) {
   if (is.null(window_expr)) {
     NULL
@@ -60,6 +31,44 @@ new_window_obj <- function(sc, window_expr) {
     window_expr$sc <- sc
     rlang::eval_tidy(window_expr)
   }
+}
+
+new_summarizer <- function(sc, summarizer_args) {
+  summarizer_args <- append(
+    list(
+      sc = sc,
+      class = "com.twosigma.flint.timeseries.Summarizers"
+    ),
+    summarizer_args
+  )
+
+  summarizer <- do.call(invoke_static, summarizer_args)
+}
+
+summarize_time_range <- function(
+  ts_rdd,
+  window_expr,
+  summarizer_args,
+  key_columns
+) {
+  sc <- spark_connection(ts_rdd)
+  window_obj <- new_window_obj(sc, window_expr)
+  summarizer <- new_summarizer(sc, summarizer_args)
+
+  key_columns <- as.list(key_columns)
+  new_ts_rdd(
+    if (is.null(window_obj))
+      invoke(ts_rdd, "summarizeCycles", summarizer, key_columns)
+    else
+      invoke(ts_rdd, "summarizeWindows", window_obj, summarizer, key_columns)
+  )
+}
+
+summarize <- function(ts_rdd, summarizer_args, key_columns = list()) {
+  sc <- spark_connection(ts_rdd)
+  summarizer <- new_summarizer(sc, summarizer_args)
+
+  new_ts_rdd(invoke(ts_rdd, "summarize", summarizer, as.list(key_columns)))
 }
 
 #' Count summarizer
@@ -84,19 +93,10 @@ summarize_count <- function(
   window = NULL,
   key_columns = list()
 ) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "count")
+  if (!is.null(column)) summarizer_args <- append(summarizer_args, column)
 
-  args <- list(
-    sc = sc,
-    class = "com.twosigma.flint.timeseries.Summarizers",
-    method = "count"
-  )
-  if (!is.null(column)) args <- append(args, column)
-
-  count_summarizer <- do.call(invoke_static, args)
-
-  summarize_time_range(ts_rdd, window_obj, count_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Minimum value summarizer
@@ -110,17 +110,9 @@ summarize_count <- function(
 #'
 #' @export
 summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "min", column)
 
-  min_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "min",
-    column
-  )
-
-  summarize_time_range(ts_rdd, window_obj, min_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Maximum value summarizer
@@ -134,17 +126,9 @@ summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' @export
 summarize_max <- function(ts_rdd, column, window = NULL, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "max", column)
 
-  max_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "max",
-    column
-  )
-
-  summarize_time_range(ts_rdd, window_obj, max_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Sum summarizer
@@ -157,17 +141,9 @@ summarize_max <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' @export
 summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "sum", column)
 
-  sum_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "sum",
-    column
-  )
-
-  summarize_time_range(ts_rdd, window_obj, sum_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Product summarizer
@@ -181,17 +157,9 @@ summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' @export
 summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "product", column)
 
-  sum_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "product",
-    column
-  )
-
-  summarize_time_range(ts_rdd, window_obj, sum_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Dot product summarizer
@@ -207,18 +175,9 @@ summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list(
 #'
 #' @export
 summarize_dot_product <- function(ts_rdd, xcolumn, ycolumn, window = NULL, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "dotProduct", xcolumn, ycolumn)
 
-  sum_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "dotProduct",
-    xcolumn,
-    ycolumn
-  )
-
-  summarize_time_range(ts_rdd, window_obj, sum_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Average summarizer
@@ -231,17 +190,9 @@ summarize_dot_product <- function(ts_rdd, xcolumn, ycolumn, window = NULL, key_c
 #'
 #' @export
 summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "mean", column)
 
-  avg_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "mean",
-    column
-  )
-
-  summarize_time_range(ts_rdd, window_obj, avg_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Weighted average summarizer
@@ -265,18 +216,9 @@ summarize_weighted_avg <- function(
   window = NULL,
   key_columns = list()
 ) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "weightedMeanTest", column, weight_column)
 
-  weighted_avg_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "weightedMeanTest",
-    column,
-    weight_column
-  )
-
-  summarize_time_range(ts_rdd, window_obj, weighted_avg_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Standard deviation summarizer
@@ -291,17 +233,9 @@ summarize_weighted_avg <- function(
 #'
 #' @export
 summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "stddev", column)
 
-  stddev_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "stddev",
-    column
-  )
-
-  summarize_time_range(ts_rdd, window_obj, stddev_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Variance summarizer
@@ -315,17 +249,9 @@ summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()
 #'
 #' @export
 summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "variance", column)
 
-  var_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "variance",
-    column
-  )
-
-  summarize_time_range(ts_rdd, window_obj, var_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Covariance summarizer
@@ -347,18 +273,9 @@ summarize_covar <- function(
   window = NULL,
   key_columns = list()
 ) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "covariance", xcolumn, ycolumn)
 
-  covar_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "covariance",
-    xcolumn,
-    ycolumn
-  )
-
-  summarize_time_range(ts_rdd, window_obj, covar_summarizer, key_columns)
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Weighted covariance summarizer
@@ -384,24 +301,11 @@ summarize_weighted_covar <- function(
   window = NULL,
   key_columns = list()
 ) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
-
-  weighted_covar_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "weightedCovariance",
-    xcolumn,
-    ycolumn,
-    weight_column
+  summarizer_args <- list(
+    method = "weightedCovariance", xcolumn, ycolumn, weight_column
   )
 
-  summarize_time_range(
-    ts_rdd,
-    window_obj,
-    weighted_covar_summarizer,
-    key_columns
-  )
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Quantile summarizer
@@ -423,23 +327,9 @@ summarize_quantile <- function(
   window = NULL,
   key_columns = list()
 ) {
-  sc <- spark_connection(ts_rdd)
-  window_obj <- new_window_obj(sc, rlang::enexpr(window))
+  summarizer_args <- list(method = "quantile", column, as.list(p))
 
-  quantile_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "quantile",
-    column,
-    as.list(p)
-  )
-
-  summarize_time_range(
-    ts_rdd,
-    window_obj,
-    quantile_summarizer,
-    key_columns
-  )
+  summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
 }
 
 #' Z-score summarizer
@@ -461,17 +351,9 @@ summarize_z_score <- function(
   column,
   include_current_observation = FALSE,
   key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
+  summarizer_args <- list(method = "zScore", column, include_current_observation)
 
-  z_score_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "zScore",
-    column,
-    include_current_observation
-  )
-
-  summarize(ts_rdd, z_score_summarizer, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns)
 }
 
 #' N-th moment summarizer
@@ -485,17 +367,9 @@ summarize_z_score <- function(
 #'
 #' @export
 summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
+  summarizer_args <- list(method = "nthMoment", column, as.integer(n))
 
-  nth_moment_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "nthMoment",
-    column,
-    as.integer(n)
-  )
-
-  summarize(ts_rdd, nth_moment_summarizer, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns)
 }
 
 #' N-th central moment summarizer
@@ -514,17 +388,9 @@ summarize_nth_central_moment <- function(
   n,
   key_columns = list()
 ) {
-  sc <- spark_connection(ts_rdd)
+  summarizer_args <- list(method = "nthCentralMoment", column, as.integer(n))
 
-  nth_central_moment_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "nthCentralMoment",
-    column,
-    as.integer(n)
-  )
-
-  summarize(ts_rdd, nth_central_moment_summarizer, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns)
 }
 
 #' Correlation summarizer
@@ -540,16 +406,9 @@ summarize_nth_central_moment <- function(
 #'
 #' @export
 summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
+  summarizer_args <- list(method = "correlation", as.list(columns))
 
-  corr_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "correlation",
-    as.list(columns)
-  )
-
-  summarize(ts_rdd, corr_summarizer, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns)
 }
 
 #' Pairwise correlation summarizer
@@ -568,17 +427,9 @@ summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
 #'
 #' @export
 summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
-  sc <- spark_connection(ts_rdd)
+  summarizer_args <- list(method = "correlation", as.list(xcolumns), as.list(ycolumns))
 
-  corr_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "correlation",
-    as.list(xcolumns),
-    as.list(ycolumns)
-  )
-
-  summarize(ts_rdd, corr_summarizer, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns)
 }
 
 #' Pearson weighted correlation summarizer
@@ -601,17 +452,12 @@ summarize_weighted_corr <- function(
   weight_column,
   key_columns = list()
 ) {
-  sc <- spark_connection(ts_rdd)
-
-  weighted_corr_summarizer <- invoke_static(
-    sc,
-    "com.twosigma.flint.timeseries.Summarizers",
-    "weightedCorrelation",
+  summarizer_args <- list(
+    method = "weightedCorrelation",
     xcolumn,
     ycolumn,
     weight_column
   )
 
-  summarize(ts_rdd, weighted_corr_summarizer, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns)
 }
-
