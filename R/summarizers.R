@@ -301,7 +301,9 @@ summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10), w = seq(1, 0.1, -0.1)))
 #' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_weighted_avg <- summarize_weighted_avg(ts, column = "v", weight_column = "w", window = in_past("3s"))
+#' ts_weighted_avg <- summarize_weighted_avg(
+#'   ts, column = "v", weight_column = "w", window = in_past("3s")
+#' )
 #' }
 #' @export
 summarize_weighted_avg <- function(
@@ -433,7 +435,9 @@ summarize_covar <- function(
 #'
 #' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10), w = 1.1 ^ seq(10)))
 #' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_weighted_covar <- summarize_weighted_covar(ts, xcolumn = "u", ycolumn = "v", weight_column = "w", window = in_past("3s"))
+#' ts_weighted_covar <- summarize_weighted_covar(
+#'   ts, xcolumn = "u", ycolumn = "v", weight_column = "w", window = in_past("3s")
+#' )
 #' }
 #'
 #' @export
@@ -636,7 +640,10 @@ summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
 #'
 #' sc <- spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), x1 = rnorm(10), x2 = rnorm(10), y1 = rnorm(10), y2 = rnorm(10)))
+#' sdf <- copy_to(
+#'   sc,
+#'   tibble::tibble(t = seq(10), x1 = rnorm(10), x2 = rnorm(10), y1 = rnorm(10), y2 = rnorm(10))
+#' )
 #' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #' ts_corr2 <- summarize_corr2(ts, xcolumns = c("x1", "x2"), ycolumns = c("y1", "y2"))
 #' }

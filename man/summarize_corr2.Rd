@@ -37,7 +37,10 @@ library(sparklyr.flint)
 
 sc <- spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), x1 = rnorm(10), x2 = rnorm(10), y1 = rnorm(10), y2 = rnorm(10)))
+sdf <- copy_to(
+  sc,
+  tibble::tibble(t = seq(10), x1 = rnorm(10), x2 = rnorm(10), y1 = rnorm(10), y2 = rnorm(10))
+)
 ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 ts_corr2 <- summarize_corr2(ts, xcolumns = c("x1", "x2"), ycolumns = c("y1", "y2"))
 }

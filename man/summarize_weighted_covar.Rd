@@ -53,7 +53,9 @@ sc <- spark_connect(master = "local")
 
 sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10), w = 1.1 ^ seq(10)))
 ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_weighted_covar <- summarize_weighted_covar(ts, xcolumn = "u", ycolumn = "v", weight_column = "w", window = in_past("3s"))
+ts_weighted_covar <- summarize_weighted_covar(
+  ts, xcolumn = "u", ycolumn = "v", weight_column = "w", window = in_past("3s")
+)
 }
 
 }
