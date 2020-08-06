@@ -1,16 +1,16 @@
 Package: sparklyr.flint
 Type: Package
-Title: Sparklyr Extension for Flint
+Title: Sparklyr Extension for 'Flint'
 Version: 0.1.0
 Authors@R: c(
     person("Yitao", "Li", email = "yitao@rstudio.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1261-905X"))
     )
 Maintainer: Yitao Li <yitao@rstudio.com>
-Description: This sparklyr extension makes Flint time series library
+Description: This sparklyr extension makes 'Flint' time series library
     functionalities (<https://github.com/twosigma/flint>) easily accessible
     through R.
-License: Apache License 2.0 | file LICENSE
+License: Apache License 2.0
 SystemRequirements: Spark: 2.x or above
 URL: <https://github.com/r-spark/sparklyr.flint>
 BugReports: https://github.com/r-spark/sparklyr.flint/issues
@@ -29,7 +29,7 @@ Collate:
     'sdf_utils.R'
     'window_exprs.R'
     'summarizers.R'
-Suggests: 
+Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr

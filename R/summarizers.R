@@ -86,6 +86,18 @@ summarize <- function(ts_rdd, summarizer_args, key_columns = list()) {
 #'   identical timestamps is reported, and stored in a column named `count`.
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_count <- summarize_count(ts, column = "v", window = in_past("3s"))
+#' }
+#'
 #' @export
 summarize_count <- function(
   ts_rdd,
@@ -108,6 +120,18 @@ summarize_count <- function(
 #' @inheritParams summarizers
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_min <- summarize_min(ts, column = "v", window = in_past("3s"))
+#' }
+#'
 #' @export
 summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
   summarizer_args <- list(method = "min", column)
@@ -124,6 +148,18 @@ summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' @inheritParams summarizers
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_max <- summarize_max(ts, column = "v", window = in_past("3s"))
+#' }
+#'
 #' @export
 summarize_max <- function(ts_rdd, column, window = NULL, key_columns = list()) {
   summarizer_args <- list(method = "max", column)
@@ -138,6 +174,18 @@ summarize_max <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' @inheritParams summarizers
 #' @family summarizers
+#'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_sum <- summarize_sum(ts, column = "v", window = in_past("3s"))
+#' }
 #'
 #' @export
 summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -154,6 +202,18 @@ summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' @inheritParams summarizers
 #' @family summarizers
+#'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_product <- summarize_product(ts, column = "v", window = in_past("3s"))
+#' }
 #'
 #' @export
 summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -173,6 +233,18 @@ summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list(
 #' @param ycolumn Name of the second column
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = seq(10, 1, -1), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_dot_product <- summarize_dot_product(ts, xcolumn = "u", ycolumn = "v", window = in_past("3s"))
+#' }
+#'
 #' @export
 summarize_dot_product <- function(ts_rdd, xcolumn, ycolumn, window = NULL, key_columns = list()) {
   summarizer_args <- list(method = "dotProduct", xcolumn, ycolumn)
@@ -187,6 +259,18 @@ summarize_dot_product <- function(ts_rdd, xcolumn, ycolumn, window = NULL, key_c
 #'
 #' @inheritParams summarizers
 #' @family summarizers
+#'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_avg <- summarize_avg(ts, column = "v", window = in_past("3s"))
+#' }
 #'
 #' @export
 summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -208,6 +292,17 @@ summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' @param weight_column Column specifying relative weight of each data point
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10), w = seq(1, 0.1, -0.1)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_weighted_avg <- summarize_weighted_avg(ts, column = "v", weight_column = "w", window = in_past("3s"))
+#' }
 #' @export
 summarize_weighted_avg <- function(
   ts_rdd,
@@ -231,6 +326,18 @@ summarize_weighted_avg <- function(
 #' @inheritParams summarizers
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_stddev <- summarize_stddev(ts, column = "v", window = in_past("3s"))
+#' }
+#'
 #' @export
 summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()) {
   summarizer_args <- list(method = "stddev", column)
@@ -246,6 +353,19 @@ summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()
 #'
 #' @inheritParams summarizers
 #' @family summarizers
+#'
+#'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_var <- summarize_var(ts, column = "v", window = in_past("3s"))
+#' }
 #'
 #' @export
 summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
@@ -264,6 +384,18 @@ summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
 #' @family summarizers
+#'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_covar <- summarize_covar(ts, xcolumn = "u", ycolumn = "v", window = in_past("3s"))
+#' }
 #'
 #' @export
 summarize_covar <- function(
@@ -292,6 +424,18 @@ summarize_covar <- function(
 #' @param weight_column Column specifying relative weight of each data point
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10), w = 1.1 ^ seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_weighted_covar <- summarize_weighted_covar(ts, xcolumn = "u", ycolumn = "v", weight_column = "w", window = in_past("3s"))
+#' }
+#'
 #' @export
 summarize_weighted_covar <- function(
   ts_rdd,
@@ -319,6 +463,18 @@ summarize_weighted_covar <- function(
 #' @param p List of quantile probabilities
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_quantile <- summarize_quantile(ts, column = "v", p = c(0.5, 0.75, 0.99), window = in_past("3s"))
+#' }
+#'
 #' @export
 summarize_quantile <- function(
   ts_rdd,
@@ -345,6 +501,18 @@ summarize_quantile <- function(
 #'   unbiased sample standard deviation excluding current observation
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_z_score <- summarize_z_score(ts, column = "v", include_current_observation = TRUE)
+#' }
+#'
 #' @export
 summarize_z_score <- function(
   ts_rdd,
@@ -365,6 +533,18 @@ summarize_z_score <- function(
 #' @param n The order of moment to calculate
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_4th_moment <- summarize_nth_moment(ts, column = "v", n = 4L)
+#' }
+#'
 #' @export
 summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
   summarizer_args <- list(method = "nthMoment", column, as.integer(n))
@@ -380,6 +560,18 @@ summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
 #' @inheritParams summarizers
 #' @param n The order of moment to calculate
 #' @family summarizers
+#'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_4th_central_moment <- summarize_nth_central_moment(ts, column = "v", n = 4L)
+#' }
 #'
 #' @export
 summarize_nth_central_moment <- function(
@@ -404,6 +596,18 @@ summarize_nth_central_moment <- function(
 #' @param columns A list of column names
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_corr <- summarize_corr(ts, columns = c("u", "v"))
+#' }
+#'
 #' @export
 summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
   summarizer_args <- list(method = "correlation", as.list(columns))
@@ -425,6 +629,18 @@ summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
 #' @param ycolumns A list of column names disjoint from xcolumns
 #' @family summarizers
 #'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), x1 = rnorm(10), x2 = rnorm(10), y1 = rnorm(10), y2 = rnorm(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_corr2 <- summarize_corr2(ts, xcolumns = c("x1", "x2"), ycolumns = c("y1", "y2"))
+#' }
+#'
 #' @export
 summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
   summarizer_args <- list(method = "correlation", as.list(xcolumns), as.list(ycolumns))
@@ -443,6 +659,18 @@ summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
 #' @param ycolumn Column representing the second random variable
 #' @param weight_column Column specifying relative weight of each data point
 #' @family summarizers
+#'
+#' @examples
+#' \dontrun{
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- spark_connect(master = "local")
+#'
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), x = rnorm(10), y = rnorm(10), w = 1.1 ^ seq(10)))
+#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' ts_weighted_corr <- summarize_weighted_corr(ts, xcolumn = "x", ycolumn = "y", weight_column = "w")
+#' }
 #'
 #' @export
 summarize_weighted_corr <- function(

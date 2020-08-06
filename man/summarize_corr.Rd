@@ -26,6 +26,19 @@ results in new columns named with the following pattern:
 `<column1>_<column2>_correlation` and `<column1>_<column2>_correlationTStat`,
 where column1 and column2 are names of any 2 distinct columns
 }
+\examples{
+\dontrun{
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- spark_connect(master = "local")
+
+sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
+ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+ts_corr <- summarize_corr(ts, columns = c("u", "v"))
+}
+
+}
 \seealso{
 Other summarizers: 
 \code{\link{summarize_avg}()},

@@ -25,3 +25,15 @@ values: "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS",
 \description{
 Construct a TimeSeriesRDD containing time series data from a Spark DataFrame
 }
+\examples{
+\dontrun{
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- spark_connect(master = "local")
+
+sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10))
+ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+}
+
+}
