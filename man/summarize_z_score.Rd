@@ -35,6 +35,19 @@ respect to the sample mean and standard deviation observed so far, with the
 option for out-of-sample calculation, and store result in a new column named
 `<column>_zScore`
 }
+\examples{
+\dontrun{
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- spark_connect(master = "local")
+
+sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
+ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+ts_z_score <- summarize_z_score(ts, column = "v", include_current_observation = TRUE)
+}
+
+}
 \seealso{
 Other summarizers: 
 \code{\link{summarize_avg}()},

@@ -33,6 +33,19 @@ Compute covariance between values from `xcolumn` and `ycolumn` within each time
 window or within each group of rows with identical timestamps, and store results
 in a new column named `<xcolumn>_<ycolumn>_covariance`
 }
+\examples{
+\dontrun{
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- spark_connect(master = "local")
+
+sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
+ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+ts_covar <- summarize_covar(ts, xcolumn = "u", ycolumn = "v", window = in_past("3s"))
+}
+
+}
 \seealso{
 Other summarizers: 
 \code{\link{summarize_avg}()},

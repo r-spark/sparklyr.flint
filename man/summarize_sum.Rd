@@ -30,6 +30,19 @@ a single time series.}
 Compute moving sums on the column specified and store results in a new column
 named `<column>_sum`
 }
+\examples{
+\dontrun{
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- spark_connect(master = "local")
+
+sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+ts_sum <- summarize_sum(ts, column = "v", window = in_past("3s"))
+}
+
+}
 \seealso{
 Other summarizers: 
 \code{\link{summarize_avg}()},

@@ -39,6 +39,19 @@ Compute dot product of values from `xcolumn` and `ycolumn` within a moving
 time window or within each group of rows with identical timestamps and store
 results in a new column named `<xcolumn>_<ycolumn>_dotProduct`
 }
+\examples{
+\dontrun{
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- spark_connect(master = "local")
+
+sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = seq(10, 1, -1), v = seq(10)))
+ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+ts_dot_product <- summarize_dot_product(ts, xcolumn = "u", ycolumn = "v", window = in_past("3s"))
+}
+
+}
 \seealso{
 Other summarizers: 
 \code{\link{summarize_avg}()},

@@ -33,6 +33,19 @@ Compute quantiles of `column` within each time window or within each group of
 rows with identical time-stamps, and store results in new columns named
 `<column>_<quantile value>quantile`
 }
+\examples{
+\dontrun{
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- spark_connect(master = "local")
+
+sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+ts_quantile <- summarize_quantile(ts, column = "v", p = c(0.5, 0.75, 0.99), window = in_past("3s"))
+}
+
+}
 \seealso{
 Other summarizers: 
 \code{\link{summarize_avg}()},

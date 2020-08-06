@@ -31,6 +31,19 @@ Find maximum value among values from `column` within each time window or
 within each group of rows with identical timestamps, and store results in a
 new column named `<column>_max`
 }
+\examples{
+\dontrun{
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- spark_connect(master = "local")
+
+sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+ts_max <- summarize_max(ts, column = "v", window = in_past("3s"))
+}
+
+}
 \seealso{
 Other summarizers: 
 \code{\link{summarize_avg}()},
