@@ -263,7 +263,8 @@ test_that("summarize_corr() with key_columns works as expected", {
   ts_corr <- summarize_corr(
     corr_test_case_multiple_ts,
     c("p", "sp"),
-    key_columns = c("id")) %>%
+    key_columns = c("id")
+  ) %>%
     collect() %>%
     dplyr::arrange(id)
   expect_equal(ts_corr$id, c(3, 7))
@@ -272,7 +273,8 @@ test_that("summarize_corr() with key_columns works as expected", {
   ts_corr <- summarize_corr(
     corr_test_case_multiple_ts,
     c("p", "np"),
-    key_columns = c("id")) %>%
+    key_columns = c("id")
+  ) %>%
     collect() %>%
     dplyr::arrange(id)
   expect_equal(ts_corr$id, c(3, 7))
@@ -281,7 +283,8 @@ test_that("summarize_corr() with key_columns works as expected", {
   ts_corr <- summarize_corr(
     corr_test_case_multiple_ts,
     c("p", "dp"),
-    key_columns = c("id")) %>%
+    key_columns = c("id")
+  ) %>%
     collect() %>%
     dplyr::arrange(id)
   expect_equal(ts_corr$id, c(3, 7))
@@ -290,7 +293,8 @@ test_that("summarize_corr() with key_columns works as expected", {
   ts_corr <- summarize_corr(
     corr_test_case_multiple_ts,
     c("p", "z"),
-    key_columns = c("id")) %>%
+    key_columns = c("id")
+  ) %>%
     collect() %>%
     dplyr::arrange(id)
   expect_equal(ts_corr$id, c(3, 7))
@@ -299,7 +303,8 @@ test_that("summarize_corr() with key_columns works as expected", {
   ts_corr <- summarize_corr(
     corr_test_case_multiple_ts,
     c("p", "f"),
-    key_columns = c("id")) %>%
+    key_columns = c("id")
+  ) %>%
     collect() %>%
     dplyr::arrange(id)
   expect_equal(ts_corr$id, c(3, 7))
@@ -354,7 +359,8 @@ test_that("summarize_corr2() with key_columns works as expected", {
   ts_corr <- summarize_corr2(
     corr_test_case_multiple_ts,
     c("p", "np"), c("f"),
-    key_columns = c("id")) %>%
+    key_columns = c("id")
+  ) %>%
     collect() %>%
     dplyr::arrange(id)
 

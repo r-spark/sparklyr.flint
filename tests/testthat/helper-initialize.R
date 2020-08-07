@@ -3,8 +3,9 @@ testthat_spark_connection <- function(conn_attempts, conn_retry_interval_s = 2) 
   if (!exists(conn_key, envir = .GlobalEnv)) {
     version <- Sys.getenv("SPARK_VERSION")
     spark_installed <- spark_installed_versions()
-    if (nrow(spark_installed[spark_installed$spark == version, ]) == 0)
+    if (nrow(spark_installed[spark_installed$spark == version, ]) == 0) {
       spark_install(version)
+    }
 
     conn_attempts <- 3
     for (attempt in seq(conn_attempts)) {
