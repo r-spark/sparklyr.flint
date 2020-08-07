@@ -35,14 +35,18 @@ test_that("summarize_count() with specific column works as expected", {
 
 test_that("summarize_count() with key_columns works as expected", {
   ts_count <- summarize_count(
-    multiple_simple_ts, window = in_past("3s"), key_columns = c("id")) %>%
+    multiple_simple_ts,
+    window = in_past("3s"), key_columns = c("id")
+  ) %>%
     collect()
 
   expect_equal(ts_count$id, rep(c(0, 1), 6))
   expect_equal(ts_count$count, c(1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4))
 
   ts_count <- summarize_count(
-    multiple_simple_ts, window = in_future("3s"), key_columns = c("id")) %>%
+    multiple_simple_ts,
+    window = in_future("3s"), key_columns = c("id")
+  ) %>%
     collect()
 
   expect_equal(ts_count$id, rep(c(0, 1), 6))

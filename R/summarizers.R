@@ -46,21 +46,21 @@ new_summarizer <- function(sc, summarizer_args) {
 }
 
 summarize_time_range <- function(
-  ts_rdd,
-  window_expr,
-  summarizer_args,
-  key_columns
-) {
+                                 ts_rdd,
+                                 window_expr,
+                                 summarizer_args,
+                                 key_columns) {
   sc <- spark_connection(ts_rdd)
   window_obj <- new_window_obj(sc, window_expr)
   summarizer <- new_summarizer(sc, summarizer_args)
 
   key_columns <- as.list(key_columns)
   new_ts_rdd(
-    if (is.null(window_obj))
+    if (is.null(window_obj)) {
       invoke(ts_rdd, "summarizeCycles", summarizer, key_columns)
-    else
+    } else {
       invoke(ts_rdd, "summarizeWindows", window_obj, summarizer, key_columns)
+    }
   )
 }
 
@@ -100,11 +100,10 @@ summarize <- function(ts_rdd, summarizer_args, key_columns = list()) {
 #'
 #' @export
 summarize_count <- function(
-  ts_rdd,
-  column = NULL,
-  window = NULL,
-  key_columns = list()
-) {
+                            ts_rdd,
+                            column = NULL,
+                            window = NULL,
+                            key_columns = list()) {
   summarizer_args <- list(method = "count")
   if (!is.null(column)) summarizer_args <- append(summarizer_args, column)
 
@@ -302,17 +301,17 @@ summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10), w = seq(1, 0.1, -0.1)))
 #' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #' ts_weighted_avg <- summarize_weighted_avg(
-#'   ts, column = "v", weight_column = "w", window = in_past("3s")
+#'   ts,
+#'   column = "v", weight_column = "w", window = in_past("3s")
 #' )
 #' }
 #' @export
 summarize_weighted_avg <- function(
-  ts_rdd,
-  column,
-  weight_column,
-  window = NULL,
-  key_columns = list()
-) {
+                                   ts_rdd,
+                                   column,
+                                   weight_column,
+                                   window = NULL,
+                                   key_columns = list()) {
   summarizer_args <- list(method = "weightedMeanTest", column, weight_column)
 
   summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
@@ -401,12 +400,11 @@ summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' @export
 summarize_covar <- function(
-  ts_rdd,
-  xcolumn,
-  ycolumn,
-  window = NULL,
-  key_columns = list()
-) {
+                            ts_rdd,
+                            xcolumn,
+                            ycolumn,
+                            window = NULL,
+                            key_columns = list()) {
   summarizer_args <- list(method = "covariance", xcolumn, ycolumn)
 
   summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
@@ -433,22 +431,22 @@ summarize_covar <- function(
 #'
 #' sc <- spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10), w = 1.1 ^ seq(10)))
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10), w = 1.1^seq(10)))
 #' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #' ts_weighted_covar <- summarize_weighted_covar(
-#'   ts, xcolumn = "u", ycolumn = "v", weight_column = "w", window = in_past("3s")
+#'   ts,
+#'   xcolumn = "u", ycolumn = "v", weight_column = "w", window = in_past("3s")
 #' )
 #' }
 #'
 #' @export
 summarize_weighted_covar <- function(
-  ts_rdd,
-  xcolumn,
-  ycolumn,
-  weight_column,
-  window = NULL,
-  key_columns = list()
-) {
+                                     ts_rdd,
+                                     xcolumn,
+                                     ycolumn,
+                                     weight_column,
+                                     window = NULL,
+                                     key_columns = list()) {
   summarizer_args <- list(
     method = "weightedCovariance", xcolumn, ycolumn, weight_column
   )
@@ -481,12 +479,11 @@ summarize_weighted_covar <- function(
 #'
 #' @export
 summarize_quantile <- function(
-  ts_rdd,
-  column,
-  p,
-  window = NULL,
-  key_columns = list()
-) {
+                               ts_rdd,
+                               column,
+                               p,
+                               window = NULL,
+                               key_columns = list()) {
   summarizer_args <- list(method = "quantile", column, as.list(p))
 
   summarize_time_range(ts_rdd, rlang::enexpr(window), summarizer_args, key_columns)
@@ -519,10 +516,10 @@ summarize_quantile <- function(
 #'
 #' @export
 summarize_z_score <- function(
-  ts_rdd,
-  column,
-  include_current_observation = FALSE,
-  key_columns = list()) {
+                              ts_rdd,
+                              column,
+                              include_current_observation = FALSE,
+                              key_columns = list()) {
   summarizer_args <- list(method = "zScore", column, include_current_observation)
 
   summarize(ts_rdd, summarizer_args, key_columns)
@@ -579,11 +576,10 @@ summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
 #'
 #' @export
 summarize_nth_central_moment <- function(
-  ts_rdd,
-  column,
-  n,
-  key_columns = list()
-) {
+                                         ts_rdd,
+                                         column,
+                                         n,
+                                         key_columns = list()) {
   summarizer_args <- list(method = "nthCentralMoment", column, as.integer(n))
 
   summarize(ts_rdd, summarizer_args, key_columns)
@@ -674,19 +670,18 @@ summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
 #'
 #' sc <- spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), x = rnorm(10), y = rnorm(10), w = 1.1 ^ seq(10)))
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), x = rnorm(10), y = rnorm(10), w = 1.1^seq(10)))
 #' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #' ts_weighted_corr <- summarize_weighted_corr(ts, xcolumn = "x", ycolumn = "y", weight_column = "w")
 #' }
 #'
 #' @export
 summarize_weighted_corr <- function(
-  ts_rdd,
-  xcolumn,
-  ycolumn,
-  weight_column,
-  key_columns = list()
-) {
+                                    ts_rdd,
+                                    xcolumn,
+                                    ycolumn,
+                                    weight_column,
+                                    key_columns = list()) {
   summarizer_args <- list(
     method = "weightedCorrelation",
     xcolumn,

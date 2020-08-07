@@ -89,11 +89,10 @@ new_ts_rdd <- function(jobj) {
 #'
 #' @export
 ts_rdd_builder <- function(
-  sc,
-  is_sorted = FALSE,
-  time_unit = .sparklyr.flint.globals$kValidTimeUnits,
-  time_column = .sparklyr.flint.globals$kDefaultTimeColumn
-) {
+                           sc,
+                           is_sorted = FALSE,
+                           time_unit = .sparklyr.flint.globals$kValidTimeUnits,
+                           time_column = .sparklyr.flint.globals$kDefaultTimeColumn) {
   time_unit <- match.arg(time_unit)
   structure(list(
     .builder <- new_ts_rdd_builder(
@@ -121,17 +120,16 @@ ts_rdd_builder <- function(
 #'
 #' sc <- spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10))
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
 #' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #' }
 #'
 #' @export
 fromSDF <- function(
-  sdf,
-  is_sorted = FALSE,
-  time_unit = .sparklyr.flint.globals$kValidTimeUnits,
-  time_column = .sparklyr.flint.globals$kDefaultTimeColumn
-) {
+                    sdf,
+                    is_sorted = FALSE,
+                    time_unit = .sparklyr.flint.globals$kValidTimeUnits,
+                    time_column = .sparklyr.flint.globals$kDefaultTimeColumn) {
   sc <- spark_connection(sdf)
   builder <- ts_rdd_builder(sc, is_sorted, time_unit, time_column)
   builder$fromSDF(sdf)
@@ -153,22 +151,22 @@ fromSDF <- function(
 #'
 #' sc <- spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10))
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
 #' rdd <- spark_dataframe(sdf) %>% invoke("rdd")
 #' schema <- spark_dataframe(sdf) %>% invoke("schema")
 #' ts <- fromRDD(
-#'    rdd, schema, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t"
+#'   rdd, schema,
+#'   is_sorted = TRUE, time_unit = "SECONDS", time_column = "t"
 #' )
 #' }
 #'
 #' @export
 fromRDD <- function(
-  rdd,
-  schema,
-  is_sorted = FALSE,
-  time_unit = .sparklyr.flint.globals$kValidTimeUnits,
-  time_column = .sparklyr.flint.globals$kDefaultTimeColumn
-) {
+                    rdd,
+                    schema,
+                    is_sorted = FALSE,
+                    time_unit = .sparklyr.flint.globals$kValidTimeUnits,
+                    time_column = .sparklyr.flint.globals$kDefaultTimeColumn) {
   sc <- spark_connection(rdd)
   builder <- ts_rdd_builder(sc, is_sorted, time_unit, time_column)
   builder$fromRDD(rdd, schema)
@@ -189,14 +187,15 @@ fromRDD <- function(
 #'
 #' sc <- spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10))
+#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
 #' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #' df <- ts %>% collect()
-#'
 #' }
 #'
 #' @importFrom dplyr collect
 #' @export
 collect.ts_rdd <- function(x, ...) {
-  invoke(x, "toDF") %>% sdf_register() %>% collect()
+  invoke(x, "toDF") %>%
+    sdf_register() %>%
+    collect()
 }

@@ -3,7 +3,9 @@ library(sparklyr.flint)
 library(testthat)
 
 if (identical(Sys.getenv("NOT_CRAN"), "true")) {
-  on.exit({ spark_disconnect_all() })
+  on.exit({
+    spark_disconnect_all()
+  })
 
   filter <- Sys.getenv("TESTTHAT_FILTER", unset = "")
   if (identical(filter, "")) filter <- NULL
