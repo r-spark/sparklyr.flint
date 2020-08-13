@@ -20,6 +20,9 @@ must be one of the following: "d", "day", "h", "hour", "min", "minute",
 \item{sc}{Spark connection (does not need to be specified within the context
 of `summarize_*` functions)}
 }
+\value{
+A time window object useable by the Flint time series library
+}
 \description{
 Functions for specifying commonly used types of time windows, which are
 commonly used within the context of summarize_* functions (e.g.,
@@ -34,26 +37,32 @@ Create a sliding time window capuring data within the closed interval of
 [current time, current time + duration]
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_count <- summarize_count(ts, column = "v", window = in_past("3s"))
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_count <- summarize_count(ts, column = "v", window = in_past("3s"))
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_count <- summarize_count(ts, column = "v", window = in_future("3s"))
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_count <- summarize_count(ts, column = "v", window = in_future("3s"))
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }

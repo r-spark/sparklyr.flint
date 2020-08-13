@@ -1,3 +1,7 @@
+#' @include sdf_utils.R
+#' @include window_exprs.R
+NULL
+
 #' Wrapper functions for commonly used summarizer functions
 #'
 #' R wrapper functions for commonly used Flint summarizer functionalities such as
@@ -18,10 +22,8 @@
 #'   summarized separately)
 #'   By default, `key_colums` is empty and all rows are considered to be part of
 #'   a single time series.
-#' @name summarizers
 #'
-#' @include sdf_utils.R
-#' @include window_exprs.R
+#' @name summarizers
 NULL
 
 new_window_obj <- function(sc, window_expr) {
@@ -84,18 +86,24 @@ summarize <- function(ts_rdd, summarizer_args, key_columns = list()) {
 #'   `<column>_count`.
 #'   Otherwise the number of rows within each time window or group of rows with
 #'   identical timestamps is reported, and stored in a column named `count`.
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_count <- summarize_count(ts, column = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_count <- summarize_count(ts, column = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -117,18 +125,24 @@ summarize_count <- function(
 #' new column named `<column>_min`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_min <- summarize_min(ts, column = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_min <- summarize_min(ts, column = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -145,18 +159,24 @@ summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' new column named `<column>_max`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_max <- summarize_max(ts, column = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_max <- summarize_max(ts, column = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -172,18 +192,24 @@ summarize_max <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' named `<column>_sum`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_sum <- summarize_sum(ts, column = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_sum <- summarize_sum(ts, column = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -200,18 +226,24 @@ summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' new column named `<column>_product`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_product <- summarize_product(ts, column = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_product <- summarize_product(ts, column = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -230,18 +262,24 @@ summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list(
 #' @inheritParams summarizers
 #' @param xcolumn Name of the first column
 #' @param ycolumn Name of the second column
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = seq(10, 1, -1), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_dot_product <- summarize_dot_product(ts, xcolumn = "u", ycolumn = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = seq(10, 1, -1), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_dot_product <- summarize_dot_product(ts, xcolumn = "u", ycolumn = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -257,18 +295,24 @@ summarize_dot_product <- function(ts_rdd, xcolumn, ycolumn, window = NULL, key_c
 #' `<column>_mean`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_avg <- summarize_avg(ts, column = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_avg <- summarize_avg(ts, column = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -289,22 +333,29 @@ summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' @inheritParams summarizers
 #' @param weight_column Column specifying relative weight of each data point
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10), w = seq(1, 0.1, -0.1)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_weighted_avg <- summarize_weighted_avg(
-#'   ts,
-#'   column = "v", weight_column = "w", window = in_past("3s")
-#' )
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10), w = seq(1, 0.1, -0.1)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_weighted_avg <- summarize_weighted_avg(
+#'     ts,
+#'     column = "v", weight_column = "w", window = in_past("3s")
+#'   )
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
+#'
 #' @export
 summarize_weighted_avg <- function(
                                    ts_rdd,
@@ -325,18 +376,24 @@ summarize_weighted_avg <- function(
 #' named `<column>_stddev`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_stddev <- summarize_stddev(ts, column = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_stddev <- summarize_stddev(ts, column = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -353,19 +410,24 @@ summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()
 #' named `<column>_variance`, with Bessel's correction applied to the results
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
-#'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_var <- summarize_var(ts, column = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_var <- summarize_var(ts, column = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -384,18 +446,24 @@ summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' @inheritParams summarizers
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_covar <- summarize_covar(ts, xcolumn = "u", ycolumn = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_covar <- summarize_covar(ts, xcolumn = "u", ycolumn = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -422,21 +490,27 @@ summarize_covar <- function(
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
 #' @param weight_column Column specifying relative weight of each data point
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10), w = 1.1^seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_weighted_covar <- summarize_weighted_covar(
-#'   ts,
-#'   xcolumn = "u", ycolumn = "v", weight_column = "w", window = in_past("3s")
-#' )
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10), w = 1.1^seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_weighted_covar <- summarize_weighted_covar(
+#'     ts,
+#'     xcolumn = "u", ycolumn = "v", weight_column = "w", window = in_past("3s")
+#'   )
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -463,18 +537,26 @@ summarize_weighted_covar <- function(
 #' @inheritParams summarizers
 #' @param column Column to be summarized
 #' @param p List of quantile probabilities
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_quantile <- summarize_quantile(ts, column = "v", p = c(0.5, 0.75, 0.99), window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_quantile <- summarize_quantile(
+#'     ts, column = "v", p = c(0.5, 0.75, 0.99), window = in_past("3s")
+#'   )
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -500,18 +582,24 @@ summarize_quantile <- function(
 #' @param include_current_observation If true, then use unbiased sample standard
 #'   deviation with current observation in z-score calculation, otherwise use
 #'   unbiased sample standard deviation excluding current observation
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_z_score <- summarize_z_score(ts, column = "v", include_current_observation = TRUE)
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_z_score <- summarize_z_score(ts, column = "v", include_current_observation = TRUE)
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -532,18 +620,24 @@ summarize_z_score <- function(
 #'
 #' @inheritParams summarizers
 #' @param n The order of moment to calculate
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_4th_moment <- summarize_nth_moment(ts, column = "v", n = 4L)
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_4th_moment <- summarize_nth_moment(ts, column = "v", n = 4L)
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -560,18 +654,24 @@ summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
 #'
 #' @inheritParams summarizers
 #' @param n The order of moment to calculate
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_4th_central_moment <- summarize_nth_central_moment(ts, column = "v", n = 4L)
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_4th_central_moment <- summarize_nth_central_moment(ts, column = "v", n = 4L)
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -594,18 +694,24 @@ summarize_nth_central_moment <- function(
 #'
 #' @inheritParams summarizers
 #' @param columns A list of column names
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_corr <- summarize_corr(ts, columns = c("u", "v"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_corr <- summarize_corr(ts, columns = c("u", "v"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -627,21 +733,27 @@ summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
 #' @inheritParams summarizers
 #' @param xcolumns A list of column names
 #' @param ycolumns A list of column names disjoint from xcolumns
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(
-#'   sc,
-#'   tibble::tibble(t = seq(10), x1 = rnorm(10), x2 = rnorm(10), y1 = rnorm(10), y2 = rnorm(10))
-#' )
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_corr2 <- summarize_corr2(ts, xcolumns = c("x1", "x2"), ycolumns = c("y1", "y2"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(
+#'     sc,
+#'     tibble::tibble(t = seq(10), x1 = rnorm(10), x2 = rnorm(10), y1 = rnorm(10), y2 = rnorm(10))
+#'   )
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_corr2 <- summarize_corr2(ts, xcolumns = c("x1", "x2"), ycolumns = c("y1", "y2"))
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -661,18 +773,24 @@ summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
 #' @param weight_column Column specifying relative weight of each data point
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), x = rnorm(10), y = rnorm(10), w = 1.1^seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_weighted_corr <- summarize_weighted_corr(ts, xcolumn = "x", ycolumn = "y", weight_column = "w")
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), x = rnorm(10), y = rnorm(10), w = 1.1^seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_weighted_corr <- summarize_weighted_corr(ts, xcolumn = "x", ycolumn = "y", weight_column = "w")
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export

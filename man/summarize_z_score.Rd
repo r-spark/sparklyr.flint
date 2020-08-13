@@ -29,6 +29,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute z-score of the most recent value in the column specified, with
 respect to the sample mean and standard deviation observed so far, with the
@@ -36,15 +39,18 @@ option for out-of-sample calculation, and store result in a new column named
 `<column>_zScore`
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_z_score <- summarize_z_score(ts, column = "v", include_current_observation = TRUE)
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_z_score <- summarize_z_score(ts, column = "v", include_current_observation = TRUE)
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }

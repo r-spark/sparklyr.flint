@@ -26,20 +26,26 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute moving sums on the column specified and store results in a new column
 named `<column>_sum`
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_sum <- summarize_sum(ts, column = "v", window = in_past("3s"))
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_sum <- summarize_sum(ts, column = "v", window = in_past("3s"))
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }

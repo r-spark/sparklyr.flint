@@ -1,7 +1,7 @@
 Package: sparklyr.flint
 Type: Package
 Title: Sparklyr Extension for 'Flint'
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Yitao", "Li", email = "yitao@rstudio.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1261-905X"))
@@ -22,13 +22,16 @@ Imports:
     dbplyr,
     dplyr,
     sparklyr (>= 1.3),
-    rlang
+    rlang,
+    tibble
 Collate:
+    'imports.R'
     'globals.R'
     'init.R'
     'sdf_utils.R'
     'window_exprs.R'
     'summarizers.R'
+    'utils.R'
 Suggests:
     knitr,
     rmarkdown

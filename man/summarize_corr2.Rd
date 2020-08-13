@@ -22,6 +22,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute pairwise correations for all possible pairs of columns such that the
 first column of each pair is one of `xcolumns` and the second column of each
@@ -31,18 +34,21 @@ following pattern:
 for each pair of columns (column1, column2)
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(
-  sc,
-  tibble::tibble(t = seq(10), x1 = rnorm(10), x2 = rnorm(10), y1 = rnorm(10), y2 = rnorm(10))
-)
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_corr2 <- summarize_corr2(ts, xcolumns = c("x1", "x2"), ycolumns = c("y1", "y2"))
+if (!is.null(sc)) {
+  sdf <- copy_to(
+    sc,
+    tibble::tibble(t = seq(10), x1 = rnorm(10), x2 = rnorm(10), y1 = rnorm(10), y2 = rnorm(10))
+  )
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_corr2 <- summarize_corr2(ts, xcolumns = c("x1", "x2"), ycolumns = c("y1", "y2"))
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }

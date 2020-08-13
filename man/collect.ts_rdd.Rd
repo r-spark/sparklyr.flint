@@ -11,20 +11,26 @@
 
 \item{...}{Additional arguments to `sdf_collect()`}
 }
+\value{
+A R data frame containing the same time series data the input
+  TimeSeriesRDD contains
+}
 \description{
 Collect data from a TimeSeriesRDD into a R data frame
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-df <- ts \%>\% collect()
-
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  df <- ts \%>\% collect()
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }

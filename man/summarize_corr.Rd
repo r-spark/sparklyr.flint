@@ -20,6 +20,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute pairwise correations among the list of columns specified and store
 results in new columns named with the following pattern:
@@ -27,15 +30,18 @@ results in new columns named with the following pattern:
 where column1 and column2 are names of any 2 distinct columns
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_corr <- summarize_corr(ts, columns = c("u", "v"))
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = rnorm(10), v = rnorm(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_corr <- summarize_corr(ts, columns = c("u", "v"))
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }

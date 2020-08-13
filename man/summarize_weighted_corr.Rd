@@ -30,21 +30,27 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute Pearson weighted correlation between `xcolumn` and `ycolumn` weighted
 by `weight_column` and store result in a new columns named
 `<xcolumn>_<ycolumn>_<weight_column>_weightedCorrelation`
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), x = rnorm(10), y = rnorm(10), w = 1.1 ^ seq(10)))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_weighted_corr <- summarize_weighted_corr(ts, xcolumn = "x", ycolumn = "y", weight_column = "w")
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), x = rnorm(10), y = rnorm(10), w = 1.1^seq(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_weighted_corr <- summarize_weighted_corr(ts, xcolumn = "x", ycolumn = "y", weight_column = "w")
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }
