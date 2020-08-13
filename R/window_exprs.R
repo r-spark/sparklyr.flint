@@ -39,7 +39,7 @@ NULL
 #'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #'   ts_count <- summarize_count(ts, column = "v", window = in_past("3s"))
 #' } else {
-#'   message("Unable to establish a Spark connection: ", e)
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @rdname window_exprs
@@ -70,7 +70,7 @@ in_past <- function(duration, sc) {
 #'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #'   ts_count <- summarize_count(ts, column = "v", window = in_future("3s"))
 #' } else {
-#'   message("Unable to establish a Spark connection: ", e)
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @rdname window_exprs
