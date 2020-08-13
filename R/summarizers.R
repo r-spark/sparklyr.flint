@@ -552,7 +552,9 @@ summarize_weighted_covar <- function(
 #' if (!is.null(sc)) {
 #'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
 #'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#'   ts_quantile <- summarize_quantile(ts, column = "v", p = c(0.5, 0.75, 0.99), window = in_past("3s"))
+#'   ts_quantile <- summarize_quantile(
+#'     ts, column = "v", p = c(0.5, 0.75, 0.99), window = in_past("3s")
+#'   )
 #' } else {
 #'   message("Unable to establish a Spark connection!")
 #' }
