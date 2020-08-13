@@ -11,6 +11,10 @@
 
 \item{...}{Additional arguments to `sdf_collect()`}
 }
+\value{
+A R data frame containing the same time series data the input
+  TimeSeriesRDD contains
+}
 \description{
 Collect data from a TimeSeriesRDD into a R data frame
 }

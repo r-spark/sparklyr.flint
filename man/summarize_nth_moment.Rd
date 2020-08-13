@@ -22,6 +22,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute n-th moment of the column specified and store result in a new column
 named `<column>_<n>thMoment`

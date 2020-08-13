@@ -26,6 +26,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute unbiased (i.e., Bessel's correction is applied) sample standard
 deviation of values from `column` within each time window or within each

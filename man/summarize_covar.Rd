@@ -28,6 +28,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute covariance between values from `xcolumn` and `ycolumn` within each time
 window or within each group of rows with identical timestamps, and store results

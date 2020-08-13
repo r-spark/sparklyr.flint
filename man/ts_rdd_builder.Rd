@@ -22,6 +22,9 @@ values: "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS",
 
 \item{time_column}{Name of the time column}
 }
+\value{
+A reusable TimeSeriesRDD builder object
+}
 \description{
 Builder object containing all required info (i.e., isSorted, timeUnit, and
 timeColumn) for importing a Spark data frame into a TimeSeriesRDD

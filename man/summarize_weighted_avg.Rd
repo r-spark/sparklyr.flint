@@ -34,6 +34,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute moving weighted average, weighted standard deviation, weighted t-
 stat, and observation count with the column and weight column specified and

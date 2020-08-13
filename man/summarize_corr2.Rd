@@ -22,6 +22,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute pairwise correations for all possible pairs of columns such that the
 first column of each pair is one of `xcolumns` and the second column of each

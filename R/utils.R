@@ -1,11 +1,17 @@
+#' @include imports.R
+NULL
+
 #' Attempt to establish a Spark connection
 #'
-#' Call `sparklyr::spark_connect` with parameters given, returning the
-#' resulting Spark connection object upon success, or NULL upon failure
+#' Attempt to connect to Apache Spark and return a Spark connection object upon success
 #'
-#' importFrom sparklyr spark_connect
-#' @inheritParams sparklyr::spark_connect
+#' @param ... Parameters for sparklyr::spark_connect
+#'
 #' @return a Spark connection object if attempt was successful, or NULL otherwise
+#'
+#' @examples
+#'
+#' try_spark_connect(master = "local")
 #'
 #' @export
 try_spark_connect <- function(...) {

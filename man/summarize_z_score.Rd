@@ -29,6 +29,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute z-score of the most recent value in the column specified, with
 respect to the sample mean and standard deviation observed so far, with the

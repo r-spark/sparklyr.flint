@@ -1,3 +1,6 @@
+#' @include globals.R
+NULL
+
 #' Utility functions for importing a Spark data frame into a TimeSeriesRDD
 #'
 #' These functions provide an interface for specifying how a Spark data frame
@@ -12,7 +15,6 @@
 #' @param time_column Name of the time column
 #'
 #' @name sdf_utils
-#' @include globals.R
 NULL
 
 jtime_unit <- function(sc, time_unit = .sparklyr.flint.globals$kValidTimeUnits) {
@@ -87,6 +89,8 @@ new_ts_rdd <- function(jobj) {
 #'
 #' @inheritParams sdf_utils
 #'
+#' @return A reusable TimeSeriesRDD builder object
+#'
 #' @export
 ts_rdd_builder <- function(
                            sc,
@@ -112,6 +116,8 @@ ts_rdd_builder <- function(
 #'
 #' @inheritParams sdf_utils
 #' @param sdf A Spark DataFrame object
+#'
+#' @return A TimeSeriesRDD useable by the Flint time series library
 #'
 #' @examples
 #'
@@ -146,6 +152,8 @@ fromSDF <- function(
 #' @param rdd A Spark RDD[Row] object containing time series data
 #' @param schema A Spark StructType object containing schema of the time series
 #'   data
+#'
+#' @return A TimeSeriesRDD useable by the Flint time series library
 #'
 #' @examples
 #'
@@ -185,6 +193,9 @@ fromRDD <- function(
 #'
 #' @param x A com.twosigma.flint.timeseries.TimeSeriesRDD object
 #' @param ... Additional arguments to `sdf_collect()`
+#'
+#' @return A R data frame containing the same time series data the input
+#'   TimeSeriesRDD contains
 #'
 #' @examples
 #'

@@ -20,6 +20,9 @@ must be one of the following: "d", "day", "h", "hour", "min", "minute",
 \item{sc}{Spark connection (does not need to be specified within the context
 of `summarize_*` functions)}
 }
+\value{
+A time window object useable by the Flint time series library
+}
 \description{
 Functions for specifying commonly used types of time windows, which are
 commonly used within the context of summarize_* functions (e.g.,

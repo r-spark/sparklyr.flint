@@ -31,6 +31,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Count the total number of rows if no column is specified, or the number of
 non-null values within the specified column within each time window or within

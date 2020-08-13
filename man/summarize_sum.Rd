@@ -26,6 +26,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute moving sums on the column specified and store results in a new column
 named `<column>_sum`

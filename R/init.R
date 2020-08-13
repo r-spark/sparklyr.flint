@@ -1,4 +1,4 @@
-#' @importFrom rlang %||%
+#' @include globals.R
 NULL
 
 #' Dependencies and initialization procedures
@@ -7,7 +7,6 @@ NULL
 #' and package-wide constants in `.sparklyr.flint.globals`.
 #'
 #' @name init
-#' @include globals.R
 NULL
 
 spark_dependencies <- function(spark_version, scala_version, ...) {
@@ -33,7 +32,6 @@ spark_dependencies <- function(spark_version, scala_version, ...) {
   )
 }
 
-#' @import sparklyr
 .onLoad <- function(libname, pkgname) {
   sparklyr::register_extension(pkgname)
   # initialize package-wide constants

@@ -24,6 +24,7 @@ Imports:
     sparklyr (>= 1.3),
     rlang
 Collate:
+    'imports.R'
     'globals.R'
     'init.R'
     'sdf_utils.R'

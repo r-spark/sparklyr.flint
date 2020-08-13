@@ -26,6 +26,9 @@ values: "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS",
 
 \item{time_column}{Name of the time column}
 }
+\value{
+A TimeSeriesRDD useable by the Flint time series library
+}
 \description{
 Construct a TimeSeriesRDD containing time series data from a Spark RDD of rows
 }

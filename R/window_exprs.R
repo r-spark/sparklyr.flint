@@ -1,3 +1,6 @@
+#' @include globals.R
+NULL
+
 #' Time window specifications
 #'
 #' Functions for specifying commonly used types of time windows, which are
@@ -14,8 +17,9 @@
 #' @param sc Spark connection (does not need to be specified within the context
 #'   of `summarize_*` functions)
 #'
+#' @return A time window object useable by the Flint time series library
+#'
 #' @name window_exprs
-#' @include globals.R
 NULL
 
 #' Create a sliding time window capturing past and current data

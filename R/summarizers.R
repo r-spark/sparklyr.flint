@@ -1,3 +1,7 @@
+#' @include sdf_utils.R
+#' @include window_exprs.R
+NULL
+
 #' Wrapper functions for commonly used summarizer functions
 #'
 #' R wrapper functions for commonly used Flint summarizer functionalities such as
@@ -18,10 +22,8 @@
 #'   summarized separately)
 #'   By default, `key_colums` is empty and all rows are considered to be part of
 #'   a single time series.
-#' @name summarizers
 #'
-#' @include sdf_utils.R
-#' @include window_exprs.R
+#' @name summarizers
 NULL
 
 new_window_obj <- function(sc, window_expr) {
@@ -84,6 +86,9 @@ summarize <- function(ts_rdd, summarizer_args, key_columns = list()) {
 #'   `<column>_count`.
 #'   Otherwise the number of rows within each time window or group of rows with
 #'   identical timestamps is reported, and stored in a column named `count`.
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -120,6 +125,9 @@ summarize_count <- function(
 #' new column named `<column>_min`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -151,6 +159,9 @@ summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' new column named `<column>_max`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -181,6 +192,9 @@ summarize_max <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' named `<column>_sum`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -212,6 +226,9 @@ summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' new column named `<column>_product`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -245,6 +262,9 @@ summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list(
 #' @inheritParams summarizers
 #' @param xcolumn Name of the first column
 #' @param ycolumn Name of the second column
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -275,6 +295,9 @@ summarize_dot_product <- function(ts_rdd, xcolumn, ycolumn, window = NULL, key_c
 #' `<column>_mean`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -310,6 +333,9 @@ summarize_avg <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #'
 #' @inheritParams summarizers
 #' @param weight_column Column specifying relative weight of each data point
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -350,6 +376,9 @@ summarize_weighted_avg <- function(
 #' named `<column>_stddev`
 #'
 #' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -381,8 +410,10 @@ summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()
 #' named `<column>_variance`, with Bessel's correction applied to the results
 #'
 #' @inheritParams summarizers
-#' @family summarizers
 #'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
+#' @family summarizers
 #'
 #' @examples
 #'
@@ -415,6 +446,9 @@ summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' @inheritParams summarizers
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -456,6 +490,9 @@ summarize_covar <- function(
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
 #' @param weight_column Column specifying relative weight of each data point
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -500,6 +537,9 @@ summarize_weighted_covar <- function(
 #' @inheritParams summarizers
 #' @param column Column to be summarized
 #' @param p List of quantile probabilities
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -540,6 +580,9 @@ summarize_quantile <- function(
 #' @param include_current_observation If true, then use unbiased sample standard
 #'   deviation with current observation in z-score calculation, otherwise use
 #'   unbiased sample standard deviation excluding current observation
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -575,6 +618,9 @@ summarize_z_score <- function(
 #'
 #' @inheritParams summarizers
 #' @param n The order of moment to calculate
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -606,6 +652,9 @@ summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
 #'
 #' @inheritParams summarizers
 #' @param n The order of moment to calculate
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -643,6 +692,9 @@ summarize_nth_central_moment <- function(
 #'
 #' @inheritParams summarizers
 #' @param columns A list of column names
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -679,6 +731,9 @@ summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
 #' @inheritParams summarizers
 #' @param xcolumns A list of column names
 #' @param ycolumns A list of column names disjoint from xcolumns
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples
@@ -716,6 +771,9 @@ summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
 #' @param xcolumn Column representing the first random variable
 #' @param ycolumn Column representing the second random variable
 #' @param weight_column Column specifying relative weight of each data point
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
 #' @family summarizers
 #'
 #' @examples

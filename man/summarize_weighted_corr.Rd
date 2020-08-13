@@ -30,6 +30,9 @@ summarized separately)
 By default, `key_colums` is empty and all rows are considered to be part of
 a single time series.}
 }
+\value{
+A TimeSeriesRDD containing the summarized result
+}
 \description{
 Compute Pearson weighted correlation between `xcolumn` and `ycolumn` weighted
 by `weight_column` and store result in a new columns named

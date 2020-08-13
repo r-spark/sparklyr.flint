@@ -7,15 +7,16 @@
 try_spark_connect(...)
 }
 \arguments{
-\item{...}{Optional arguments; currently unused.}
+\item{...}{Parameters for sparklyr::spark_connect}
 }
 \value{
 a Spark connection object if attempt was successful, or NULL otherwise
 }
 \description{
-Call `sparklyr::spark_connect` with parameters given, returning the
-resulting Spark connection object upon success, or NULL upon failure
+Attempt to connect to Apache Spark and return a Spark connection object upon success
 }
-\details{
-importFrom sparklyr spark_connect
+\examples{
+
+try_spark_connect(master = "local")
+
 }
