@@ -24,15 +24,18 @@ NULL
 #' [current time - duration, current time]
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_count <- summarize_count(ts, column = "v", window = in_past("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_count <- summarize_count(ts, column = "v", window = in_past("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection: ", e)
 #' }
 #'
 #' @rdname window_exprs
@@ -52,15 +55,18 @@ in_past <- function(duration, sc) {
 #' [current time, current time + duration]
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' ts_count <- summarize_count(ts, column = "v", window = in_future("3s"))
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_count <- summarize_count(ts, column = "v", window = in_future("3s"))
+#' } else {
+#'   message("Unable to establish a Spark connection: ", e)
 #' }
 #'
 #' @rdname window_exprs

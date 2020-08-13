@@ -43,18 +43,23 @@ store results in new columns named `<column>_<weighted_column>_mean`,
 `<column>_<weighted_column>_observationCount`,
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10), w = seq(1, 0.1, -0.1)))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_weighted_avg <- summarize_weighted_avg(
-  ts, column = "v", weight_column = "w", window = in_past("3s")
-)
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10), w = seq(1, 0.1, -0.1)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_weighted_avg <- summarize_weighted_avg(
+    ts,
+    column = "v", weight_column = "w", window = in_past("3s")
+  )
+} else {
+  message("Unable to establish a Spark connection!")
 }
+
 }
 \seealso{
 Other summarizers: 

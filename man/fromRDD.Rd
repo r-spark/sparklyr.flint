@@ -30,18 +30,22 @@ values: "NANOSECONDS", "MICROSECONDS", "MILLISECONDS", "SECONDS",
 Construct a TimeSeriesRDD containing time series data from a Spark RDD of rows
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10))
-rdd <- spark_dataframe(sdf) \%>\% invoke("rdd")
-schema <- spark_dataframe(sdf) \%>\% invoke("schema")
-ts <- fromRDD(
-   rdd, schema, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t"
-)
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+  rdd <- spark_dataframe(sdf) \%>\% invoke("rdd")
+  schema <- spark_dataframe(sdf) \%>\% invoke("schema")
+  ts <- fromRDD(
+    rdd, schema,
+    is_sorted = TRUE, time_unit = "SECONDS", time_column = "t"
+  )
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }

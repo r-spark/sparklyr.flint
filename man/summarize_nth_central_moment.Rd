@@ -27,15 +27,18 @@ Compute n-th central moment of the column specified and store result in a
 new column named `<column>_<n>thCentralMoment`
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_4th_central_moment <- summarize_nth_central_moment(ts, column = "v", n = 4L)
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = rnorm(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_4th_central_moment <- summarize_nth_central_moment(ts, column = "v", n = 4L)
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }

@@ -114,14 +114,17 @@ ts_rdd_builder <- function(
 #' @param sdf A Spark DataFrame object
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -145,19 +148,22 @@ fromSDF <- function(
 #'   data
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' rdd <- spark_dataframe(sdf) %>% invoke("rdd")
-#' schema <- spark_dataframe(sdf) %>% invoke("schema")
-#' ts <- fromRDD(
-#'   rdd, schema,
-#'   is_sorted = TRUE, time_unit = "SECONDS", time_column = "t"
-#' )
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   rdd <- spark_dataframe(sdf) %>% invoke("rdd")
+#'   schema <- spark_dataframe(sdf) %>% invoke("schema")
+#'   ts <- fromRDD(
+#'     rdd, schema,
+#'     is_sorted = TRUE, time_unit = "SECONDS", time_column = "t"
+#'   )
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
@@ -181,15 +187,18 @@ fromRDD <- function(
 #' @param ... Additional arguments to `sdf_collect()`
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(sparklyr)
 #' library(sparklyr.flint)
 #'
-#' sc <- spark_connect(master = "local")
+#' sc <- try_spark_connect(master = "local")
 #'
-#' sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#' ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#' df <- ts %>% collect()
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   df <- ts %>% collect()
+#' } else {
+#'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @importFrom dplyr collect

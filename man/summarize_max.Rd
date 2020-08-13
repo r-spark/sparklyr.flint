@@ -32,15 +32,18 @@ within each group of rows with identical timestamps, and store results in a
 new column named `<column>_max`
 }
 \examples{
-\dontrun{
+
 library(sparklyr)
 library(sparklyr.flint)
 
-sc <- spark_connect(master = "local")
+sc <- try_spark_connect(master = "local")
 
-sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-ts_max <- summarize_max(ts, column = "v", window = in_past("3s"))
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts_max <- summarize_max(ts, column = "v", window = in_past("3s"))
+} else {
+  message("Unable to establish a Spark connection!")
 }
 
 }
