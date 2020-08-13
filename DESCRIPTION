@@ -22,7 +22,8 @@ Imports:
     dbplyr,
     dplyr,
     sparklyr (>= 1.3),
-    rlang
+    rlang,
+    tibble
 Collate:
     'imports.R'
     'globals.R'
