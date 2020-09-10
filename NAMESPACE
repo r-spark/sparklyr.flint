@@ -3,6 +3,8 @@
 S3method(collect,ts_rdd)
 export(fromRDD)
 export(fromSDF)
+export(from_rdd)
+export(from_sdf)
 export(in_future)
 export(in_past)
 export(summarize_avg)
