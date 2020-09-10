@@ -45,18 +45,18 @@ test_that("ts_rdd_builder can work with time column of type Date", {
   verify_result(ts_rdd %>% collect())
 })
 
-test_that("fromSDF() works as expected", {
+test_that("from_sdf() works as expected", {
   sdf <- testthat_date_sdf()
-  ts_rdd <- fromSDF(sdf, is_sorted = TRUE, time_column = "date")
+  ts_rdd <- from_sdf(sdf, is_sorted = TRUE, time_column = "date")
 
   verify_result(ts_rdd %>% collect())
 })
 
-test_that("fromRDD() works as expected", {
+test_that("from_rdd() works as expected", {
   sdf <- testthat_date_sdf()
   rdd <- invoke(spark_dataframe(sdf), "rdd")
   schema <- invoke(spark_dataframe(sdf), "schema")
-  ts_rdd <- fromRDD(rdd, schema, is_sorted = TRUE, time_column = "date")
+  ts_rdd <- from_rdd(rdd, schema, is_sorted = TRUE, time_column = "date")
 
   verify_result(ts_rdd %>% collect())
 })

@@ -128,13 +128,13 @@ ts_rdd_builder <- function(
 #'
 #' if (!is.null(sc)) {
 #'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts <- from_sdf(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #' } else {
 #'   message("Unable to establish a Spark connection!")
 #' }
 #'
 #' @export
-fromSDF <- function(
+from_sdf <- function(
                     sdf,
                     is_sorted = FALSE,
                     time_unit = .sparklyr.flint.globals$kValidTimeUnits,
@@ -143,6 +143,10 @@ fromSDF <- function(
   builder <- ts_rdd_builder(sc, is_sorted, time_unit, time_column)
   builder$fromSDF(sdf)
 }
+
+#' @rdname from_sdf
+#' @export
+fromSDF <- from_sdf
 
 #' Construct a TimeSeriesRDD from a Spark RDD of rows
 #'
@@ -166,7 +170,7 @@ fromSDF <- function(
 #'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
 #'   rdd <- spark_dataframe(sdf) %>% invoke("rdd")
 #'   schema <- spark_dataframe(sdf) %>% invoke("schema")
-#'   ts <- fromRDD(
+#'   ts <- from_rdd(
 #'     rdd, schema,
 #'     is_sorted = TRUE, time_unit = "SECONDS", time_column = "t"
 #'   )
@@ -175,7 +179,7 @@ fromSDF <- function(
 #' }
 #'
 #' @export
-fromRDD <- function(
+from_rdd <- function(
                     rdd,
                     schema,
                     is_sorted = FALSE,
@@ -185,6 +189,10 @@ fromRDD <- function(
   builder <- ts_rdd_builder(sc, is_sorted, time_unit, time_column)
   builder$fromRDD(rdd, schema)
 }
+
+#' @rdname from_rdd
+#' @export
+fromRDD <- from_rdd
 
 
 #' Collect data from a TimeSeriesRDD
@@ -206,7 +214,7 @@ fromRDD <- function(
 #'
 #' if (!is.null(sc)) {
 #'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts <- from_sdf(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 #'   df <- ts %>% collect()
 #' } else {
 #'   message("Unable to establish a Spark connection!")

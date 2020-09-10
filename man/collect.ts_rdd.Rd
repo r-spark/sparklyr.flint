@@ -27,7 +27,7 @@ sc <- try_spark_connect(master = "local")
 
 if (!is.null(sc)) {
   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  ts <- from_sdf(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
   df <- ts \%>\% collect()
 } else {
   message("Unable to establish a Spark connection!")
