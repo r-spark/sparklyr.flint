@@ -194,6 +194,40 @@ from_rdd <- function(
 #' @export
 fromRDD <- from_rdd
 
+#' Export data from TimeSeriesRDD to a Spark dataframe
+#'
+#' Construct a Spark dataframe containing time series data from a TimeSeriesRDD
+#'
+#' @param ts_rdd A TimeSeriesRDD object
+#'
+#' @return A Spark dataframe containing time series data exported from `ts_rdd`
+#'
+#' @examples
+#'
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- try_spark_connect(master = "local")
+#'
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+#'   ts <- from_sdf(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_avg <- summarize_avg(ts, column = "v", window = in_past("3s"))
+#'   # now export the average values from `ts_avg` back to a Spark dataframe
+#'   # named `sdf_avg`
+#'   sdf_avg <- ts_avg %>% to_sdf()
+#' } else {
+#'   message("Unable to establish a Spark connection!")
+#' }
+#'
+#' @export
+to_sdf <- function(ts_rdd) {
+  invoke(ts_rdd, "toDF") %>% sdf_register()
+}
+
+#' @rdname to_sdf
+#' @export
+toSDF <- to_sdf
 
 #' Collect data from a TimeSeriesRDD
 #'
@@ -223,7 +257,5 @@ fromRDD <- from_rdd
 #' @importFrom dplyr collect
 #' @export
 collect.ts_rdd <- function(x, ...) {
-  invoke(x, "toDF") %>%
-    sdf_register() %>%
-    collect()
+  to_sdf(x) %>% collect()
 }

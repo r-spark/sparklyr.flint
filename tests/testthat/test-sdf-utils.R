@@ -60,3 +60,10 @@ test_that("from_rdd() works as expected", {
 
   verify_result(ts_rdd %>% collect())
 })
+
+test_that("to_sdf() works as expected", {
+  sdf <- testthat_date_sdf()
+  ts_rdd <- from_sdf(sdf, is_sorted = TRUE, time_column = "date")
+
+  verify_result(ts_rdd %>% to_sdf() %>% collect())
+})
