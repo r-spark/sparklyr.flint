@@ -29,6 +29,7 @@ Collate:
     'globals.R'
     'init.R'
     'sdf_utils.R'
+    'reexports.R'
     'window_exprs.R'
     'summarizers.R'
     'utils.R'
