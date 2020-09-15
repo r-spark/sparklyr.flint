@@ -9,3 +9,22 @@
 \description{
 Retrieve a Spark DataFrame from a TimeSeriesRDD object
 }
+\examples{
+
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- try_spark_connect(master = "local")
+
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+  ts <- from_sdf(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  print(ts \%>\% spark_dataframe())
+  print(sdf \%>\% spark_dataframe()) # the former should contain the same set of
+                                   # rows as the latter does, modulo possible
+                                   # difference in types of timestamp columns
+} else {
+  message("Unable to establish a Spark connection!")
+}
+
+}
