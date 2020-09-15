@@ -194,6 +194,16 @@ from_rdd <- function(
 #' @export
 fromRDD <- from_rdd
 
+#' Retrieve a Spark DataFrame
+#'
+#' Retrieve a Spark DataFrame from a TimeSeriesRDD object
+#'
+#' @importFrom sparklyr spark_dataframe
+#' @export
+spark_dataframe.ts_rdd <- function(x) {
+  invoke(x, "toDF")
+}
+
 #' Export data from TimeSeriesRDD to a Spark dataframe
 #'
 #' Construct a Spark dataframe containing time series data from a TimeSeriesRDD
@@ -222,7 +232,7 @@ fromRDD <- from_rdd
 #'
 #' @export
 to_sdf <- function(ts_rdd) {
-  invoke(ts_rdd, "toDF") %>% sdf_register()
+  ts_rdd %>% spark_dataframe() %>% sdf_register()
 }
 
 #' @rdname to_sdf
