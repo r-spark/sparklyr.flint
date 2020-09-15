@@ -1,19 +1,19 @@
 context("summarize-windows")
 
 sc <- testthat_spark_connection()
-ts <- fromSDF(
+ts <- from_sdf(
   testthat_generic_time_series(),
   is_sorted = FALSE,
   time_unit = "SECONDS",
   time_column = "t"
 )
-quantile_summarizer_test_case_ts <- fromSDF(
+quantile_summarizer_test_case_ts <- from_sdf(
   testthat_quantile_summarizer_test_case(),
   is_sorted = TRUE,
   time_unit = "SECONDS",
   time_column = "t"
 )
-multiple_simple_ts <- fromSDF(
+multiple_simple_ts <- from_sdf(
   testthat_multiple_simple_ts_test_case(),
   is_sorted = TRUE,
   time_unit = "SECONDS",

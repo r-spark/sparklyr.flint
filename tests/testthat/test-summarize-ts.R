@@ -1,31 +1,31 @@
 context("summarize-ts")
 
 sc <- testthat_spark_connection()
-simple_ts <- fromSDF(
+simple_ts <- from_sdf(
   testthat_simple_time_series(),
   is_sorted = TRUE,
   time_unit = "SECONDS",
   time_column = "t"
 )
-multiple_simple_ts <- fromSDF(
+multiple_simple_ts <- from_sdf(
   testthat_multiple_simple_ts_test_case(),
   is_sorted = TRUE,
   time_unit = "SECONDS",
   time_column = "t"
 )
-corr_test_case_ts <- fromSDF(
+corr_test_case_ts <- from_sdf(
   testthat_corr_test_case(),
   is_sorted = TRUE,
   time_unit = "SECONDS",
   time_column = "t"
 )
-corr_test_case_multiple_ts <- fromSDF(
+corr_test_case_multiple_ts <- from_sdf(
   testthat_corr_multiple_ts_test_case(),
   is_sorted = TRUE,
   time_unit = "SECONDS",
   time_column = "t"
 )
-weighted_corr_test_case_ts <- fromSDF(
+weighted_corr_test_case_ts <- from_sdf(
   testthat_weighted_corr_test_case(),
   is_sorted = TRUE,
   time_unit = "SECONDS",
