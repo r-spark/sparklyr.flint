@@ -1,13 +1,13 @@
 context("summarize-cycles")
 
 sc <- testthat_spark_connection()
-ts <- fromSDF(
+ts <- from_sdf(
   testthat_generic_cycles(),
   is_sorted = FALSE,
   time_unit = "SECONDS",
   time_column = "t"
 )
-quantile_summarizer_test_case_ts <- fromSDF(
+quantile_summarizer_test_case_ts <- from_sdf(
   testthat_quantile_summarizer_test_case(),
   is_sorted = FALSE,
   time_unit = "SECONDS",

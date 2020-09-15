@@ -27,8 +27,9 @@ Imports:
 Collate:
     'imports.R'
     'globals.R'
-    'init.R'
     'sdf_utils.R'
+    'asof_join.R'
+    'init.R'
     'reexports.R'
     'window_exprs.R'
     'summarizers.R'
