@@ -54,6 +54,8 @@ NULL
 #'   message("Unable to establish a Spark connection!")
 #' }
 #'
+#' @family Temporal join functions
+#'
 #' @export
 asof_join <- function(left,
                       right,
@@ -92,6 +94,8 @@ asof_join <- function(left,
 #'
 #' @inheritParams asof_join
 #'
+#' @family Temporal join functions
+#'
 #' @export
 left_join <- function(left,
                       right,
@@ -125,6 +129,8 @@ left_join <- function(left,
 #' @param strict_lookahead Whether each record from `left` with timestamp `t`
 #'   should match record from `right` with the smallest timestamp strictly
 #'   greater than `t` (default: FALSE)
+#'
+#' @family Temporal join functions
 #'
 #' @export
 future_left_join <- function(left,
