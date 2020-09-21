@@ -81,3 +81,65 @@ asof_join <- function(left,
 
   out %>% new_ts_rdd()
 }
+
+#' Temporal left join
+#'
+#' Perform left-outer join on 2 `TimeSeriesRDD`s based on inexact timestamp
+#' matches, where each record from `left` with timestamp `t` matches the
+#' record from `right` having the most recent timestamp at or before `t`.
+#' Notice this is equivalent to `asof_join()` with `direction` = "<=".
+#' See \code{\link[sparklyr.flint:asof_join]{asof_join}}.
+#'
+#' @inheritParams asof_join
+#'
+#' @export
+left_join <- function(left,
+                      right,
+                      tol = "0ms",
+                      key_columns = list(),
+                      left_prefix = NULL,
+                      right_prefix = NULL
+) {
+  asof_join(left = left,
+            right = right,
+            tol = tol,
+            direction = ">=",
+            key_columns = key_columns,
+            left_prefix = left_prefix,
+            right_prefix = right_prefix)
+}
+
+#' Temporal future left join
+#'
+#' Perform left-outer join on 2 `TimeSeriesRDD`s based on inexact timestamp
+#' matches, where each record from `left` with timestamp `t` matches the
+#' record from `right` having the most recent timestamp at or after `t` if
+#' `strict_lookahead` is FALSE (default) or having the most recent timestamp
+#' strictly after `t` if `strict_lookahead` is TRUE.
+#' Notice this is equivalent to `asof_join()` with `direction` = ">=" if
+#' `strict_lookahead` is FALSE (default) or direction `>` if
+#' `strict_lookahead` is TRUE.
+#' See \code{\link[sparklyr.flint:asof_join]{asof_join}}.
+#'
+#' @inheritParams asof_join
+#' @param strict_lookahead Whether each record from `left` with timestamp `t`
+#'   should match record from `right` with the smallest timestamp strictly
+#'   greater than `t` (default: FALSE)
+#'
+#' @export
+future_left_join <- function(left,
+                      right,
+                      tol = "0ms",
+                      key_columns = list(),
+                      left_prefix = NULL,
+                      right_prefix = NULL,
+                      strict_lookahead
+) {
+  asof_join(left = left,
+            right = right,
+            tol = tol,
+            direction = if (strictly_lookahead) "<" else "<=",
+            key_columns = key_columns,
+            left_prefix = left_prefix,
+            right_prefix = right_prefix)
+}

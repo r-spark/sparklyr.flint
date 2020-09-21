@@ -126,6 +126,54 @@ test_that("asof_join works with direction = \"<\"", {
   )
 })
 
+test_that("left_join being equivalent to Flint leftJoin", {
+  actual <- asof_join(ts_2, ts_1, direction = ">=") %>% collect()
+  expected <- spark_jobj(ts_2) %>%
+    invoke("leftJoin", spark_jobj(ts_1), tolerance = "0ns", list(), NULL, NULL) %>%
+    new_ts_rdd() %>%
+    collect()
+  expect_equivalent(actual, expected)
+
+  actual <- asof_join(ts_1, ts_2, direction = ">=") %>% collect()
+  expected <- spark_jobj(ts_1) %>%
+    invoke("leftJoin", spark_jobj(ts_2), tolerance = "0ns", list(), NULL, NULL) %>%
+    new_ts_rdd() %>%
+    collect()
+  expect_equivalent(actual, expected)
+})
+
+test_that("future_left_join being equivalent to Flint futureLeftJoin", {
+  actual <- asof_join(ts_1, ts_2, direction = "<=") %>% collect()
+  expected <- spark_jobj(ts_1) %>%
+    invoke(
+      "futureLeftJoin",
+      spark_jobj(ts_2),
+      tolerance = "0ns",
+      list(),
+      NULL,
+      NULL,
+      FALSE
+    ) %>%
+    new_ts_rdd() %>%
+    collect()
+  expect_equivalent(actual, expected)
+
+  actual <- asof_join(ts_1, ts_2, tol = "1s", direction = "<") %>% collect()
+  expected <- spark_jobj(ts_1) %>%
+    invoke(
+      "futureLeftJoin",
+      spark_jobj(ts_2),
+      tolerance = "1s",
+      list(),
+      NULL,
+      NULL,
+      TRUE
+    ) %>%
+    new_ts_rdd() %>%
+    collect()
+  expect_equivalent(actual, expected)
+})
+
 test_that("asof_join works with left_prefix and right_prefix", {
   rs <- asof_join(
     ts_1, ts_2, tol = "1s", direction = ">=", left_prefix = "left", right_prefix = "right"
