@@ -53,3 +53,9 @@ Notice this is equivalent to `asof_join()` with `direction` = ">=" if
 `strict_lookahead` is TRUE.
 See \code{\link[sparklyr.flint:asof_join]{asof_join}}.
 }
+\seealso{
+Other Temporal join functions: 
+\code{\link{asof_join}()},
+\code{\link{left_join}()}
+}
+\concept{Temporal join functions}

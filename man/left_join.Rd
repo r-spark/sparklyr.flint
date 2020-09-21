@@ -44,3 +44,9 @@ record from `right` having the most recent timestamp at or before `t`.
 Notice this is equivalent to `asof_join()` with `direction` = "<=".
 See \code{\link[sparklyr.flint:asof_join]{asof_join}}.
 }
+\seealso{
+Other Temporal join functions: 
+\code{\link{asof_join}()},
+\code{\link{future_left_join}()}
+}
+\concept{Temporal join functions}
