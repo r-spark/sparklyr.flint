@@ -80,9 +80,10 @@ test_that("spark_dataframe.ts_rdd() works as expected", {
   )
 })
 
-test_that("as.jobj.ts_rdd() works as expected", {
+test_that("spark_jobj.ts_rdd() works as expected", {
   sdf <- testthat_date_sdf()
   ts_rdd <- from_sdf(sdf, is_sorted = TRUE, time_column = "date")
 
-  expect_equal(class(as.jobj(ts_rdd))[1:2], c("spark_jobj", "shell_jobj"))
+  expect_equal(class(spark_jobj(ts_rdd)), c("spark_jobj", "shell_jobj"))
+  expect_equal(class(ts_rdd), "ts_rdd")
 })
