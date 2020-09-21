@@ -66,3 +66,4 @@ if (!is.null(sc)) {
 }
 
 }
+\concept{Time window expressions}
