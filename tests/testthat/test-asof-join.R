@@ -94,6 +94,38 @@ test_that("asof_join works with direction = \"<=\"", {
   )
 })
 
+test_that("asof_join works with direction = \"<\"", {
+  rs <- asof_join(ts_1, ts_2, direction = "<") %>% collect()
+  expect_equivalent(
+    rs,
+    tibble::tibble(
+      t = as.POSIXct(seq(10), origin = "1970-01-01"),
+      u = seq(10),
+      v = NA_integer_
+    )
+  )
+
+  rs <- asof_join(ts_1, ts_2, tol = "500ms", direction = "<") %>% collect()
+  expect_equivalent(
+    rs,
+    tibble::tibble(
+      t = as.POSIXct(seq(10), origin = "1970-01-01"),
+      u = seq(10),
+      v = NA_integer_
+    )
+  )
+
+  rs <- asof_join(ts_1, ts_2, tol = "1s", direction = "<") %>% collect()
+  expect_equivalent(
+    rs,
+    tibble::tibble(
+      t = as.POSIXct(seq(10), origin = "1970-01-01"),
+      u = seq(10),
+      v = c(seq(10) + 1)
+    )
+  )
+})
+
 test_that("asof_join works with left_prefix and right_prefix", {
   rs <- asof_join(
     ts_1, ts_2, tol = "1s", direction = ">=", left_prefix = "left", right_prefix = "right"
