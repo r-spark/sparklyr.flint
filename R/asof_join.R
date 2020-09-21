@@ -65,8 +65,8 @@ asof_join <- function(left,
 ) {
   direction <- match.arg(direction)
   key_columns <- as.list(key_columns)
-  left <- as.jobj(left)
-  right <- as.jobj(right)
+  left <- spark_jobj(left)
+  right <- spark_jobj(right)
 
   do.invoke <- function(ts_rdd_1, method, ts_rdd_2, ...) {
     ts_rdd_1 %>%

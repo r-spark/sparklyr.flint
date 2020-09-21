@@ -32,8 +32,7 @@ new_ts_rdd_builder <- function(sc, is_sorted, time_unit, time_column) {
 }
 
 new_ts_rdd <- function(jobj) {
-  class(jobj) <- c("ts_rdd", class(jobj))
-  jobj
+  structure(list(.jobj = jobj), class = "ts_rdd")
 }
 
 .fromSDF <- function(builder, time_column) {
@@ -220,7 +219,7 @@ fromRDD <- from_rdd
 #'
 #' @export
 spark_dataframe.ts_rdd <- function(x) {
-  invoke(x, "toDF")
+  invoke(spark_jobj(x), "toDF")
 }
 
 #' Export data from TimeSeriesRDD to a Spark dataframe
@@ -289,44 +288,14 @@ collect.ts_rdd <- function(x, ...) {
   to_sdf(x) %>% collect()
 }
 
-#' Retrieve an underlying Java object
-#'
-#' Retrieve the underlying Java object from the input
-#'
-#' @param x The input, which is some R object encapsulating a Java oject
-#'
-#' @examples
-#'
-#' library(sparklyr)
-#' library(sparklyr.flint)
-#'
-#' sc <- try_spark_connect(master = "local")
-#'
-#' if (!is.null(sc)) {
-#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
-#'   ts <- from_sdf(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-#'   print(ts %>% as.jobj)
-#' } else {
-#'   message("Unable to establish a Spark connection!")
-#' }
-#'
 #' @export
-as.jobj <- function(x) {
-  UseMethod("as.jobj")
+#' @importFrom sparklyr spark_jobj
+spark_jobj.ts_rdd <- function(x) {
+  x$.jobj
 }
 
 #' @export
-as.jobj.ts_rdd <- function(x) {
-  class(x) <- setdiff(class(x), c("ts_rdd", "spark_jobj", "shell_jobj"))
-  class(x) <- c("spark_jobj", "shell_jobj", class(x))
-
-  x
-}
-
-#' @export
-as.jobj.default <- function(x) {
-  class(x) <- setdiff(class(x), c("spark_jobj", "shell_jobj"))
-  class(x) <- c("spark_jobj", "shell_jobj", class(x))
-
-  x
+#' @importFrom sparklyr spark_connection
+spark_connection.ts_rdd <- function(x) {
+  x %>% spark_jobj() %>% sparklyr::spark_connection()
 }

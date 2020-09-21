@@ -59,9 +59,13 @@ summarize_time_range <- function(
   key_columns <- as.list(key_columns)
   new_ts_rdd(
     if (is.null(window_obj)) {
-      invoke(ts_rdd, "summarizeCycles", summarizer, key_columns)
+      ts_rdd %>%
+        spark_jobj() %>%
+        invoke("summarizeCycles", summarizer, key_columns)
     } else {
-      invoke(ts_rdd, "summarizeWindows", window_obj, summarizer, key_columns)
+      ts_rdd %>%
+        spark_jobj() %>%
+        invoke("summarizeWindows", window_obj, summarizer, key_columns)
     }
   )
 }
@@ -70,7 +74,10 @@ summarize <- function(ts_rdd, summarizer_args, key_columns = list()) {
   sc <- spark_connection(ts_rdd)
   summarizer <- new_summarizer(sc, summarizer_args)
 
-  new_ts_rdd(invoke(ts_rdd, "summarize", summarizer, as.list(key_columns)))
+  ts_rdd %>%
+    spark_jobj() %>%
+    invoke("summarize", summarizer, as.list(key_columns)) %>%
+    new_ts_rdd()
 }
 
 #' Count summarizer
