@@ -19,6 +19,8 @@ NULL
 #'
 #' @return A time window object useable by the Flint time series library
 #'
+#' @family Time window expressions
+#'
 #' @name window_exprs
 NULL
 
