@@ -37,3 +37,23 @@ if (!is.null(sc)) {
 }
 
 }
+\seealso{
+Other Spark dataframe utility functions: 
+\code{\link{collect.ts_rdd}()},
+\code{\link{from_rdd}()},
+\code{\link{from_sdf}()},
+\code{\link{spark_connection.ts_rdd}()},
+\code{\link{spark_dataframe.ts_rdd}()},
+\code{\link{spark_jobj.ts_rdd}()},
+\code{\link{ts_rdd_builder}()}
+
+Other Spark dataframe utility functions: 
+\code{\link{collect.ts_rdd}()},
+\code{\link{from_rdd}()},
+\code{\link{from_sdf}()},
+\code{\link{spark_connection.ts_rdd}()},
+\code{\link{spark_dataframe.ts_rdd}()},
+\code{\link{spark_jobj.ts_rdd}()},
+\code{\link{ts_rdd_builder}()}
+}
+\concept{Spark dataframe utility functions}

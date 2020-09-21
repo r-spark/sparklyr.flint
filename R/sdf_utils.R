@@ -90,6 +90,8 @@ new_ts_rdd <- function(jobj) {
 #'
 #' @return A reusable TimeSeriesRDD builder object
 #'
+#' @family Spark dataframe utility functions
+#'
 #' @export
 ts_rdd_builder <- function(
                            sc,
@@ -132,6 +134,8 @@ ts_rdd_builder <- function(
 #'   message("Unable to establish a Spark connection!")
 #' }
 #'
+#' @family Spark dataframe utility functions
+#'
 #' @export
 from_sdf <- function(
                     sdf,
@@ -144,6 +148,9 @@ from_sdf <- function(
 }
 
 #' @rdname from_sdf
+#'
+#' @family Spark dataframe utility functions
+#'
 #' @export
 fromSDF <- from_sdf
 
@@ -177,6 +184,8 @@ fromSDF <- from_sdf
 #'   message("Unable to establish a Spark connection!")
 #' }
 #'
+#' @family Spark dataframe utility functions
+#'
 #' @export
 from_rdd <- function(
                     rdd,
@@ -190,14 +199,15 @@ from_rdd <- function(
 }
 
 #' @rdname from_rdd
+#'
+#' @family Spark dataframe utility functions
+#'
 #' @export
 fromRDD <- from_rdd
 
 #' Retrieve a Spark DataFrame
 #'
 #' Retrieve a Spark DataFrame from a TimeSeriesRDD object
-#'
-#' @importFrom sparklyr spark_dataframe
 #'
 #' @examples
 #'
@@ -217,6 +227,9 @@ fromRDD <- from_rdd
 #'   message("Unable to establish a Spark connection!")
 #' }
 #'
+#' @family Spark dataframe utility functions
+#'
+#' @importFrom sparklyr spark_dataframe
 #' @export
 spark_dataframe.ts_rdd <- function(x) {
   invoke(spark_jobj(x), "toDF")
@@ -248,12 +261,17 @@ spark_dataframe.ts_rdd <- function(x) {
 #'   message("Unable to establish a Spark connection!")
 #' }
 #'
+#' @family Spark dataframe utility functions
+#'
 #' @export
 to_sdf <- function(ts_rdd) {
   ts_rdd %>% spark_dataframe() %>% sdf_register()
 }
 
 #' @rdname to_sdf
+#'
+#' @family Spark dataframe utility functions
+#'
 #' @export
 toSDF <- to_sdf
 
@@ -282,18 +300,31 @@ toSDF <- to_sdf
 #'   message("Unable to establish a Spark connection!")
 #' }
 #'
+#' @family Spark dataframe utility functions
+#'
 #' @importFrom dplyr collect
 #' @export
 collect.ts_rdd <- function(x, ...) {
   to_sdf(x) %>% collect()
 }
 
+#' Retrieve a Spark JVM Object Reference
+#'
+#' See \code{\link[sparklyr:spark_jobj]{spark_jobj}} for more details.
+#'
+#' @family Spark dataframe utility functions
+#'
 #' @export
 #' @importFrom sparklyr spark_jobj
 spark_jobj.ts_rdd <- function(x) {
   x$.jobj
 }
 
+#' Retrieve Spark connection associated with an R object
+#'
+#' See \code{\link[sparklyr:spark_connection]{spark_connection}} for more details.
+#' @family Spark dataframe utility functions
+#'
 #' @export
 #' @importFrom sparklyr spark_connection
 spark_connection.ts_rdd <- function(x) {
