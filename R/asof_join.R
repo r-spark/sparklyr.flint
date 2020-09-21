@@ -3,7 +3,8 @@ NULL
 
 #' Temporal join
 #'
-#' Perform join on 2 `TimeSeriesRDD`s based on inexact timestamp matches
+#' Perform left-outer join on 2 `TimeSeriesRDD`s based on inexact timestamp
+#' matches
 #'
 #' @param left The left `TimeSeriesRDD`
 #' @param right The right `TimeSeriesRDD`
@@ -13,16 +14,19 @@ NULL
 #'   By default, `tol` is "0ns", which means a record from `left` will only be
 #'   matched with a record from `right` if both contain the exact same timestamps.
 #' @param direction Specifies the temporal direction of the join, must be one
-#'   of ">=", "<=", ">", or "<".
+#'   of ">=", "<=", or "<".
 #'   If direction is ">=", then each record from `left` with timestamp `tl`
 #'   gets joined with a record from `right` having the largest/most recent
-#'   timestamp `tr` such that `tl` >= `tr` and abs(`tl` - `tr`) <= `tol`.
+#'   timestamp `tr` such that `tl` >= `tr` and `tl` - `tr` <= `tol` (or
+#'   equivalently, 0 <= `tl` - `tr` <= `tol`).
 #'   If direction is "<=", then each record from `left` with timestamp `tl`
 #'   gets joined with a record from `right` having the smallest/least recent
-#'   timestamp `tr` such that `tl` <= `tr` and abs(`tl` - `tr`) <= `tol`.
+#'   timestamp `tr` such that `tl` <= `tr` and `tr` - `tl` <= `tol` (or
+#'   equivalently, `0 <= `tr` - `tl` <= `tol`).
 #'   If direction is "<", then each record from `left` with timestamp `tl`
 #'   gets joined with a record from `right` having the smallest/least recent
-#'   timestamp `tr` such that `tl` < `tr` and abs(`tl` - `tr`) <= `tol`.
+#'   timestamp `tr` such that `tr` > `tl` and `tr` - `tl` <= `tol` (or
+#'   equivalently, 0 < `tr` - `tl` <= `tol`).
 #' @param key_columns Columns to be used as the matching key among records from
 #'   `left` and `right`: if non-empty, then in addition to matching criteria
 #'   imposed by timestamps, a record from `left` will only match one from the
