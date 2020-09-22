@@ -31,22 +31,27 @@ weighted_corr_test_case_ts <- from_sdf(
   time_unit = "SECONDS",
   time_column = "t"
 )
-ewma_test_case_ids <- c(7L, 3L, rep(c(3L, 7L), 5))
-ewma_test_case_ts <- from_sdf(
+price_ids <- c(7L, 3L, rep(c(3L, 7L), 5))
+price_ts <- from_sdf(
   copy_to(
     sc,
     data.frame(
       time = ceiling(seq(12) / 2),
       price = seq(12) / 2,
-      id = ewma_test_case_ids
+      id = price_ids
     )
   ),
   is_sorted = TRUE,
   time_unit = "DAY"
 )
 
-test_that("summarize_z_score() works as expected", {
-  ts_in_sample_z_score <- summarize_z_score(simple_ts, "v", TRUE) %>% collect()
+test_that("summarize_z_score() works as expected with incremental = FALSE", {
+  ts_in_sample_z_score <- summarize_z_score(
+    simple_ts,
+    "v",
+    include_current_observation = TRUE,
+    incremental = FALSE
+  ) %>% collect()
   expect_equal(
     ts_in_sample_z_score$v_zScore,
     1.52542554,
@@ -54,11 +59,52 @@ test_that("summarize_z_score() works as expected", {
     scale = 1
   )
 
-  ts_out_of_sample_z_score <-
-    summarize_z_score(simple_ts, "v", FALSE) %>% collect()
+  ts_out_of_sample_z_score <- summarize_z_score(
+    simple_ts,
+    "v",
+    include_current_observation = FALSE,
+    incremental = FALSE
+  ) %>%
+    collect()
   expect_equal(
     ts_out_of_sample_z_score$v_zScore,
     1.80906807,
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
+
+test_that("summarize_z_score() works as expected with incremental = TRUE", {
+  ts_in_sample_z_score <- summarize_z_score(
+    price_ts,
+    "price",
+    include_current_observation = TRUE,
+    key_columns = c("id"),
+    incremental = TRUE
+  ) %>%
+    collect()
+  expect_equal(ts_in_sample_z_score$id, price_ids)
+  expect_equal(
+    ts_in_sample_z_score$price_zScore,
+    c(NaN, NaN, 0.70710678, 0.70710678, 1.09108945, 0.92717265,
+      1.24021595, 1.08838387, 1.32701756, 1.20245650, 1.38567360,
+      1.28499134),
+    tolerance = 1e-7,
+    scale = 1
+  )
+
+  ts_out_of_sample_z_score <- summarize_z_score(
+    price_ts,
+    "price",
+    include_current_observation = FALSE,
+    incremental = TRUE
+  ) %>%
+    collect()
+  expect_equal(ts_out_of_sample_z_score$id, price_ids)
+  expect_equal(
+    ts_out_of_sample_z_score$price_zScore,
+    c(NaN, NaN, 2.1213203, 2.0000000, 1.9364917, 1.8973666, 1.8708287,
+      1.8516402, 1.8371173, 1.8257419, 1.8165902, 1.8090681),
     tolerance = 1e-7,
     scale = 1
   )
@@ -404,30 +450,68 @@ test_that("summarize_corr2() with key_columns works as expected", {
   )
 })
 
-test_that("summarize_weighted_corr() works as expected", {
-  ts_weighted_corr <- summarize_weighted_corr(
-    weighted_corr_test_case_ts,
-    "x",
-    "y",
-    "w"
-  ) %>% collect()
-
-  expect_equal(ts_weighted_corr$x_y_w_weightedCorrelation, -1)
-})
-
-test_that("summarize_weighted_corr() with key_columns works as expected", {
+test_that("summarize_weighted_corr() works as expected with incremental = FALSE", {
   ts_weighted_corr <- summarize_weighted_corr(
     weighted_corr_test_case_ts,
     "x",
     "y",
     "w",
-    key_columns = c("id")
+    incremental = FALSE
+  ) %>%
+    collect()
+
+  expect_equal(ts_weighted_corr$x_y_w_weightedCorrelation, -1)
+})
+
+test_that("summarize_weighted_corr() works as expected with incremental = TRUE", {
+  ts_weighted_corr <- summarize_weighted_corr(
+    weighted_corr_test_case_ts,
+    "x",
+    "y",
+    "w",
+    incremental = TRUE
+  ) %>%
+    collect()
+
+  expect_equal(
+    ts_weighted_corr$x_y_w_weightedCorrelation,
+    c(NaN, rep(-1, 8))
+  )
+})
+
+test_that("summarize_weighted_corr() with key_columns works with incremental = FALSE", {
+  ts_weighted_corr <- summarize_weighted_corr(
+    weighted_corr_test_case_ts,
+    "x",
+    "y",
+    "w",
+    key_columns = c("id"),
+    incremental = FALSE
   ) %>%
     collect() %>%
     dplyr::arrange(id)
 
   expect_equal(ts_weighted_corr$id, c(0, 1))
   expect_equal(ts_weighted_corr$x_y_w_weightedCorrelation, c(-1, -1))
+})
+
+test_that("summarize_weighted_corr() with key_columns works with incremental = TRUE", {
+  ts_weighted_corr <- summarize_weighted_corr(
+    weighted_corr_test_case_ts,
+    "x",
+    "y",
+    "w",
+    key_columns = c("id"),
+    incremental = TRUE
+  ) %>%
+    collect() %>%
+    dplyr::arrange(id)
+
+  expect_equal(ts_weighted_corr$id, c(rep(0, 5), rep(1, 4)))
+  expect_equal(
+    ts_weighted_corr$x_y_w_weightedCorrelation,
+    c(NaN, rep(-1, 4), NaN, rep(-1, 3))
+  )
 })
 
 test_that("summarize_ewma() works as expected", {
@@ -448,15 +532,15 @@ test_that("summarize_ewma() works as expected", {
   )
   for (convention in c("core", "legacy")) {
     ts_ewma <- summarize_ewma(
-      ewma_test_case_ts,
+      price_ts,
       "price",
       smoothing_duration = "constant",
       convention = convention,
-      key_columns = "id"
+      key_columns = c("id")
     ) %>%
       collect()
 
-    expect_equal(ts_ewma$id, ewma_test_case_ids)
+    expect_equal(ts_ewma$id, price_ids)
     expect_equal(
       ts_ewma$price_ewma,
       expected[[convention]],

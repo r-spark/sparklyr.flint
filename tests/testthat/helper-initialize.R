@@ -160,20 +160,6 @@ testthat_corr_test_case <- function() {
   )
 }
 
-testthat_weighted_corr_test_case <- function() {
-  testthat_sdf(
-    function() {
-      tibble::tibble(
-        t = 1000 + 100 * c(1, seq(8)),
-        w = seq(9, 1, -1),
-        x = seq(9),
-        y = seq(9, 1, -1)
-      )
-    },
-    ".testthat_weighted_corr_test_case"
-  )
-}
-
 testthat_multiple_simple_ts_test_case <- function() {
   testthat_sdf(
     function() {
