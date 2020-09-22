@@ -10,34 +10,34 @@ summarize_count(ts_rdd, column = NULL, window = NULL, key_columns = list())
 \item{ts_rdd}{Timeseries RDD being summarized}
 
 \item{column}{If not NULL, then report the number of values in the column
-specified that are not NULL or NaN within each time window or group of rows
+specified that are not NULL or NaN within each time window or group of records
 with identical timestamps, and store the counts in a new column named
 `<column>_count`.
-Otherwise the number of rows within each time window or group of rows with
+Otherwise the number of records within each time window or group of records with
 identical timestamps is reported, and stored in a column named `count`.}
 
 \item{window}{Either a R expression specifying time windows to be summarized
 (e.g., `in_past("1h")` to summarize data from looking behind 1 hour at
 each time point, `in_future("5s")` to summarize data from looking forward
 5 seconds at each time point), or `NULL` to compute aggregate statistics
-on rows grouped by timestamps}
+on records grouped by timestamps}
 
 \item{key_columns}{Optional list of columns that will form an equivalence
-relation associating each row with the time series it belongs to (i.e., any
-2 rows having equal values in those columns will be associated with the
-same time series, and any 2 rows having differing values in those columns
-are considered to be from 2 separate time series and will therefore be
-summarized separately)
-By default, `key_colums` is empty and all rows are considered to be part of
-a single time series.}
+relation associating each record with the time series it belongs to (i.e.,
+any 2 records having equal values in those columns will be associated with
+the same time series, and any 2 records having differing values in those
+columns are considered to be from 2 separate time series and will therefore
+be summarized separately)
+By default, `key_colums` is empty and all records are considered to be part
+of a single time series.}
 }
 \value{
 A TimeSeriesRDD containing the summarized result
 }
 \description{
-Count the total number of rows if no column is specified, or the number of
+Count the total number of records if no column is specified, or the number of
 non-null values within the specified column within each time window or within
-each group of rows with identical timestamps
+each group of records with identical timestamps
 }
 \examples{
 

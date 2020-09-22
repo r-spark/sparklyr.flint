@@ -12,16 +12,27 @@ NULL
 #'    (e.g., `in_past("1h")` to summarize data from looking behind 1 hour at
 #'    each time point, `in_future("5s")` to summarize data from looking forward
 #'    5 seconds at each time point), or `NULL` to compute aggregate statistics
-#'    on rows grouped by timestamps
+#'    on records grouped by timestamps
 #' @param column Column to be summarized
 #' @param key_columns Optional list of columns that will form an equivalence
-#'   relation associating each row with the time series it belongs to (i.e., any
-#'   2 rows having equal values in those columns will be associated with the
-#'   same time series, and any 2 rows having differing values in those columns
-#'   are considered to be from 2 separate time series and will therefore be
-#'   summarized separately)
-#'   By default, `key_colums` is empty and all rows are considered to be part of
-#'   a single time series.
+#'   relation associating each record with the time series it belongs to (i.e.,
+#'   any 2 records having equal values in those columns will be associated with
+#'   the same time series, and any 2 records having differing values in those
+#'   columns are considered to be from 2 separate time series and will therefore
+#'   be summarized separately)
+#'   By default, `key_colums` is empty and all records are considered to be part
+#'   of a single time series.
+#' @param incremental If FALSE and `key_columns` is empty, then apply the
+#'   summarizer to all records of `ts_rdd`.
+#'   If FALSE and `key_columns` is non-empty, then apply the summarizer to all
+#'   records within each group determined by `key_columns`.
+#'   If TRUE and `key_columns` is empty, then for each record in `ts_rdd`,
+#'   the summarizer is applied to that record and all records preceding it, and
+#'   the summarized result is associated with the timestamp of that record.
+#'   If TRUE and `key_columns` is non-empty, then for each record within a group
+#'   of records determined by 1 or more key columns, the summarizer is applied
+#'   to that record and all records preceding it within its group, and the
+#'   summarized result is associated with the timestamp of that record.
 #'
 #' @name summarizers
 NULL
@@ -70,28 +81,39 @@ summarize_time_range <- function(
   )
 }
 
-summarize <- function(ts_rdd, summarizer_args, key_columns = list()) {
+summarize <- function(
+                      ts_rdd,
+                      summarizer_args,
+                      key_columns = list(),
+                      incremental = FALSE) {
   sc <- spark_connection(ts_rdd)
   summarizer <- new_summarizer(sc, summarizer_args)
+  method <- (
+    if (incremental) {
+      "addSummaryColumns"
+    } else {
+      "summarize"
+    }
+  )
 
   ts_rdd %>%
     spark_jobj() %>%
-    invoke("summarize", summarizer, as.list(key_columns)) %>%
+    invoke(method, summarizer, as.list(key_columns)) %>%
     new_ts_rdd()
 }
 
 #' Count summarizer
 #'
-#' Count the total number of rows if no column is specified, or the number of
+#' Count the total number of records if no column is specified, or the number of
 #' non-null values within the specified column within each time window or within
-#' each group of rows with identical timestamps
+#' each group of records with identical timestamps
 #'
 #' @inheritParams summarizers
 #' @param column If not NULL, then report the number of values in the column
-#'   specified that are not NULL or NaN within each time window or group of rows
+#'   specified that are not NULL or NaN within each time window or group of records
 #'   with identical timestamps, and store the counts in a new column named
 #'   `<column>_count`.
-#'   Otherwise the number of rows within each time window or group of rows with
+#'   Otherwise the number of records within each time window or group of records with
 #'   identical timestamps is reported, and stored in a column named `count`.
 #'
 #' @return A TimeSeriesRDD containing the summarized result
@@ -128,7 +150,7 @@ summarize_count <- function(
 #' Minimum value summarizer
 #'
 #' Find minimum value among values from `column` within each time window or
-#' within each group of rows with identical timestamps, and store results in a
+#' within each group of records with identical timestamps, and store results in a
 #' new column named `<column>_min`
 #'
 #' @inheritParams summarizers
@@ -162,7 +184,7 @@ summarize_min <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' Maximum value summarizer
 #'
 #' Find maximum value among values from `column` within each time window or
-#' within each group of rows with identical timestamps, and store results in a
+#' within each group of records with identical timestamps, and store results in a
 #' new column named `<column>_max`
 #'
 #' @inheritParams summarizers
@@ -229,7 +251,7 @@ summarize_sum <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' Product summarizer
 #'
 #' Compute product of values from the given column within a moving time window
-#  or within each group of rows with identical timestamps and store results in a
+#  or within each group of records with identical timestamps and store results in a
 #' new column named `<column>_product`
 #'
 #' @inheritParams summarizers
@@ -263,7 +285,7 @@ summarize_product <- function(ts_rdd, column, window = NULL, key_columns = list(
 #' Dot product summarizer
 #'
 #' Compute dot product of values from `xcolumn` and `ycolumn` within a moving
-#' time window or within each group of rows with identical timestamps and store
+#' time window or within each group of records with identical timestamps and store
 #' results in a new column named `<xcolumn>_<ycolumn>_dotProduct`
 #'
 #' @inheritParams summarizers
@@ -379,7 +401,7 @@ summarize_weighted_avg <- function(
 #'
 #' Compute unbiased (i.e., Bessel's correction is applied) sample standard
 #' deviation of values from `column` within each time window or within each
-#' group of rows with identical timestamps, and store results in a new column
+#' group of records with identical timestamps, and store results in a new column
 #' named `<column>_stddev`
 #'
 #' @inheritParams summarizers
@@ -413,7 +435,7 @@ summarize_stddev <- function(ts_rdd, column, window = NULL, key_columns = list()
 #' Variance summarizer
 #'
 #' Compute variance of values from `column` within each time window or within
-#' each group of rows with identical timestamps, and store results in a new column
+#' each group of records with identical timestamps, and store results in a new column
 #' named `<column>_variance`, with Bessel's correction applied to the results
 #'
 #' @inheritParams summarizers
@@ -447,7 +469,7 @@ summarize_var <- function(ts_rdd, column, window = NULL, key_columns = list()) {
 #' Covariance summarizer
 #'
 #' Compute covariance between values from `xcolumn` and `ycolumn` within each time
-#' window or within each group of rows with identical timestamps, and store results
+#' window or within each group of records with identical timestamps, and store results
 #' in a new column named `<xcolumn>_<ycolumn>_covariance`
 #'
 #' @inheritParams summarizers
@@ -488,7 +510,7 @@ summarize_covar <- function(
 #' Weighted covariance summarizer
 #'
 #' Compute unbiased weighted covariance between values from `xcolumn` and
-#' `ycolumn` within each time window or within each group of rows with identical
+#' `ycolumn` within each time window or within each group of records with identical
 #' timestamps, using values from `weight_column` as relative weights, and store
 #' results in a new column named
 #' `<xcolumn>_<ycolumn>_<weight_column>_weightedCovariance`
@@ -538,7 +560,7 @@ summarize_weighted_covar <- function(
 #' Quantile summarizer
 #'
 #' Compute quantiles of `column` within each time window or within each group of
-#' rows with identical time-stamps, and store results in new columns named
+#' records with identical time-stamps, and store results in new columns named
 #' `<column>_<quantile value>quantile`
 #'
 #' @inheritParams summarizers
@@ -580,10 +602,10 @@ summarize_quantile <- function(
 
 #' Z-score summarizer
 #'
-#' Compute z-score of the most recent value in the column specified, with
-#' respect to the sample mean and standard deviation observed so far, with the
-#' option for out-of-sample calculation, and store result in a new column named
-#' `<column>_zScore`
+#' Compute z-score of value(s) in the column specified, with respect to the
+#' sample mean and standard deviation observed so far, with the option for out-
+#' of-sample calculation, and store result in a new column named
+#' `<column>_zScore`.
 #'
 #' @inheritParams summarizers
 #' @param include_current_observation If true, then use unbiased sample standard
@@ -614,10 +636,11 @@ summarize_z_score <- function(
                               ts_rdd,
                               column,
                               include_current_observation = FALSE,
-                              key_columns = list()) {
+                              key_columns = list(),
+                              incremental = FALSE) {
   summarizer_args <- list(method = "zScore", column, include_current_observation)
 
-  summarize(ts_rdd, summarizer_args, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns, incremental)
 }
 
 #' N-th moment summarizer
@@ -648,10 +671,10 @@ summarize_z_score <- function(
 #' }
 #'
 #' @export
-summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list()) {
+summarize_nth_moment <- function(ts_rdd, column, n, key_columns = list(), incremental = FALSE) {
   summarizer_args <- list(method = "nthMoment", column, as.integer(n))
 
-  summarize(ts_rdd, summarizer_args, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns, incremental)
 }
 
 #' N-th central moment summarizer
@@ -686,10 +709,11 @@ summarize_nth_central_moment <- function(
                                          ts_rdd,
                                          column,
                                          n,
-                                         key_columns = list()) {
+                                         key_columns = list(),
+                                         incremental = FALSE) {
   summarizer_args <- list(method = "nthCentralMoment", column, as.integer(n))
 
-  summarize(ts_rdd, summarizer_args, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns, incremental)
 }
 
 #' Correlation summarizer
@@ -722,10 +746,10 @@ summarize_nth_central_moment <- function(
 #' }
 #'
 #' @export
-summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
+summarize_corr <- function(ts_rdd, columns, key_columns = list(), incremental = FALSE) {
   summarizer_args <- list(method = "correlation", as.list(columns))
 
-  summarize(ts_rdd, summarizer_args, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns, incremental)
 }
 
 #' Pairwise correlation summarizer
@@ -764,10 +788,10 @@ summarize_corr <- function(ts_rdd, columns, key_columns = list()) {
 #' }
 #'
 #' @export
-summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list()) {
+summarize_corr2 <- function(ts_rdd, xcolumns, ycolumns, key_columns = list(), incremental = FALSE) {
   summarizer_args <- list(method = "correlation", as.list(xcolumns), as.list(ycolumns))
 
-  summarize(ts_rdd, summarizer_args, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns, incremental)
 }
 
 #' Pearson weighted correlation summarizer
@@ -806,7 +830,8 @@ summarize_weighted_corr <- function(
                                     xcolumn,
                                     ycolumn,
                                     weight_column,
-                                    key_columns = list()) {
+                                    key_columns = list(),
+                                    incremental = FALSE) {
   summarizer_args <- list(
     method = "weightedCorrelation",
     xcolumn,
@@ -814,7 +839,7 @@ summarize_weighted_corr <- function(
     weight_column
   )
 
-  summarize(ts_rdd, summarizer_args, key_columns)
+  summarize(ts_rdd, summarizer_args, key_columns, incremental)
 }
 
 #' Exponential weighted moving average summarizer
@@ -894,20 +919,14 @@ summarize_ewma <- function(
                            convention = c("core", "legacy"),
                            key_columns = list()) {
   convention <- match.arg(convention)
-
   summarizer_args <- list(
-    "ewma",
+    method = "ewma",
     column,
     alpha,
     time_column,
     smoothing_duration,
     convention
   )
-  sc <- spark_connection(ts_rdd)
-  summarizer <- new_summarizer(sc, summarizer_args)
 
-  ts_rdd %>%
-    spark_jobj() %>%
-    invoke("addSummaryColumns", summarizer, key_columns) %>%
-    new_ts_rdd()
+  summarize(ts_rdd, summarizer_args, key_columns, incremental = TRUE)
 }
