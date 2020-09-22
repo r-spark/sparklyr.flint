@@ -31,6 +31,19 @@ weighted_corr_test_case_ts <- from_sdf(
   time_unit = "SECONDS",
   time_column = "t"
 )
+ewma_test_case_ids <- c(7L, 3L, rep(c(3L, 7L), 5))
+ewma_test_case_ts <- from_sdf(
+  copy_to(
+    sc,
+    data.frame(
+      time = ceiling(seq(12) / 2),
+      price = seq(12) / 2,
+      id = ewma_test_case_ids
+    )
+  ),
+  is_sorted = TRUE,
+  time_unit = "DAY"
+)
 
 test_that("summarize_z_score() works as expected", {
   ts_in_sample_z_score <- summarize_z_score(simple_ts, "v", TRUE) %>% collect()
@@ -415,4 +428,40 @@ test_that("summarize_weighted_corr() with key_columns works as expected", {
 
   expect_equal(ts_weighted_corr$id, c(0, 1))
   expect_equal(ts_weighted_corr$x_y_w_weightedCorrelation, c(-1, -1))
+})
+
+test_that("summarize_ewma() works as expected", {
+  expected <- tibble::tribble(
+    ~core,              ~legacy,
+    0.5,                0.5,
+    1.0,                1.0,
+    1.2564102564102564, 2.45,
+    1.2692307692307692, 2.475,
+    1.692375109553024,  4.827500000000001,
+    1.8759859772129714, 5.35125,
+    2.179621954917619,  8.086125,
+    2.4485157855722903, 9.0836875,
+    2.6924828118762094, 12.181818749999998,
+    3.012456813846092,  13.629503125,
+    3.222386784002165,  17.0727278125,
+    3.5763397378536745, 18.948027968749997
+  )
+  for (convention in c("core", "legacy")) {
+    ts_ewma <- summarize_ewma(
+      ewma_test_case_ts,
+      "price",
+      smoothing_duration = "constant",
+      convention = convention,
+      key_columns = "id"
+    ) %>%
+      collect()
+
+    expect_equal(ts_ewma$id, ewma_test_case_ids)
+    expect_equal(
+      ts_ewma$price_ewma,
+      expected[[convention]],
+      tolerance = 1e-7,
+      scale = 1
+    )
+  }
 })

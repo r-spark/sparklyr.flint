@@ -59,6 +59,7 @@ Other summarizers:
 \code{\link{summarize_count}()},
 \code{\link{summarize_covar}()},
 \code{\link{summarize_dot_product}()},
+\code{\link{summarize_ewma}()},
 \code{\link{summarize_max}()},
 \code{\link{summarize_min}()},
 \code{\link{summarize_nth_central_moment}()},

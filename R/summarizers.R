@@ -44,7 +44,7 @@ new_summarizer <- function(sc, summarizer_args) {
     summarizer_args
   )
 
-  summarizer <- do.call(invoke_static, summarizer_args)
+  do.call(invoke_static, summarizer_args)
 }
 
 summarize_time_range <- function(
@@ -815,4 +815,99 @@ summarize_weighted_corr <- function(
   )
 
   summarize(ts_rdd, summarizer_args, key_columns)
+}
+
+#' Exponential weighted moving average summarizer
+#'
+#' Compute exponential weighted moving average (EWMA) of `column` and store
+#' results in a new column named `<column>_ewma`
+#' At time t[n], the i-th value x[i] with timestamp t[i] will have a weighted
+#' value of [weight(i, n) * x[i]], where weight(i, n) is determined by both
+#' `alpha` and `smoothing_duration`.
+#'
+#' @inheritParams summarizers
+#' @param alpha A smoothing factor between 0 and 1 (default: 0.05) -- a higher
+#'   alpha discounts older observations faster
+#' @param smoothing_duration A time duration specified in string form (e.g.,
+#'   "1d", "1h", "15m", etc) or "constant".
+#'   The weight applied to a past observation from time t[p] at time t[n] is
+#'   jointly determined by `alpha` and `smoothing_duration`.
+#'
+#'   If `smoothing_duration` is a fixed time duration such as "1d", then
+#'   weight(p, n) = (1 - alpha) ^ [(t[n] - t[p]) / smoothing_duration]
+#'
+#'   If `smoothing_duration` is "constant", then
+#'   weight(p, n) = (1 - alpha) ^ (n - p)
+#'   (i.e., this option assumes the difference between consecutive timestamps
+#'   is equal to some constant `diff`, and `smoothing_duration` is effectively
+#'   also equal to `diff`, so that t[n] - t[p] = (n - p) * diff and
+#'   weight(p, n) = (1 - alpha) ^ [(t[n] - t[p]) / smoothing_duration] =
+#'   (1 - alpha) ^ [(n - p) * diff / diff] = (1 - alpha) ^ (n - p))
+#' @param time_column Name of the column containing timestamps (default: "time")
+#' @param convention One of "core" or "legacy" (default: "core")
+#'
+#'   If `convention` is "core", then the output will be weighted sum of all
+#'   observations divided by the sum of all weight coefficients (see
+#'   https://github.com/twosigma/flint/blob/master/doc/ema.md#core).
+#'
+#'   If `convention` is "legacy", then the output will simply be the weighted
+#'   sum of all observations, without being normalized by the sum of all weight
+#'   coefficients (see
+#'   https://github.com/twosigma/flint/blob/master/doc/ema.md#legacy).
+#'
+#' @family summarizers
+#'
+#' @examples
+#'
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- try_spark_connect(master = "local")
+#'
+#' if (!is.null(sc)) {
+#'   price_sdf <- copy_to(
+#'     sc,
+#'     data.frame(
+#'       time = ceiling(seq(12) / 2),
+#'       price = seq(12) / 2,
+#'       id = rep(c(3L, 7L), 6)
+#'     )
+#'   )
+#'   ts <- fromSDF(price_sdf, is_sorted = TRUE, time_unit = "DAYS")
+#'   ts_ewma <- summarize_ewma(
+#'     ts,
+#'     column = "price",
+#'     smoothing_duration = "1d",
+#'     key_columns = "id"
+#'   )
+#' } else {
+#'   message("Unable to establish a Spark connection!")
+#' }
+#'
+#' @export
+summarize_ewma <- function(
+                           ts_rdd,
+                           column,
+                           alpha = 0.05,
+                           smoothing_duration = "1d",
+                           time_column = "time",
+                           convention = c("core", "legacy"),
+                           key_columns = list()) {
+  convention <- match.arg(convention)
+
+  summarizer_args <- list(
+    "ewma",
+    column,
+    alpha,
+    time_column,
+    smoothing_duration,
+    convention
+  )
+  sc <- spark_connection(ts_rdd)
+  summarizer <- new_summarizer(sc, summarizer_args)
+
+  ts_rdd %>%
+    spark_jobj() %>%
+    invoke("addSummaryColumns", summarizer, key_columns) %>%
+    new_ts_rdd()
 }
