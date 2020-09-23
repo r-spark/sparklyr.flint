@@ -72,6 +72,7 @@ if (!is.null(sc)) {
 }
 \seealso{
 Other summarizers: 
+\code{\link{ols_regression}()},
 \code{\link{summarize_avg}()},
 \code{\link{summarize_corr}()},
 \code{\link{summarize_count}()},
