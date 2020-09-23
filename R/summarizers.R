@@ -1012,3 +1012,43 @@ summarize_kurtosis <- function(
 
   summarize(ts_rdd, summarizer_args, key_columns, incremental)
 }
+
+#' Geometric mean summarizer
+#'
+#' Compute geometric mean of values from `column` within a moving time window or
+#' within each group of records with identical timestamps and store results in a
+#' new column named `<column>_geometricMean`
+#'
+#' @inheritParams summarizers
+#'
+#' @return A TimeSeriesRDD containing the summarized result
+#'
+#' @family summarizers
+#'
+#' @examples
+#'
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- try_spark_connect(master = "local")
+#'
+#' if (!is.null(sc)) {
+#'   sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = seq(10, 1, -1)))
+#'   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_geometric_mean <- summarize_geometric_mean(
+#'     ts, column = "u", window = in_past("3s")
+#'   )
+#' } else {
+#'   message("Unable to establish a Spark connection!")
+#' }
+#'
+#' @export
+summarize_geometric_mean <- function(
+                                     ts_rdd,
+                                     column,
+                                     key_columns = list(),
+                                     incremental = FALSE) {
+  summarizer_args <- list(method = "geometricMean", column)
+
+  summarize(ts_rdd, summarizer_args, key_columns, incremental)
+}

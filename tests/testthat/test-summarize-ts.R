@@ -550,3 +550,21 @@ test_that("summarize_kurtosis() works as expected", {
     rs$price_kurtosis, -1.2167832167832167, tolerance = 1e-12, scale = 1
   )
 })
+
+test_that("summarize_geometric_mean() works as expected", {
+  rs <- summarize_geometric_mean(price_ts, "price", key_columns = c("id")) %>%
+    collect()
+
+  expect_equal(
+    rs %>% dplyr::filter(id == 3L) %>% dplyr::pull(price_geometricMean),
+    2.621877636494,
+    tolerance = 1e-12,
+    scale = 1
+  )
+  expect_equal(
+    rs %>% dplyr::filter(id == 7L) %>% dplyr::pull(price_geometricMean),
+    2.667168275340,
+    tolerance = 1e-12,
+    scale = 1
+  )
+})

@@ -61,6 +61,7 @@ if (!is.null(sc)) {
 }
 \seealso{
 Other summarizers: 
+\code{\link{ols_regression}()},
 \code{\link{summarize_avg}()},
 \code{\link{summarize_corr2}()},
 \code{\link{summarize_corr}()},
@@ -68,6 +69,7 @@ Other summarizers:
 \code{\link{summarize_covar}()},
 \code{\link{summarize_dot_product}()},
 \code{\link{summarize_ewma}()},
+\code{\link{summarize_geometric_mean}()},
 \code{\link{summarize_max}()},
 \code{\link{summarize_min}()},
 \code{\link{summarize_nth_central_moment}()},
