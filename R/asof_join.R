@@ -94,10 +94,26 @@ asof_join <- function(left,
 #'
 #' @inheritParams asof_join
 #'
+#' @examples
+#'
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- try_spark_connect(master = "local")
+#' if (!is.null(sc)) {
+#'   ts_1 <- copy_to(sc, tibble::tibble(t = seq(10), u = seq(10))) %>%
+#'     from_sdf(is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_2 <- copy_to(sc, tibble::tibble(t = seq(10) + 1, v = seq(10) + 1L)) %>%
+#'     from_sdf(is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   left_join_ts <- asof_left_join(ts_1, ts_2, tol = "1s")
+#' } else {
+#'   message("Unable to establish a Spark connection!")
+#' }
+#'
 #' @family Temporal join functions
 #'
 #' @export
-left_join <- function(left,
+asof_left_join <- function(left,
                       right,
                       tol = "0ms",
                       key_columns = list(),
@@ -130,21 +146,37 @@ left_join <- function(left,
 #'   should match record from `right` with the smallest timestamp strictly
 #'   greater than `t` (default: FALSE)
 #'
+#' @examples
+#'
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- try_spark_connect(master = "local")
+#' if (!is.null(sc)) {
+#'   ts_1 <- copy_to(sc, tibble::tibble(t = seq(10), u = seq(10))) %>%
+#'     from_sdf(is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   ts_2 <- copy_to(sc, tibble::tibble(t = seq(10) + 1, v = seq(10) + 1L)) %>%
+#'     from_sdf(is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+#'   future_left_join_ts <- asof_future_left_join(ts_1, ts_2, tol = "1s")
+#' } else {
+#'   message("Unable to establish a Spark connection!")
+#' }
+#'
 #' @family Temporal join functions
 #'
 #' @export
-future_left_join <- function(left,
+asof_future_left_join <- function(left,
                       right,
                       tol = "0ms",
                       key_columns = list(),
                       left_prefix = NULL,
                       right_prefix = NULL,
-                      strict_lookahead
+                      strict_lookahead = FALSE
 ) {
   asof_join(left = left,
             right = right,
             tol = tol,
-            direction = if (strictly_lookahead) "<" else "<=",
+            direction = if (strict_lookahead) "<" else "<=",
             key_columns = key_columns,
             left_prefix = left_prefix,
             right_prefix = right_prefix)

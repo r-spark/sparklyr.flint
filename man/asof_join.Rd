@@ -76,7 +76,7 @@ if (!is.null(sc)) {
 }
 \seealso{
 Other Temporal join functions: 
-\code{\link{future_left_join}()},
-\code{\link{left_join}()}
+\code{\link{asof_future_left_join}()},
+\code{\link{asof_left_join}()}
 }
 \concept{Temporal join functions}

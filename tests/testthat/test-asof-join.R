@@ -170,7 +170,7 @@ test_that("asof_join works with direction = \"<\"", {
   )
 })
 
-test_that("left_join being equivalent to Flint leftJoin", {
+test_that("asof_left_join being equivalent to Flint leftJoin", {
   actual <- asof_join(ts_2, ts_1, direction = ">=") %>% collect()
   expected <- spark_jobj(ts_2) %>%
     invoke("leftJoin", spark_jobj(ts_1), tolerance = "0ns", list(), NULL, NULL) %>%
@@ -178,7 +178,7 @@ test_that("left_join being equivalent to Flint leftJoin", {
     collect()
   expect_equivalent(actual, expected)
 
-  actual <- asof_join(ts_1, ts_2, direction = ">=") %>% collect()
+  actual <- asof_left_join(ts_1, ts_2) %>% collect()
   expected <- spark_jobj(ts_1) %>%
     invoke("leftJoin", spark_jobj(ts_2), tolerance = "0ns", list(), NULL, NULL) %>%
     new_ts_rdd() %>%
@@ -186,8 +186,8 @@ test_that("left_join being equivalent to Flint leftJoin", {
   expect_equivalent(actual, expected)
 })
 
-test_that("future_left_join being equivalent to Flint futureLeftJoin", {
-  actual <- asof_join(ts_1, ts_2, direction = "<=") %>% collect()
+test_that("asof_future_left_join being equivalent to Flint futureLeftJoin", {
+  actual <- asof_future_left_join(ts_1, ts_2) %>% collect()
   expected <- spark_jobj(ts_1) %>%
     invoke(
       "futureLeftJoin",
@@ -202,7 +202,10 @@ test_that("future_left_join being equivalent to Flint futureLeftJoin", {
     collect()
   expect_equivalent(actual, expected)
 
-  actual <- asof_join(ts_1, ts_2, tol = "1s", direction = "<") %>% collect()
+  actual <- asof_future_left_join(
+    ts_1, ts_2, tol = "1s", strict_lookahead = TRUE
+  ) %>%
+    collect()
   expected <- spark_jobj(ts_1) %>%
     invoke(
       "futureLeftJoin",
