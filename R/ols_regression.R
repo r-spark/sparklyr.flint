@@ -33,6 +33,30 @@ NULL
 #' @param const_var_threshold Consider an independent variable `x` as constant
 #'   if ((number of observations) * variance(x)) is less than this value.
 #'   Default: 1e-12.
+#' @return A TimeSeries RDD with the following schema:
+#'   * - "samples": [[LongType]], the number of samples
+#'   * - "beta": [[ArrayType]] of [[DoubleType]], beta without the intercept
+#'       component
+#'   * - "intercept": [[DoubleType]], the intercept
+#'   * - "hasIntercept": [[BooleanType]], whether the model has an intercept
+#'       term
+#'   * - "stdErr_intercept": [[DoubleType]], the standard error of the intercept
+#'   * - "stdErr_beta": [[ArrayType]] of [[DoubleType]], the standard error of
+#'       beta
+#'   * - "rSquared": [[DoubleType]], the r-squared statistics
+#'   * - "r": [[DoubleType]], the squared root of r-squared statistics
+#'   * - "tStat_intercept": [[DoubleType]], the t-stats of the intercept
+#'   * - "tStat_beta": [[ArrayType]] of [[DoubleType]], the t-stats of beta
+#'   * - "logLikelihood": [[DoubleType]], the log-likelihood of the data given
+#'       the fitted betas
+#'   * - "akaikeIC": [[DoubleType]], the Akaike information criterion
+#'   * - "bayesIC": [[DoubleType]], the Bayes information criterion
+#'   * - "cond": [[DoubleType]], the condition number of the Gram matrix X^TX
+#'       where X is the matrix formed by row vectors of independent variables
+#'       (including a constant entry corresponding to the intercept if
+#'       `has_intercept` is TRUE)
+#'   * - "const_columns": [[ArrayType]] of [[StringType]], the list of
+#'       independent variables that are considered constants
 #'
 #' @family summarizers
 #'
