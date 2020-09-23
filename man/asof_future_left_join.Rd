@@ -11,7 +11,7 @@ asof_future_left_join(
   key_columns = list(),
   left_prefix = NULL,
   right_prefix = NULL,
-  strict_lookahead
+  strict_lookahead = FALSE
 )
 }
 \arguments{

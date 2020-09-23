@@ -51,6 +51,7 @@ if (!is.null(sc)) {
 }
 \seealso{
 Other summarizers: 
+\code{\link{ols_regression}()},
 \code{\link{summarize_corr2}()},
 \code{\link{summarize_corr}()},
 \code{\link{summarize_count}()},

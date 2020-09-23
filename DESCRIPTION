@@ -30,9 +30,10 @@ Collate:
     'sdf_utils.R'
     'asof_join.R'
     'init.R'
-    'reexports.R'
     'window_exprs.R'
     'summarizers.R'
+    'ols_regression.R'
+    'reexports.R'
     'utils.R'
 Suggests:
     knitr,
