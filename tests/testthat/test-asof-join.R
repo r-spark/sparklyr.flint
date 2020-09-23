@@ -32,7 +32,7 @@ ts_3_with_key_cols <- copy_to(
 ) %>%
   from_sdf(is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
 
-test_that("asof_join works with direction = \">=\"", {
+test_that("asof_join() works with direction = \">=\"", {
   rs <- asof_join(ts_2, ts_1, direction = ">=") %>% collect()
   expect_equivalent(
     rs,
@@ -82,7 +82,7 @@ test_that("asof_join works with direction = \">=\"", {
   )
 })
 
-test_that("asof_join works with direction = \"<=\"", {
+test_that("asof_join() works with direction = \"<=\"", {
   rs <- asof_join(ts_1, ts_2, direction = "<=") %>% collect()
   expect_equivalent(
     rs,
@@ -132,7 +132,7 @@ test_that("asof_join works with direction = \"<=\"", {
   )
 })
 
-test_that("asof_join works with direction = \"<\"", {
+test_that("asof_join() works with direction = \"<\"", {
   rs <- asof_join(ts_1, ts_2, direction = "<") %>% collect()
   expect_equivalent(
     rs,
@@ -170,7 +170,7 @@ test_that("asof_join works with direction = \"<\"", {
   )
 })
 
-test_that("asof_left_join being equivalent to Flint leftJoin", {
+test_that("asof_left_join() being equivalent to Flint leftJoin", {
   actual <- asof_join(ts_2, ts_1, direction = ">=") %>% collect()
   expected <- spark_jobj(ts_2) %>%
     invoke("leftJoin", spark_jobj(ts_1), tolerance = "0ns", list(), NULL, NULL) %>%
@@ -186,7 +186,7 @@ test_that("asof_left_join being equivalent to Flint leftJoin", {
   expect_equivalent(actual, expected)
 })
 
-test_that("asof_future_left_join being equivalent to Flint futureLeftJoin", {
+test_that("asof_future_left_join() being equivalent to Flint futureLeftJoin", {
   actual <- asof_future_left_join(ts_1, ts_2) %>% collect()
   expected <- spark_jobj(ts_1) %>%
     invoke(
@@ -221,7 +221,7 @@ test_that("asof_future_left_join being equivalent to Flint futureLeftJoin", {
   expect_equivalent(actual, expected)
 })
 
-test_that("asof_join works with left_prefix and right_prefix", {
+test_that("asof_join() works with left_prefix and right_prefix", {
   rs <- asof_join(
     ts_1, ts_2, tol = "1s", direction = ">=", left_prefix = "left", right_prefix = "right"
   ) %>% collect()
@@ -251,7 +251,7 @@ test_that("asof_join works with left_prefix and right_prefix", {
   )
 })
 
-test_that("asof_join works with key columns", {
+test_that("asof_join() works with key columns", {
   rs <- asof_join(
     ts_2_with_key_cols, ts_1, direction = ">=", key_columns = c("k1", "k2")
   ) %>%

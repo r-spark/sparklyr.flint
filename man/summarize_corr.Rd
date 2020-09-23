@@ -66,6 +66,7 @@ Other summarizers:
 \code{\link{summarize_covar}()},
 \code{\link{summarize_dot_product}()},
 \code{\link{summarize_ewma}()},
+\code{\link{summarize_geometric_mean}()},
 \code{\link{summarize_kurtosis}()},
 \code{\link{summarize_max}()},
 \code{\link{summarize_min}()},
