@@ -31,19 +31,6 @@ weighted_corr_test_case_ts <- from_sdf(
   time_unit = "SECONDS",
   time_column = "t"
 )
-price_ids <- c(7L, 3L, rep(c(3L, 7L), 5))
-price_ts <- from_sdf(
-  copy_to(
-    sc,
-    data.frame(
-      time = ceiling(seq(12) / 2),
-      price = seq(12) / 2,
-      id = price_ids
-    )
-  ),
-  is_sorted = TRUE,
-  time_unit = "DAY"
-)
 
 test_that("summarize_z_score() works as expected with incremental = FALSE", {
   ts_in_sample_z_score <- summarize_z_score(
@@ -548,4 +535,18 @@ test_that("summarize_ewma() works as expected", {
       scale = 1
     )
   }
+})
+
+test_that("summarize_skewness() works as expected", {
+  rs <- summarize_skewness(price_ts, "price") %>% collect()
+
+  expect_equal(rs$price_skewness, 0)
+})
+
+test_that("summarize_kurtosis() works as expected", {
+  rs <- summarize_kurtosis(price_ts, "price") %>% collect()
+
+  expect_equal(
+    rs$price_kurtosis, -1.2167832167832167, tolerance = 1e-12, scale = 1
+  )
 })

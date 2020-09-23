@@ -930,3 +930,85 @@ summarize_ewma <- function(
 
   summarize(ts_rdd, summarizer_args, key_columns, incremental = TRUE)
 }
+
+#' Skewness summarizer
+#'
+#' Compute skewness (third standardized moment) of `column` and store the result
+#' in a new column named `<column>_skewness`
+#'
+#' @inheritParams summarizers
+#' @family summarizers
+#'
+#' @examples
+#'
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- try_spark_connect(master = "local")
+#'
+#' if (!is.null(sc)) {
+#'   price_sdf <- copy_to(
+#'     sc,
+#'     data.frame(
+#'       time = ceiling(seq(12) / 2),
+#'       price = seq(12) / 2,
+#'       id = rep(c(3L, 7L), 6)
+#'     )
+#'   )
+#'   ts <- fromSDF(price_sdf, is_sorted = TRUE, time_unit = "DAYS")
+#'   ts_skewness <- summarize_skewness(ts, column = "price")
+#' } else {
+#'   message("Unable to establish a Spark connection!")
+#' }
+#'
+#' @export
+summarize_skewness <- function(
+                               ts_rdd,
+                               column,
+                               key_columns = list(),
+                               incremental = FALSE) {
+  summarizer_args <- list(method = "skewness", column)
+
+  summarize(ts_rdd, summarizer_args, key_columns, incremental)
+}
+
+#' Kurtosis summarizer
+#'
+#' Compute the excess kurtosis (fourth standardized moment minus 3) of `column`
+#' and store the result in a new column named `<column>_kurtosis`
+#'
+#' @inheritParams summarizers
+#' @family summarizers
+#'
+#' @examples
+#'
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- try_spark_connect(master = "local")
+#'
+#' if (!is.null(sc)) {
+#'   price_sdf <- copy_to(
+#'     sc,
+#'     data.frame(
+#'       time = ceiling(seq(12) / 2),
+#'       price = seq(12) / 2,
+#'       id = rep(c(3L, 7L), 6)
+#'     )
+#'   )
+#'   ts <- fromSDF(price_sdf, is_sorted = TRUE, time_unit = "DAYS")
+#'   ts_kurtosis <- summarize_kurtosis(ts, column = "price")
+#' } else {
+#'   message("Unable to establish a Spark connection!")
+#' }
+#'
+#' @export
+summarize_kurtosis <- function(
+                               ts_rdd,
+                               column,
+                               key_columns = list(),
+                               incremental = FALSE) {
+  summarizer_args <- list(method = "kurtosis", column)
+
+  summarize(ts_rdd, summarizer_args, key_columns, incremental)
+}

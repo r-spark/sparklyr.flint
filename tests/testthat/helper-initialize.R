@@ -209,3 +209,17 @@ testthat_weighted_corr_test_case <- function() {
     ".testthat_weighted_corr_test_case"
   )
 }
+
+price_ids <- c(7L, 3L, rep(c(3L, 7L), 5))
+price_ts <- from_sdf(
+  copy_to(
+    testthat_spark_connection(),
+    data.frame(
+      time = ceiling(seq(12) / 2),
+      price = seq(12) / 2,
+      id = price_ids
+    )
+  ),
+  is_sorted = TRUE,
+  time_unit = "DAY"
+)
