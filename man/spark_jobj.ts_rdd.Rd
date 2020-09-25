@@ -4,10 +4,31 @@
 \alias{spark_jobj.ts_rdd}
 \title{Retrieve a Spark JVM Object Reference}
 \usage{
-\method{spark_jobj}{ts_rdd}(x)
+\method{spark_jobj}{ts_rdd}(x, ...)
+}
+\arguments{
+\item{x}{An R object containing, or wrapping, a 'spark_jobj'.}
+
+\item{...}{Optional arguments; currently unused.}
 }
 \description{
 See \code{\link[sparklyr:spark_jobj]{spark_jobj}} for more details.
+}
+\examples{
+
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- try_spark_connect(master = "local")
+
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  print(spark_jobj(ts))
+} else {
+  message("Unable to establish a Spark connection!")
+}
+
 }
 \seealso{
 Other Spark dataframe utility functions: 

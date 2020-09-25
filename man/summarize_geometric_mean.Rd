@@ -55,9 +55,7 @@ sc <- try_spark_connect(master = "local")
 if (!is.null(sc)) {
   sdf <- copy_to(sc, tibble::tibble(t = seq(10), u = seq(10, 1, -1)))
   ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
-  ts_geometric_mean <- summarize_geometric_mean(
-    ts, column = "u", window = in_past("3s")
-  )
+  ts_geometric_mean <- summarize_geometric_mean(ts, column = "u")
 } else {
   message("Unable to establish a Spark connection!")
 }

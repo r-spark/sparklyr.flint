@@ -4,10 +4,31 @@
 \alias{spark_connection.ts_rdd}
 \title{Retrieve Spark connection associated with an R object}
 \usage{
-\method{spark_connection}{ts_rdd}(x)
+\method{spark_connection}{ts_rdd}(x, ...)
+}
+\arguments{
+\item{x}{An R object from which a 'spark_connection' can be obtained.}
+
+\item{...}{Optional arguments; currently unused.}
 }
 \description{
 See \code{\link[sparklyr:spark_connection]{spark_connection}} for more details.
+}
+\examples{
+
+library(sparklyr)
+library(sparklyr.flint)
+
+sc <- try_spark_connect(master = "local")
+
+if (!is.null(sc)) {
+  sdf <- copy_to(sc, tibble::tibble(t = seq(10), v = seq(10)))
+  ts <- fromSDF(sdf, is_sorted = TRUE, time_unit = "SECONDS", time_column = "t")
+  print(spark_connection(ts))
+} else {
+  message("Unable to establish a Spark connection!")
+}
+
 }
 \seealso{
 Other Spark dataframe utility functions: 

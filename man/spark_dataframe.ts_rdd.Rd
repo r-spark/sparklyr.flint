@@ -4,7 +4,12 @@
 \alias{spark_dataframe.ts_rdd}
 \title{Retrieve a Spark DataFrame}
 \usage{
-\method{spark_dataframe}{ts_rdd}(x)
+\method{spark_dataframe}{ts_rdd}(x, ...)
+}
+\arguments{
+\item{x}{An R object wrapping, or containing, a Spark DataFrame.}
+
+\item{...}{Optional arguments; currently unused.}
 }
 \description{
 Retrieve a Spark DataFrame from a TimeSeriesRDD object

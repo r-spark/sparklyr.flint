@@ -87,7 +87,7 @@ ols_regression <- function(
                            has_intercept = TRUE,
                            ignore_const_vars = FALSE,
                            const_var_threshold = 1e-12) {
-  independent_vars <- labels(terms(formula))
+  independent_vars <- labels(stats::terms(formula))
   dependent_var <- setdiff(all.vars(formula), independent_vars)
   if (length(dependent_var) > 1) {
     stop(
