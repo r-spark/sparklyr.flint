@@ -4,18 +4,17 @@
 \alias{summarize_geometric_mean}
 \title{Geometric mean summarizer}
 \usage{
-summarize_geometric_mean(ts_rdd, column, window = NULL, key_columns = list())
+summarize_geometric_mean(
+  ts_rdd,
+  column,
+  key_columns = list(),
+  incremental = FALSE
+)
 }
 \arguments{
 \item{ts_rdd}{Timeseries RDD being summarized}
 
 \item{column}{Column to be summarized}
-
-\item{window}{Either a R expression specifying time windows to be summarized
-(e.g., `in_past("1h")` to summarize data from looking behind 1 hour at
-each time point, `in_future("5s")` to summarize data from looking forward
-5 seconds at each time point), or `NULL` to compute aggregate statistics
-on records grouped by timestamps}
 
 \item{key_columns}{Optional list of columns that will form an equivalence
 relation associating each record with the time series it belongs to (i.e.,
@@ -25,6 +24,18 @@ columns are considered to be from 2 separate time series and will therefore
 be summarized separately)
 By default, `key_colums` is empty and all records are considered to be part
 of a single time series.}
+
+\item{incremental}{If FALSE and `key_columns` is empty, then apply the
+summarizer to all records of `ts_rdd`.
+If FALSE and `key_columns` is non-empty, then apply the summarizer to all
+records within each group determined by `key_columns`.
+If TRUE and `key_columns` is empty, then for each record in `ts_rdd`,
+the summarizer is applied to that record and all records preceding it, and
+the summarized result is associated with the timestamp of that record.
+If TRUE and `key_columns` is non-empty, then for each record within a group
+of records determined by 1 or more key columns, the summarizer is applied
+to that record and all records preceding it within its group, and the
+summarized result is associated with the timestamp of that record.}
 }
 \value{
 A TimeSeriesRDD containing the summarized result
@@ -61,6 +72,7 @@ Other summarizers:
 \code{\link{summarize_count}()},
 \code{\link{summarize_covar}()},
 \code{\link{summarize_dot_product}()},
+\code{\link{summarize_ema_half_life}()},
 \code{\link{summarize_ewma}()},
 \code{\link{summarize_kurtosis}()},
 \code{\link{summarize_max}()},

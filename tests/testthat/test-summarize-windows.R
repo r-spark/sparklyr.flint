@@ -591,3 +591,54 @@ test_that("summarize_quantile() with key_columns works as expected", {
     )
   }
 })
+
+test_that("summarize_ema_half_life() works as expected", {
+  test_tbl <- spark_read_csv(
+    sc,
+    path = file.path("data", "ema_half_life_summarize_windows_test_data.csv"),
+    header = TRUE
+  )
+  test_ts <- invoke_static(
+    sc,
+    "com.twosigma.flint.timeseries.CSV",
+    "from",
+    hive_context(sc) %>% invoke("sqlContext"),
+    file.path("data", "ema_half_life_summarize_windows_test_data.csv"),
+    TRUE,
+    "time",
+    jtime_unit(sc, "NANOSECONDS"),
+    TRUE,
+    ",",
+    "\"",
+    "\\",
+    "#",
+    "PERMISSIVE",
+    "COMMONS",
+    TRUE,
+    TRUE,
+    "UTF-8",
+    NULL,
+    "yyyyMMdd HH:mm:ss.SSS",
+    FALSE,
+    NULL
+  ) %>%
+    new_ts_rdd()
+  for (interpolation in c("previous", "current", "linear")) {
+    for (convention in c("core", "convolution", "legacy")) {
+      rs <- summarize_ema_half_life(
+        test_ts,
+        column = "v",
+        half_life_duration = "60min",
+        window = in_past("1day"),
+        interpolation = interpolation,
+        convention = convention
+      ) %>%
+        collect()
+
+      expected_col <- sprintf("expected_%s_%s", convention, interpolation)
+      expect_true("v_ema" %in% colnames(rs))
+      expect_true(expected_col %in% colnames(rs))
+      expect_equal(rs$v_ema, rs[[expected_col]])
+    }
+  }
+})

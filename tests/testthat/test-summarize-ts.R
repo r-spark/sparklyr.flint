@@ -568,3 +568,23 @@ test_that("summarize_geometric_mean() works as expected", {
     scale = 1
   )
 })
+
+test_that("summarize_ema_half_life() works as expected", {
+  test_tbl <- spark_read_csv(
+    sc,
+    path = file.path("data", "ema_half_life_test_data.csv"),
+    header = TRUE
+  )
+  test_ts <- from_sdf(test_tbl, is_sorted = TRUE, time_unit = "NANOSECONDS")
+  rs <- summarize_ema_half_life(
+    test_ts, column = "price", half_life_duration = "100s"
+  ) %>%
+    collect()
+
+  expect_equal(
+    rs$price_ema,
+    rs$expected_legacy_previous,
+    tolerance = 1e-7,
+    scale = 1
+  )
+})
