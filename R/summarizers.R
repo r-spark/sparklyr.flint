@@ -8,7 +8,7 @@ NULL
 #' sum and count.
 #'
 #' @param ts_rdd Timeseries RDD being summarized
-#' @param window Either a R expression specifying time windows to be summarized
+#' @param window Either an R expression specifying time windows to be summarized
 #'    (e.g., `in_past("1h")` to summarize data from looking behind 1 hour at
 #'    each time point, `in_future("5s")` to summarize data from looking forward
 #'    5 seconds at each time point), or `NULL` to compute aggregate statistics
@@ -929,6 +929,87 @@ summarize_ewma <- function(
   )
 
   summarize(ts_rdd, summarizer_args, key_columns, incremental = TRUE)
+}
+
+#' EMA half-life summarizer
+#'
+#' Calculate the exponential moving average of a time series using the half-
+#' life specified and store the result in a new column named `<column>_ema`
+#' See https://github.com/twosigma/flint/blob/master/doc/ema.md for details on
+#' different EMA implementations.
+#'
+#' @inheritParams summarizers
+#' @param half_life_duration A time duration specified in string form (e.g.,
+#'   "1d", "1h", "15m", etc) representing the half-life duration
+#' @param window Either an R expression specifying time windows to be summarized
+#'    (e.g., `in_past("1h")` to summarize the EMA of `column` within the time
+#'    interval of [t - 1h, t] for each timestamp `t`, `in_future("5s")` to
+#'    summarize EMA of `column` within the time interval of [t, t + 5s] for each
+#'    timestamp `t`), or `NULL` to summarize EMA of `column` within the time
+#'    interval of (-inf, t] for each timestamp `t`
+#' @param time_column Name of the column containing timestamps (default: "time")
+#' @param interpolation Method used for interpolating values between two
+#'   consecutive data points, must be one of "previous", "linear", and
+#'   "current" (default: "previous"). See
+#'   https://github.com/twosigma/flint/blob/master/doc/ema.md for details on
+#'   different interpolation methods.
+#' @param convention Convolution convention, must be one of "convolution",
+#'   "core", and "legacy" (default: "legacy"). See
+#'   https://github.com/twosigma/flint/blob/master/doc/ema.md for details.
+#'
+#' @family summarizers
+#'
+#' @examples
+#'
+#' library(sparklyr)
+#' library(sparklyr.flint)
+#'
+#' sc <- try_spark_connect(master = "local")
+#'
+#' if (!is.null(sc)) {
+#'   price_sdf <- copy_to(
+#'     sc,
+#'     data.frame(time = seq(1000), price = rnorm(1000))
+#'   )
+#'   ts <- fromSDF(price_sdf, is_sorted = TRUE, time_unit = "SECONDS")
+#'   ts_ema <- summarize_ema_half_life(
+#'     ts,
+#'     column = "price",
+#'     half_life_duration = "100s"
+#'   )
+#' } else {
+#'   message("Unable to establish a Spark connection!")
+#' }
+#'
+#' @export
+summarize_ema_half_life <- function(
+                                    ts_rdd,
+                                    column,
+                                    half_life_duration,
+                                    window = NULL,
+                                    time_column = "time",
+                                    interpolation = c("previous", "linear", "current"),
+                                    convention = c("legacy", "convolution", "core"),
+                                    key_columns = list()) {
+  interpolation <- match.arg(interpolation)
+  convention <- match.arg(convention)
+  summarizer_args <- list(
+    method = "emaHalfLife",
+    column,
+    half_life_duration,
+    time_column,
+    interpolation,
+    convention
+  )
+
+  window <- rlang::enexpr(window)
+  if (is.null(window)) {
+    summarize(ts_rdd, summarizer_args, key_columns, incremental = TRUE)
+  } else {
+    summarize_time_range(
+      ts_rdd, window, summarizer_args, key_columns
+    )
+  }
 }
 
 #' Skewness summarizer

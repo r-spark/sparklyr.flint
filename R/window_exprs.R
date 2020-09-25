@@ -3,11 +3,13 @@ NULL
 
 #' Time window specifications
 #'
-#' Functions for specifying commonly used types of time windows, which are
-#' commonly used within the context of summarize_* functions (e.g.,
-#' `summarize_count(ts_rdd, in_past("3s"))`) where the Spark connection (`sc`)
-#' is implied to be the same Spark connection the timeseries RDD object has
-#' and does not need to be specified explicitly
+#' Functions for specifying commonly used types of time windows, which should
+#' only be used within the context of summarize_* functions (e.g.,
+#' `summarize_count(ts_rdd, in_past("3s"))`). When passing a time window
+#' specification to some summarize_* function, the Spark connection parameter
+#' (`sc`) for the time window object will be injected and will be the same Spark
+#' connection the underlying timeseries RDD object is associated with, so, `sc`
+#' never needs to be specified explicitly.
 #'
 #' @param duration String representing length of the time window containing a
 #'   number followed by a time unit (e.g., "10s" or "10sec"), where time unit

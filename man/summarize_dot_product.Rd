@@ -19,7 +19,7 @@ summarize_dot_product(
 
 \item{ycolumn}{Name of the second column}
 
-\item{window}{Either a R expression specifying time windows to be summarized
+\item{window}{Either an R expression specifying time windows to be summarized
 (e.g., `in_past("1h")` to summarize data from looking behind 1 hour at
 each time point, `in_future("5s")` to summarize data from looking forward
 5 seconds at each time point), or `NULL` to compute aggregate statistics
@@ -66,6 +66,7 @@ Other summarizers:
 \code{\link{summarize_corr}()},
 \code{\link{summarize_count}()},
 \code{\link{summarize_covar}()},
+\code{\link{summarize_ema_half_life}()},
 \code{\link{summarize_ewma}()},
 \code{\link{summarize_geometric_mean}()},
 \code{\link{summarize_kurtosis}()},
