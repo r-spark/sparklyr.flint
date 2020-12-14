@@ -1,28 +1,37 @@
-Package: sparklyr.flint
 Type: Package
+Package: sparklyr.flint
 Title: Sparklyr Extension for 'Flint'
 Version: 0.2.0
-Authors@R: c(
-    person("Yitao", "Li", email = "yitao@rstudio.com", role = c("aut", "cre"),
+Authors@R: 
+    person(given = "Yitao",
+           family = "Li",
+           role = c("aut", "cre"),
+           email = "yitao@rstudio.com",
            comment = c(ORCID = "0000-0002-1261-905X"))
-    )
 Maintainer: Yitao Li <yitao@rstudio.com>
-Description: This sparklyr extension makes 'Flint' time series library
-    functionalities (<https://github.com/twosigma/flint>) easily accessible
-    through R.
+Description: This sparklyr extension makes 'Flint' time series
+    library functionalities (<https://github.com/twosigma/flint>) easily
+    accessible through R.
 License: Apache License 2.0
-SystemRequirements: Spark: 2.x or above
 URL: <https://github.com/r-spark/sparklyr.flint>
 BugReports: https://github.com/r-spark/sparklyr.flint/issues
-LazyData: TRUE
-RoxygenNote: 7.1.1
 Depends:
     R (>= 3.2)
 Imports:
     dbplyr,
     dplyr,
-    sparklyr (>= 1.3),
-    rlang
+    rlang,
+    sparklyr (>= 1.3)
+Suggests:
+    knitr,
+    rmarkdown,
+    tibble
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: TRUE
+RoxygenNote: 7.1.1
+SystemRequirements: Spark: 2.x or above
 Collate:
     'imports.R'
     'globals.R'
@@ -34,8 +43,3 @@ Collate:
     'ols_regression.R'
     'reexports.R'
     'utils.R'
-Suggests:
-    knitr,
-    rmarkdown,
-    tibble
-VignetteBuilder: knitr
