@@ -24,6 +24,7 @@ spark_dependencies <- function(spark_version, scala_version, ...) {
   }
 
   sparklyr::spark_dependency(
+    jars = "https://github.com/r-spark/sparkwarc/raw/main/inst/java/sparkwarc-3.0-2.12.jar",  # for debugging something in sparklyr
     packages = c(
       "org.slf4j:slf4j-log4j12:1.7.30",
       sprintf(pkg_name, pkg_spark_version, scala_version, pkg_version)

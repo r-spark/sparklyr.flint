@@ -25,7 +25,8 @@ testthat_spark_connection <- function(conn_attempts, conn_retry_interval_s = 2) 
             Sys.sleep(conn_retry_interval_s)
             FALSE
           } else {
-            e
+            print(e)
+            FALSE
           }
         }
       )

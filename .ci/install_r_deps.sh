@@ -5,14 +5,16 @@ set -efux -o pipefail
 TEST_DEPS="testthat \
            tibble \
            R6 \
-           uuid"
+           uuid \
+           knitr \
+           rmarkdown"
 SEP='"\\s+"'
 
 R_REMOTES_NO_ERRORS_FROM_WARNINGS=true Rscript - <<_RSCRIPT_EOF_
-  if (!require(devtools))
-    install.packages("devtools")
+  if (!require(remotes))
+    install.packages("remotes")
 
-  devtools::install_deps(dependencies = c("Imports"))
+  remotes::install_deps(dependencies = c("Imports"))
 
   test_deps <- strsplit("$TEST_DEPS", $SEP)[[1]]
   for (pkg in test_deps)
