@@ -166,7 +166,7 @@ testthat_multiple_simple_ts_test_case <- function() {
       tibble::tibble(
         t = do.call(c, lapply(seq(6), function(x) rep(x, 2))),
         u = c(3, 1, 4, -2, 8, 10, 7, 1, 5, 6, 7, -1),
-        v = c(6, NaN, 5, 2, NaN, 3, 3, 4, 2, NaN, 1, 6),
+        v = c(6, NA, 5, 2, NA, 3, 3, 4, 2, NA, 1, 6),
         w = c(2, 1, 1, 2, 1, 3, 4, 2, 1, 0, 3, 1),
         id = rep(c(0, 1), 6)
       )

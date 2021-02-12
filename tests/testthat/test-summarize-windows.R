@@ -488,7 +488,8 @@ test_that("summarize_weighted_covar() works as expected", {
     ycolumn = "v",
     window = in_past("6s"),
     weight_column = "w"
-  ) %>% collect()
+  ) %>%
+    collect()
 
   expect_equal(
     ts_weighted_covar$u_v_w_weightedCovariance,
@@ -506,7 +507,8 @@ test_that("summarize_weighted_covar() with key_columns works as expected", {
     window = in_past("6s"),
     weight_column = "w",
     key_columns = c("id")
-  ) %>% collect()
+  ) %>%
+    collect()
 
   expect_equal(ts_weighted_covar$id, rep(c(0, 1), 6))
   expect_equal(
