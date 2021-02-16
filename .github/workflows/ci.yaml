@@ -15,26 +15,26 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: 'Spark 2.4.0 (R oldrel, oraclejdk8)'
+          - name: 'Spark 2.4.0 (R oldrel, openjdk8)'
             r: 'oldrel'
             env:
               SPARK_VERSION: '2.4.0'
-              JAVA_VERSION: 'oraclejdk8'
-          - name: 'Spark 2.4.0 (R release, oraclejdk8)'
+              JAVA_VERSION: 'openjdk8'
+          - name: 'Spark 2.4.0 (R release, openjdk8)'
             r: 'release'
             env:
               SPARK_VERSION: '2.4.0'
-              JAVA_VERSION: 'oraclejdk8'
-          - name: 'Spark 2.4.5 (R release, oraclejdk8)'
+              JAVA_VERSION: 'openjdk8'
+          - name: 'Spark 2.4.5 (R release, openjdk8)'
             r: 'release'
             env:
               SPARK_VERSION: '2.4.5'
-              JAVA_VERSION: 'oraclejdk8'
-          - name: 'Spark 3.0.0 (R release, oraclejdk8)'
+              JAVA_VERSION: 'openjdk8'
+          - name: 'Spark 3.0.0 (R release, openjdk8)'
             r: 'release'
             env:
               SPARK_VERSION: '3.0.0'
-              JAVA_VERSION: 'oraclejdk8'
+              JAVA_VERSION: 'openjdk8'
           - name: 'Spark 3.0.0 (R release, openjdk11)'
             r: 'release'
             env:
@@ -60,16 +60,21 @@ jobs:
         with:
           r-version: ${{ matrix.r }}
       - name: Install Java
+        id: install-java
         run: |
-          if [[ ! -z "$JAVA_VERSION" ]]; then
-            source ./.ci/jdk_switcher.sh use "$JAVA_VERSION";
-          fi
+          sudo apt-get -y remove --purge default-jdk adoptopenjdk-11-hotspot || :
 
           if [[ ! -z "$JAVA_URL" ]]; then
             source ./.ci/install-jdk.sh --url $JAVA_URL
+          else
+            sudo apt-get -y install openjdk-8-jdk
+            wget https://raw.githubusercontent.com/michaelklishin/jdk_switcher/master/jdk_switcher.sh
+            . ./jdk_switcher.sh
+            jdk_switcher use openjdk8;
           fi
 
-          echo $JAVA_HOME
+          echo "${JAVA_HOME}"
+          echo "::set-output name=JAVA_HOME::${JAVA_HOME}"
       - name: Cache R packages
         if: runner.os != 'Windows'
         uses: actions/cache@master
@@ -96,7 +101,8 @@ jobs:
         run: Rscript -e 'install.packages(".", repos = NULL, type = "source")'
       - name: Run tests
         run: |
-          export SPARKLYR_LOG_FILE=/tmp/sparklyr.log
+          export SPARKLYR_LOG_FILE='/tmp/sparklyr.log'
+          export JAVA_HOME="${{ steps.install-java.outputs.JAVA_HOME }}"
 
           cd tests
           NOT_CRAN='true' Rscript testthat.R
