@@ -4,3 +4,4 @@ metastore_db
 inst/doc
 doc
 Meta
+tests/testthat/testthat-problems.rds

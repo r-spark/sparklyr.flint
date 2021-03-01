@@ -25,10 +25,13 @@ spark_dependencies <- function(spark_version, scala_version, ...) {
 
   sparklyr::spark_dependency(
     packages = c(
-      "org.slf4j:slf4j-log4j12:1.7.30",
+      sprintf(
+        "org.clapper:grizzled-slf4j_%s:1.3.4",
+        gsub("-", ".", scala_version)
+      ),
       sprintf(pkg_name, pkg_spark_version, scala_version, pkg_version)
     ),
-    repositories = "https://dl.bintray.com/yl790/maven"
+    repositories = "https://github.com/org-sparklyr/sparklyr.flint/raw/maven2"
   )
 }
 
