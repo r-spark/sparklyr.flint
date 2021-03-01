@@ -75,13 +75,32 @@ jobs:
 
           echo "${JAVA_HOME}"
           echo "::set-output name=JAVA_HOME::${JAVA_HOME}"
+      - name: Query dependencies
+        run: |
+          print(R.version)
+          install.packages("remotes")
+          saveRDS(remotes::dev_package_deps(".", dependencies = TRUE), ".github/deps.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+      - name: Get OS name
+        id: os-name
+        run: |
+          # `os_name` will be like "Ubuntu-20.04.1-LTS"
+          OS_NAME=$(lsb_release -ds | sed 's/\s/-/g')
+          echo "::set-output name=os-name::$OS_NAME"
       - name: Cache R packages
         if: runner.os != 'Windows'
         uses: actions/cache@master
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: sparklyr.flint-${{ runner.os }}-r-${{ matrix.r }}-${{ hashFiles('DESCRIPTION') }}-${{ hashFiles('.ci/install_r_deps.sh') }}
-          restore-keys: sparklyr-${{ runner.os }}-r-${{ matrix.r }}
+          key: sparklyr.flint-${{ steps.os-name.outputs.os-name }}-${{ hashFiles('.github/R-version') }}-${{ hashFiles('.github/deps.Rds') }}
+          restore-keys: sparklyr.flint-${{ steps.os-name.outputs.os-name }}-${{ hashFiles('.github/R-version') }}
+      - name: Cache Spark installations
+        if: runner.os != 'Windows'
+        uses: actions/cache@master
+        with:
+          path: ~/spark
+          key: sparklyr.flint-apache-spark-${{ steps.os-name.outputs.os-name }}-${{ env.SPARK_VERSION }}
       - name: Install system dependencies
         run: source .ci/install_deps.sh
       - name: Install R dependencies

@@ -2,6 +2,9 @@ library(sparklyr)
 library(sparklyr.flint)
 library(testthat)
 
+# increase timeout for downloading Apache Spark tgz files
+options(timeout = 600)
+
 if (identical(Sys.getenv("NOT_CRAN"), "true")) {
   on.exit({
     spark_disconnect_all()
