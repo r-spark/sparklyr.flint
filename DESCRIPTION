@@ -5,8 +5,8 @@ Version: 0.2.2
 Authors@R:
     c(person(given = "Yitao",
            family = "Li",
-           role = c("aut"),
-           email = "yitao@rstudio.com",
+           role = "aut",
+           email = "yitaoli1990@gmail.com",
            comment = c(ORCID = "0000-0002-1261-905X")),
       person(given = "Edgar",
              family = "Ruiz",
